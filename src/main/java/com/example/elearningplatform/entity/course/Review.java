@@ -22,13 +22,13 @@ public class Review {
     @Column(name = "rating")
     private float rating;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    // @ManyToOne
+    // @JoinColumn(name = "user_id")
+    // private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "course_id")
-    private Course course;
+    // @ManyToOne
+    // @JoinColumn(name = "course_id")
+    // private Course course;
 
     @Column(name = "creation_date")
     private LocalDate creationDate;

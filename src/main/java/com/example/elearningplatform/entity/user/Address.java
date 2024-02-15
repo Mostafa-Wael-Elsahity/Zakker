@@ -30,6 +30,7 @@ public class Address {
     private String zipCode;
 
     @OneToOne
-    @PrimaryKeyJoinColumn
+//    @PrimaryKeyJoinColumn
+    @JoinColumn(name = "user_id")
     private User user;
 }

@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-ELearningPlatformApplication<E-learning-Platform>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.example.elearningplatform.ELearningPlatformApplication",
+            "projectName": "E-learning-Platform",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

@@ -15,7 +15,6 @@ public class Category {
     @Column(name = "id")
     private Long id;
 
-    @NotNull
     @Column(name = "name")
     private String name;
 

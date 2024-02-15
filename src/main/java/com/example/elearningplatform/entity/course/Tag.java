@@ -16,11 +16,10 @@ public class Tag {
     @Column(name = "title")
     private String name;
 
-    @ManyToMany
-    @JoinTable(name = "course_tag",
-            joinColumns = @JoinColumn(name = "tag_id"),
-            inverseJoinColumns = @JoinColumn(name = "course_id"))
-    private List<Course> courses;
-
+    // @ManyToMany
+    // @JoinTable(name = "course_tag",
+    // joinColumns = @JoinColumn(name = "tag_id"),
+    // inverseJoinColumns = @JoinColumn(name = "course_id"))
+    // private List<Course> courses;
 
 }

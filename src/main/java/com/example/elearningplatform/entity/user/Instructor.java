@@ -16,18 +16,17 @@ public class Instructor {
     private Long id;
 
     // connect to user to allow multiple instructors
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    // @ManyToOne
+    // @JoinColumn(name = "user_id")
+    // private User user;
 
-    @OneToMany(mappedBy = "instructor")
-    private List<Section> sections;
+    // @OneToMany(mappedBy = "instructor")
+    // private List<Section> sections;
 
-    @ManyToMany
-    @JoinTable(name = "instructor_course",
-            joinColumns = @JoinColumn(name = "instructor_id"),
-            inverseJoinColumns = @JoinColumn(name = "course_id"))
-    private List<Course> courses;
-
+    // @ManyToMany
+    // @JoinTable(name = "instructor_course",
+    // joinColumns = @JoinColumn(name = "instructor_id"),
+    // inverseJoinColumns = @JoinColumn(name = "course_id"))
+    // private List<Course> courses;
 
 }

@@ -22,9 +22,9 @@ public class Lesson {
     @Column(name = "video_url")
     private String videoUrl;
 
-    @ManyToOne
-    @JoinColumn(name = "section_id")
-    private Section section;
+    // @ManyToOne
+    // @JoinColumn(name = "section_id")
+    // private Section section;
 
     @Column(name = "duration")
     private Duration duration;

@@ -22,11 +22,11 @@ public class ListOfCourses {
     @Column(name = "description")
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    // @ManyToOne
+    // @JoinColumn(name = "user_id")
+    // private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "course_id")
-    private Course course;
+    // @ManyToOne
+    // @JoinColumn(name = "course_id")
+    // private Course course;
 }

@@ -17,9 +17,9 @@ public class Cart {
     @Column(name = "id")
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    // @OneToOne
+    // @JoinColumn(name = "user_id")
+    // private User user;
 
     @Column(name = "total_price")
     @NotBlank
@@ -28,6 +28,6 @@ public class Cart {
     @Column(name = "total_quantity")
     private int totalQuantity;
 
-    @OneToMany(mappedBy = "cart")
-    private List<Course> courses;
+    // @OneToMany(mappedBy = "cart")
+    // private List<Course> courses;
 }

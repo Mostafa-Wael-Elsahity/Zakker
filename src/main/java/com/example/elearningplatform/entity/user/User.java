@@ -4,7 +4,10 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+
+import java.sql.Blob;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -36,29 +39,30 @@ public class User {
     private String role;
 
     @NotBlank
-    @Column(name="phone_number")
+    @Column(name = "phone_number")
     private String phoneNumber;
 
     @NotBlank
-    @Column(name="profile_picture")
-    private String profilePicture;
+    @Column(name = "profile_picture")
+    @Lob
+    private Blob profilePicture;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Address address;
+//    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+//    private Address address;
 
-    @Column(name = "email_verified")
-    private boolean emailVerified;
+    @Column(name = "is_enabled")
+    private boolean isEnabled;
 
     @Column(name = " registration_date")
-    private LocalDate registrationDate;
+    private LocalDateTime registrationDate;
 
     @NotBlank
     @Column(name = "bio")
     private String bio;
 
-    @Column(name="age")
+    @Column(name = "age")
     private int age;
 
-    @Column(name="last_login")
+    @Column(name = "last_login")
     private LocalDate lastLogin;
 }

@@ -24,15 +24,15 @@ public class Section {
     @Column(name = "duration")
     private Duration duration;
 
-    @ManyToOne
-    @JoinColumn(name = "course_id")
-    private Course course;
+    // @ManyToOne
+    // @JoinColumn(name = "course_id")
+    // private Course course;
 
     @Column(name = "description")
     private String description;
 
     // connect with lesson
-    @OneToMany(mappedBy = "section")
-    private List<Lesson> lessons;
+    // @OneToMany(mappedBy = "section")
+    // private List<Lesson> lessons;
 
 }
