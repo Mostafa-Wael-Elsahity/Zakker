@@ -3,8 +3,6 @@ package com.example.elearningplatform.entity.course;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.util.List;
-
 @Entity
 @Table(name = "tag")
 @Data

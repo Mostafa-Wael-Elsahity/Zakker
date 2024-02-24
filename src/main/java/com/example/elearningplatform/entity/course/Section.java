@@ -1,11 +1,10 @@
 package com.example.elearningplatform.entity.course;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import org.antlr.v4.runtime.misc.NotNull;
 
 import java.time.Duration;
-import java.util.List;
 
 @Data
 @Entity

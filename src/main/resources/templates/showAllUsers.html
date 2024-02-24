@@ -1,0 +1,13 @@
+
+
+
+
+    <table class="table border" >
+        <tr th:each="list : ${users}">
+            <td th:text="${list.getEmail()}"></td>
+            <td><img height="250px"  th:src="@{${'/user/display?email=' + list.getEmail()}}" alt=""></td>
+        </tr>
+
+    </table>
+
+

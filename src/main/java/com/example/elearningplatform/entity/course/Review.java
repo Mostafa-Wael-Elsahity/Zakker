@@ -1,10 +1,9 @@
 package com.example.elearningplatform.entity.course;
 
-import com.example.elearningplatform.entity.user.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 
 @Entity
