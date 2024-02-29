@@ -1,24 +1,28 @@
-// package com.example.elearningplatform.role;
+package com.example.elearningplatform.role;
 
-// import jakarta.persistence.Column;
-// import jakarta.persistence.Entity;
+import com.example.elearningplatform.user.User;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-// import jakarta.persistence.Id;
-// import lombok.NoArgsConstructor;
+import java.util.List;
 
-// @Entity
-// @NoArgsConstructor
-// public class Role {
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "roles")
+public class Role {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-// @Id
-// @Column(name = "role")
-// private String role;
+    @Column(nullable = false, unique = true)
+    private String name;
 
-// public Role(String role) {
-// this.role = role;
-// }
-
-// public String getRole() {
-// return role;
-// }
-// }
+    @ManyToMany(mappedBy = "roles")
+    private List<User> users;
+}

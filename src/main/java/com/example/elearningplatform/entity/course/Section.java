@@ -6,6 +6,8 @@ import lombok.Data;
 
 import java.time.Duration;
 
+import com.example.elearningplatform.course.Course;
+
 @Data
 @Entity
 @Table(name = "section")
@@ -23,9 +25,9 @@ public class Section {
     @Column(name = "duration")
     private Duration duration;
 
-    // @ManyToOne
-    // @JoinColumn(name = "course_id")
-    // private Course course;
+    @ManyToOne
+    @JoinColumn(name = "course_id")
+    private Course course;
 
     @Column(name = "description")
     private String description;

@@ -43,16 +43,17 @@ public class LoginController {
     /*****************************************************************************************************************/
 
     @GetMapping("/get-login")
-    public ModelAndView login(Model model) {
+    public ModelAndView login(Model model, HttpServletRequest request) {
+       
         model.addAttribute("loginRequest", new LoginRequest());
-        ModelAndView mv = new ModelAndView("login", "loginRequest",model);
+        ModelAndView mv = new ModelAndView("login", "loginRequest", model);
         return mv;
     }
 
     /*****************************************************************************************************************/
 
     @PostMapping("/post-login")
-    public Response login(@RequestBody  Map<String, String> loginRequest, HttpServletRequest request)
+    public Response login(@RequestBody Map<String, String> loginRequest, HttpServletRequest request)
             throws MessagingException, UnsupportedEncodingException {
         System.out.println(loginRequest);
         User user = userRepository.findByEmail(loginRequest.get("email"));

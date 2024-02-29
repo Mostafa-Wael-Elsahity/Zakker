@@ -6,6 +6,8 @@ import lombok.Data;
 
 import java.time.LocalDate;
 
+import com.example.elearningplatform.course.Course;
+
 @Entity
 @Data
 @Table(name = "review")
@@ -25,9 +27,9 @@ public class Review {
     // @JoinColumn(name = "user_id")
     // private User user;
 
-    // @ManyToOne
-    // @JoinColumn(name = "course_id")
-    // private Course course;
+    @ManyToOne
+    @JoinColumn(name = "course_id")
+    private Course course;
 
     @Column(name = "creation_date")
     private LocalDate creationDate;

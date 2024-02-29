@@ -1,5 +1,9 @@
 package com.example.elearningplatform.entity.course;
 
+import java.util.List;
+
+import com.example.elearningplatform.course.Course;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -19,4 +23,7 @@ public class Category {
     @NotBlank
     @Column(name = "description")
     private String description;
+
+    @ManyToMany(mappedBy = "categories")
+    private List<Course> courses;
 }

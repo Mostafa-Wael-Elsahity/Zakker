@@ -3,11 +3,17 @@ package com.example.elearningplatform.address;
 import com.example.elearningplatform.user.User;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "address")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Address {
 
     @Id
@@ -31,7 +37,6 @@ public class Address {
     private String zipCode;
 
     @OneToOne
-    // @PrimaryKeyJoinColumn
     @JoinColumn(name = "user_id")
     private User user;
 }

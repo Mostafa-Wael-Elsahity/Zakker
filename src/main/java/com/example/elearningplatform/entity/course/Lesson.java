@@ -32,4 +32,5 @@ public class Lesson {
     @NotBlank
     @Column(name = "description")
     private String description;
+
 }
