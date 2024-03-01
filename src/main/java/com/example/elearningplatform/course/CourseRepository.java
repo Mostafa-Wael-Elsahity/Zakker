@@ -1,9 +1,12 @@
 package com.example.elearningplatform.course;
 
+import java.util.List;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CourseRepository extends JpaRepository<Course, Long> {
+import com.example.elearningplatform.user.User;
 
-    Course findByTitle(String title);
+public interface CourseRepository extends JpaRepository<Course, Long> {
 
 }

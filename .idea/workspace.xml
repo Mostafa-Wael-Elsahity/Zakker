@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="023ed099-1337-407b-9d09-cc7c448033ef" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/address/AddressRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/login/LoginRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/security/Security.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/security/SecurityConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/user/UserRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/user/Users.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/user/usersroles/UsersRoles.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/user/usersroles/UsersRolesRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/user/usersroles/UsersRolesService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/verficationtoken/VerficationTokenRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/changepassword.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/home.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/login.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/resetpageenteremail.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/templates/showAllUsers.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/.vscode/settings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/ELearningPlatformApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/ELearningPlatformApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/controller/HomeController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/controller/UserController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/dto/RegistrationRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/entity/course/Cart.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/entity/course/Cart.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/entity/course/Category.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/entity/course/Category.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/entity/course/Comment.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/entity/course/Comment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/entity/course/Course.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/entity/course/Course.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/entity/course/Lesson.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/entity/course/Lesson.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/entity/course/Review.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/entity/course/Review.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/entity/course/Section.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/entity/course/Section.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/entity/course/Tag.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/entity/course/Tag.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/entity/user/Address.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/entity/user/Instructor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/entity/user/ListOfCourses.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/entity/user/User.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/entity/user/VerificationToken.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/repository/AddressRepo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/repository/CourseRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/repository/TokenRepo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/repository/UserRepo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/repository/UserRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/elearningplatform/service/UserService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/example/elearningplatform/ELearningPlatformApplicationTests.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/ELearningPlatformApplication.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/ELearningPlatformApplication.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/controller/UserController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/dto/RegistrationRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/entity/course/Cart.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/entity/course/Cart.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/entity/course/Category.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/entity/course/Category.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/entity/course/Comment.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/entity/course/Comment.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/entity/course/Course.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/entity/course/Course.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/entity/course/Lesson.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/entity/course/Lesson.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/entity/course/Review.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/entity/course/Review.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/entity/course/Section.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/entity/course/Section.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/entity/course/Tag.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/entity/course/Tag.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/entity/user/Address.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/entity/user/Instructor.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/entity/user/ListOfCourses.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/entity/user/User.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/entity/user/VerificationToken.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/exception/RegistrationExceptionHandler.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/exception/RegistrationExceptionHandler.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/exception/UserAlreadyExistException.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/exception/UserAlreadyExistException.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/repository/AddressRepo.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/repository/CourseRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/repository/TokenRepo.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/repository/UserRepo.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/repository/UserRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/elearningplatform/service/UserService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/test-classes/com/example/elearningplatform/ELearningPlatformApplicationTests.class" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+        <option value="HTML File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="jar://$MAVEN_REPOSITORY$/org/springframework/security/spring-security-core/6.2.1/spring-security-core-6.2.1-sources.jar!/org/springframework/security/provisioning/JdbcUserDetailsManager.java" root0="SKIP_INSPECTION" />
+  </component>
+  <component name="JpbToolWindowState">
+    <option name="isToolWindowVisible" value="false" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="2cRMAA6rkUmruIZMC3c0sf7gSAG" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "DefaultHtmlFileTemplate": "HTML File",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "Spring Boot.ELearningPlatformApplication.executor": "Run",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "reference.settings.project.maven.repository.indices",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager" selected="Spring Boot.ELearningPlatformApplication">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="E-Learning-Platform2" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="E-Learning-Platform2" />
+      <option name="filePath" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ELearningPlatformApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="E-learning-Platform" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.elearningplatform.ELearningPlatformApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Write tests for prefix unknown" type="com.diffblue.cover.write-tests-run-configuration" factoryName="com.diffblue.cover.write-tests-run-configuration">
+      <settings run-config-name="Write tests for prefix unknown" include-system-env-vars="true" skeleton-tests-only="false">
+        <jvm-args />
+        <selection-scope>prefix</selection-scope>
+      </settings>
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Diffblue Cover.Write tests for prefix unknown" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="jdk-21.0.1-openjdk-21.0.1-4caba194b151-23eed401" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="023ed099-1337-407b-9d09-cc7c448033ef" name="Changes" comment="" />
+      <created>1708069795731</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1708069795731</updated>
+      <workItem from="1708069798836" duration="2381000" />
+      <workItem from="1708075972008" duration="1977000" />
+      <workItem from="1708085316157" duration="21472000" />
+      <workItem from="1708119555580" duration="428000" />
+      <workItem from="1708120414740" duration="7055000" />
+      <workItem from="1708156364497" duration="17276000" />
+      <workItem from="1708176713015" duration="8228000" />
+      <workItem from="1708254680673" duration="599000" />
+      <workItem from="1708266876164" duration="2617000" />
+      <workItem from="1708319032908" duration="83000" />
+      <workItem from="1708413751250" duration="2615000" />
+      <workItem from="1708455010579" duration="6307000" />
+      <workItem from="1708468751733" duration="3733000" />
+      <workItem from="1708501701825" duration="8335000" />
+      <workItem from="1708612353163" duration="17211000" />
+      <workItem from="1708636039417" duration="826000" />
+      <workItem from="1708687857367" duration="61000" />
+      <workItem from="1708687943993" duration="2729000" />
+      <workItem from="1708696498671" duration="101000" />
+      <workItem from="1708699313189" duration="5552000" />
+      <workItem from="1708711090738" duration="7090000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+</project>

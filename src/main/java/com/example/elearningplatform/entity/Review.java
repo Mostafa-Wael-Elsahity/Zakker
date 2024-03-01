@@ -1,15 +1,18 @@
-package com.example.elearningplatform.entity.course;
+package com.example.elearningplatform.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
 import com.example.elearningplatform.course.Course;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "review")
 public class Review {
     @Id
@@ -21,13 +24,13 @@ public class Review {
     private String content;
 
     @Column(name = "rating")
-    private float rating;
+    private Double rating;
 
     // @ManyToOne
     // @JoinColumn(name = "user_id")
     // private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id")
     private Course course;
 

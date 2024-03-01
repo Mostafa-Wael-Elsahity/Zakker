@@ -1,4 +1,4 @@
-package com.example.elearningplatform.entity.course;
+package com.example.elearningplatform.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;

@@ -57,7 +57,7 @@ public class UserService {
         return user;
     }
 
-    private Role checkRoleExist() {
+    public Role checkRoleExist() {
         Role role = new Role();
         role.setName("ROLE_USER");
         return roleRepository.save(role);

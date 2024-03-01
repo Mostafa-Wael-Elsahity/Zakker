@@ -2,29 +2,25 @@ package com.example.elearningplatform.course;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
-import com.example.elearningplatform.entity.course.Cart;
-import com.example.elearningplatform.entity.course.Category;
-import com.example.elearningplatform.entity.course.Review;
-import com.example.elearningplatform.entity.course.Section;
-import com.example.elearningplatform.entity.course.Tag;
+import com.example.elearningplatform.entity.Category;
+import com.example.elearningplatform.entity.Review;
+import com.example.elearningplatform.entity.Section;
+import com.example.elearningplatform.entity.Tag;
 import com.example.elearningplatform.user.User;
 
-import jakarta.persistence.*;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Entity
@@ -36,30 +32,24 @@ public class Course {
         @Column(name = "id")
         private Long id;
 
-        @NotBlank
         @Column(name = "title")
         private String title;
 
-        @NotBlank
         @Column(name = "description")
         private String description;
 
-        @NotBlank
         @Column(name = "language")
         private String language;
 
-        @NotBlank
         @Column(name = "level")
         private String level;
 
-        @NotBlank
         @Column(name = "price")
-        private double price;
+        private Double price;
 
         @Column(name = "duration")
         private Duration duration;
 
-        @NotBlank
         @Column(name = "imageUrl")
         private String imageUrl;
 
@@ -73,13 +63,13 @@ public class Course {
         private LocalDate lastUpdateDate;
 
         @Column(name = "average_rating")
-        private float averageRating;
+        private Double averageRating;
 
         @Column(name = "number_of_ratings")
-        private int numberOfRatings;
+        private Integer numberOfRatings;
 
         @Column(name = "number_of_enrollments")
-        private int numberOfEnrollments;
+        private Integer numberOfEnrollments;
 
         @ManyToMany
         @JoinTable(name = "course_tag", joinColumns = @JoinColumn(name = "course_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
@@ -90,19 +80,16 @@ public class Course {
         @ManyToMany
         @JoinTable(name = "instructed_courses", joinColumns = @JoinColumn(name = "course_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
         private List<User> instructors;
-        @ManyToMany
-        @JoinTable(name = "course_users", joinColumns = @JoinColumn(name = "course_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
-        private List<User> users;
 
         @OneToMany(mappedBy = "course")
         private List<Section> sections;
 
-        @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+        @ManyToMany
         @JoinTable(name = "course_category", joinColumns = {
                         @JoinColumn(name = "COURSE_ID", referencedColumnName = "ID") }, inverseJoinColumns = {
                                         @JoinColumn(name = "CATEGORY_ID", referencedColumnName = "ID") })
-        private List<Category> categories = new ArrayList<>();
+        private List<Category> categories;
 
-        @ManyToMany(mappedBy = "courses")
-        private List<Cart> carts = new ArrayList<>();
+        // @ManyToMany(mappedBy = "courses")
+        // private List<Cart> carts = new ArrayList<>();
 }

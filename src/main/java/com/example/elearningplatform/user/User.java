@@ -15,7 +15,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.example.elearningplatform.course.Course;
 import com.example.elearningplatform.role.Role;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -76,15 +75,19 @@ public class User implements UserDetails {
 
     @Column(name = "last_login")
     private LocalDate lastLogin;
-    @ManyToMany(mappedBy = "users")
-    private List<Course> courses;
-    @ManyToMany(mappedBy = "instructors")
-    private List<Course> coursesInstructor;
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    // @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
+    // private List<Course> courses;
+    // @ManyToMany(mappedBy = "instructors")
+    // private List<Course> coursesInstructor;
+    @ManyToMany
     @JoinTable(name = "users_roles", joinColumns = {
             @JoinColumn(name = "USER_ID", referencedColumnName = "ID") }, inverseJoinColumns = {
                     @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID") })
     private List<Role> roles = new ArrayList<>();
+
+    @ManyToMany
+    @JoinTable(name = "course_users", joinColumns = @JoinColumn(name = "course_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private List<Course> courses;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

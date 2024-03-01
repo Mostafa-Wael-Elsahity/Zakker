@@ -1,4 +1,4 @@
-package com.example.elearningplatform.entity.course;
+package com.example.elearningplatform.entity;
 
 import java.util.List;
 

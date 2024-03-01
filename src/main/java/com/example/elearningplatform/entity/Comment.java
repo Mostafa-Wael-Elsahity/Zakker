@@ -1,7 +1,6 @@
-package com.example.elearningplatform.entity.course;
+package com.example.elearningplatform.entity;
 
 import jakarta.persistence.Entity;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -13,7 +12,6 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
     @Column(name = "content")
     private String content;
 

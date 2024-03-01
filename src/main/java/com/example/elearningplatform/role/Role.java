@@ -12,7 +12,6 @@ import java.util.List;
 @Setter
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "roles")
 public class Role {
@@ -23,6 +22,10 @@ public class Role {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @ManyToMany(mappedBy = "roles")
-    private List<User> users;
+    public Role(String name) {
+        this.name = name;
+    }
+
+    // @ManyToMany(mappedBy = "roles")
+    // private List<User> users;
 }
