@@ -3,8 +3,7 @@ package com.example.elearningplatform.resetpassword;
 import com.example.elearningplatform.Response;
 import com.example.elearningplatform.email.EmailService;
 import com.example.elearningplatform.user.User;
-import com.example.elearningplatform.user.UserRepository;
-
+import com.example.elearningplatform.user.UserService;
 import com.example.elearningplatform.verficationtoken.VerficationTokenRepository;
 import com.example.elearningplatform.verficationtoken.VerficationTokenService;
 import com.example.elearningplatform.verficationtoken.VerificationToken;
@@ -30,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RestController
 @AllArgsConstructor
 @NoArgsConstructor
-@RequestMapping("/forget-password")
 public class ResetPasswordController {
 
     @Autowired
@@ -40,24 +38,24 @@ public class ResetPasswordController {
     @Autowired
     private VerficationTokenRepository verficationTokenRepository;
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
     @Autowired
     private EmailService emailService;
 
     /***************************************************************************************************************/
-    @GetMapping("/get-email")
+    @GetMapping("/forget-password/get-email")
     public ModelAndView getEmail() {
         return new ModelAndView("resetpageenteremail");
     }
 
     /***************************************************************************************************************/
 
-    @PostMapping("/send-email")
+    @PostMapping("/forget-password/send-email")
 
     public Response sendEmail(@RequestBody Map<String, String> data, HttpServletRequest request)
             throws MessagingException, UnsupportedEncodingException {
 
-        User user = userRepository.findByEmail(data.get("email"));
+        User user = userService.findByEmail(data.get("email"));
         System.out.println(user);
         if (user == null)
             return new Response(HttpStatus.BAD_REQUEST, "User not found", null);
@@ -70,7 +68,7 @@ public class ResetPasswordController {
 
     /***************************************************************************************************************/
 
-    @PostMapping("/save-password")
+    @PostMapping("/forget-password/save-password")
     public Response changePassword(@RequestBody Map<String, String> data, HttpServletRequest request)
             throws SQLException, IOException, MessagingException {
 

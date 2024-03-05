@@ -1,18 +1,18 @@
 package com.example.elearningplatform.course;
 
-import java.time.Duration;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
-import com.example.elearningplatform.entity.Category;
-import com.example.elearningplatform.entity.Review;
-import com.example.elearningplatform.entity.Section;
-import com.example.elearningplatform.entity.Tag;
+import com.example.elearningplatform.course.category.Category;
+import com.example.elearningplatform.course.review.Review;
+import com.example.elearningplatform.course.section.Section;
+import com.example.elearningplatform.course.tag.Tag;
 import com.example.elearningplatform.user.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -22,6 +22,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -30,7 +31,7 @@ public class Course {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(name = "id")
-        private Long id;
+        private Integer id;
 
         @Column(name = "title")
         private String title;
@@ -48,7 +49,7 @@ public class Course {
         private Double price;
 
         @Column(name = "duration")
-        private Duration duration;
+        private BigDecimal duration;
 
         @Column(name = "imageUrl")
         private String imageUrl;
@@ -71,24 +72,28 @@ public class Course {
         @Column(name = "number_of_enrollments")
         private Integer numberOfEnrollments;
 
-        @ManyToMany
-        @JoinTable(name = "course_tag", joinColumns = @JoinColumn(name = "course_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
-        private List<Tag> tags;
-
         @OneToMany(mappedBy = "course")
-        private List<Review> reviews;
-        @ManyToMany
-        @JoinTable(name = "instructed_courses", joinColumns = @JoinColumn(name = "course_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
-        private List<User> instructors;
-
-        @OneToMany(mappedBy = "course")
+        @ToString.Exclude
         private List<Section> sections;
 
+        @OneToMany
+        @ToString.Exclude
+        private List<Review> reviews;
+
         @ManyToMany
-        @JoinTable(name = "course_category", joinColumns = {
-                        @JoinColumn(name = "COURSE_ID", referencedColumnName = "ID") }, inverseJoinColumns = {
-                                        @JoinColumn(name = "CATEGORY_ID", referencedColumnName = "ID") })
-        private List<Category> categories;
+        @ToString.Exclude
+        @JoinTable(name = "course_tag", joinColumns = @JoinColumn(name = "course_id", unique = false), inverseJoinColumns = @JoinColumn(name = "tag_id", unique = false))
+        private List<Tag> tags = new ArrayList<>();
+
+        @ManyToMany
+        @ToString.Exclude
+        @JoinTable(name = "instructed_courses", joinColumns = @JoinColumn(name = "course_id", unique = false), inverseJoinColumns = @JoinColumn(name = "user_id", unique = false))
+        private List<User> instructors = new ArrayList<>();;
+
+        @ManyToMany
+        @ToString.Exclude
+        @JoinTable(name = "course_category", joinColumns = @JoinColumn(name = "course_id", unique = false), inverseJoinColumns = @JoinColumn(name = "category_id", unique = false))
+        private List<Category> categories = new ArrayList<>();;
 
         // @ManyToMany(mappedBy = "courses")
         // private List<Cart> carts = new ArrayList<>();

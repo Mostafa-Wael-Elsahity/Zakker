@@ -9,11 +9,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.elearningplatform.Response;
+import com.example.elearningplatform.course.section.SectionService;
 
 @RestController
 public class CourseController {
     @Autowired
+    SectionService sectionService;
+
+    @Autowired
     private CourseService courseService;
+
+    /***************************************************************************************** */
 
     @GetMapping("/course/title")
     public Response searchCourseWithTitle(@RequestParam(defaultValue = "0") Integer pageNumber,
@@ -21,10 +27,11 @@ public class CourseController {
             @RequestParam(defaultValue = "") String searchKey) {
         String searchKey1 = "%" + searchKey + "%";
         // System.out.println("searchKey1 : " + searchKey1);
-        List<CourseDao> courses = courseService.getAllCoursesByTitle(searchKey1, pageNumber, pageSize);
+        List<CourseDao> courses = courseService.findByTitle(searchKey1, pageNumber, pageSize);
         return new Response(HttpStatus.OK, "Success", courses);
     }
 
+    /*******************************************************************************************/
     @GetMapping("/course/instructor")
     public Response searchCourseWithInstructor(@RequestParam(defaultValue = "0") Integer pageNumber,
             @RequestParam(defaultValue = "10") Integer pageSize,
@@ -32,16 +39,25 @@ public class CourseController {
         String searchKey1 = "%" + searchKey + "%";
         // System.out.println("searchKey1 : " + searchKey1);
 
-        List<CourseDao> courses = courseService.getAllCoursesByInstructorName(searchKey1, pageNumber,
+        List<CourseDao> courses = courseService.findByInstructorName(searchKey1, pageNumber,
                 pageSize);
         return new Response(HttpStatus.OK, "Success", courses);
     }
 
-    @GetMapping("/course")
-    public Response searchCourse(@RequestParam Long id) {
+    /*******************************************************************************************/
 
-        Course course = courseService.getCourseById(id);
+    @GetMapping("/get-course")
+    public Response searchCourse(@RequestParam Integer id) {
 
+        Course course = courseService.getCourse(id);
+        // System.out.println(course);
+        if (course == null) {
+            return new Response(HttpStatus.NOT_FOUND, "Course not found", null);
+
+        }
         return new Response(HttpStatus.OK, "Success", course);
+
     }
+    /*******************************************************************************************/
+
 }

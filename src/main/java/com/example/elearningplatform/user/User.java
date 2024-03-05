@@ -17,7 +17,6 @@ import com.example.elearningplatform.role.Role;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,8 +28,13 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
+@Getter
+@Setter
 @Data
 @Entity
 @Table(name = "users")
@@ -40,7 +44,7 @@ import lombok.NoArgsConstructor;
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(name = "first_name")
     private String firstName;
@@ -62,7 +66,7 @@ public class User implements UserDetails {
     private Blob profilePicture;
 
     @Column(name = "enabled")
-    private boolean enabled;
+    private Boolean enabled;
 
     @Column(name = " registration_date")
     private LocalDateTime registrationDate;
@@ -75,19 +79,23 @@ public class User implements UserDetails {
 
     @Column(name = "last_login")
     private LocalDate lastLogin;
-    // @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
-    // private List<Course> courses;
-    // @ManyToMany(mappedBy = "instructors")
-    // private List<Course> coursesInstructor;
+
     @ManyToMany
+    @ToString.Exclude
     @JoinTable(name = "users_roles", joinColumns = {
             @JoinColumn(name = "USER_ID", referencedColumnName = "ID") }, inverseJoinColumns = {
                     @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID") })
     private List<Role> roles = new ArrayList<>();
 
     @ManyToMany
-    @JoinTable(name = "course_users", joinColumns = @JoinColumn(name = "course_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private List<Course> courses;
+    @ToString.Exclude
+    @JoinTable(name = "course_users", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "course_id"))
+    private List<Course> courses = new ArrayList<>();;
+
+    @ManyToMany
+    @ToString.Exclude
+    @JoinTable(name = "instructed_courses", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "course_id"))
+    private List<Course> instructedCourses = new ArrayList<>();;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -5,12 +5,13 @@ import java.sql.SQLException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.elearningplatform.Response;
 import com.example.elearningplatform.email.EmailService;
 import com.example.elearningplatform.user.User;
-import com.example.elearningplatform.user.UserRepository;
+import com.example.elearningplatform.user.UserService;
 import com.example.elearningplatform.verficationtoken.VerficationTokenService;
 
 import jakarta.mail.MessagingException;
@@ -26,15 +27,19 @@ public class ResetPasswordService {
     @Autowired
     private VerficationTokenService verficationTokenService;
 
-    @Autowired  private EmailService emailService;
+    @Autowired
+    private EmailService emailService;
 
-    @Autowired  private UserRepository userRepository;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     /******************************************************************************************************************/
 
     public String resetPassword(String email) throws MessagingException, IOException, SQLException {
 
-        User user = userRepository.findByEmail(email);
+        User user = userService.findByEmail(email);
         String token = verficationTokenService.create(user);
         return token;
     }
@@ -43,8 +48,8 @@ public class ResetPasswordService {
     public Response savePassword(User user, String password)
             throws SQLException, IOException, MessagingException {
         try {
-            user.setPassword(password);
-            userRepository.save(user);
+            user.setPassword(passwordEncoder.encode(password)); // encoded password);
+            userService.save(user);
             return new Response(HttpStatus.OK, "Password Changed Successfully", null);
         } catch (Exception e) {
             return new Response(HttpStatus.BAD_REQUEST, e.getMessage(), null);

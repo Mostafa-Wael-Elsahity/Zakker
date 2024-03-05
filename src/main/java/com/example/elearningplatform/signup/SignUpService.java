@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.elearningplatform.Response;
 import com.example.elearningplatform.user.User;
-import com.example.elearningplatform.user.UserRepository;
 import com.example.elearningplatform.user.UserService;
 import com.example.elearningplatform.verficationtoken.VerficationTokenRepository;
 import com.example.elearningplatform.verficationtoken.VerficationTokenService;
@@ -24,13 +23,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SignUpService {
     @Autowired
-    private UserRepository userRepository;
+    UserService userService;
     @Autowired
     private VerficationTokenRepository verficationTokenRepository;
     @Autowired
     private VerficationTokenService verficationTokenService;
-    @Autowired
-    private UserService userService;
 
     /******************************************************************************************************************/
 
@@ -63,7 +60,7 @@ public class SignUpService {
 
             else {
                 user.setEnabled(true);
-                userRepository.save(user);
+                userService.update(user);
                 verficationTokenRepository.delete(token);
                 verficationTokenRepository.delete(token);
                 return new Response(HttpStatus.OK, "Email verified successfully! Now you can login", null);

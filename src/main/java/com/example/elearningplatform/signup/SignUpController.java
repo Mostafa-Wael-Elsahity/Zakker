@@ -16,8 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.example.elearningplatform.Response;
 import com.example.elearningplatform.email.EmailService;
 import com.example.elearningplatform.user.User;
-import com.example.elearningplatform.user.UserRepository;
-
+import com.example.elearningplatform.user.UserService;
 import com.example.elearningplatform.verficationtoken.VerficationTokenService;
 
 import jakarta.mail.MessagingException;
@@ -28,7 +27,6 @@ import lombok.NoArgsConstructor;
 @RestController
 @AllArgsConstructor
 @NoArgsConstructor
-@RequestMapping("/signup")
 public class SignUpController {
 
     @Autowired
@@ -40,11 +38,11 @@ public class SignUpController {
     @Autowired
     private EmailService emailService;
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     /******************************************************************************************************************/
 
-    @GetMapping("/get-signup")
+    @GetMapping("/signup/get-signup")
     public ModelAndView signup() {
         // model.addAttribute("registrationRequest", new RegistrationRequest());
         ModelAndView mv = new ModelAndView("signup");
@@ -54,13 +52,13 @@ public class SignUpController {
     /******************************************************************************************************************/
 
     //
-    @PostMapping(value = "/post-signup", consumes = { "multipart/form-data" })
+    @PostMapping(value = "/signup/post-signup", consumes = { "multipart/form-data" })
 
     public Response signUp(SignUpRequest signUpRequest,
             HttpServletRequest request) throws MessagingException, IOException, SQLException {
         // return new Response(HttpStatus.OK, "ok", signUpRequest.getEmail());
 
-        User user = userRepository.findByEmail(signUpRequest.getEmail());
+        User user = userService.findByEmail(signUpRequest.getEmail());
 
         if (user != null) {
             return new Response(HttpStatus.BAD_REQUEST, "Email already exists , Please login", null);
@@ -92,7 +90,7 @@ public class SignUpController {
 
     public Response verifyEmail(@RequestParam("token") String verficationToken) throws SQLException, IOException {
 
-        System.out.println(verficationToken + " verifyemail1");
+        // System.out.println(verficationToken + " verifyemail1");
 
         return signUpService.verifyEmail(verficationToken);
     }

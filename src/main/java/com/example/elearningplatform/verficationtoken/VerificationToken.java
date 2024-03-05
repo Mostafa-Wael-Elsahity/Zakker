@@ -21,7 +21,7 @@ public class VerificationToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Integer id;
     private String token;
     @OneToOne
     @JoinColumn(name = "user_id")
