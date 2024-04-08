@@ -2,15 +2,10 @@ package com.example.elearningplatform.course.cart;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.example.elearningplatform.course.Course;
 import com.example.elearningplatform.user.User;
-
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import lombok.AccessLevel;
 import lombok.Data;
-import lombok.Getter;
 import lombok.ToString;
 
 @Entity
@@ -20,15 +15,12 @@ public class Cart {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+
     private Integer id;
 
-    @Column(name = "total_price")
-    @NotBlank
-    private Double totalPrice;
+    private Double totalPrice = 0.0;
 
-    @Column(name = "total_quantity")
-    private Integer totalQuantity;
+    private Integer numberOfCourses = 0;
 
     @OneToOne
     @ToString.Exclude
@@ -41,4 +33,10 @@ public class Cart {
             @JoinColumn(name = "COURSE_ID", referencedColumnName = "ID") }, inverseJoinColumns = {
                     @JoinColumn(name = "CART_ID", referencedColumnName = "ID") })
     private List<Course> courses = new ArrayList<>();
+
+    public void addCourse(Course course) {
+        this.courses.add(course);
+        this.numberOfCourses++;
+        this.totalPrice += course.getPrice();
+    }
 }

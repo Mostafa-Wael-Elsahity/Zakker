@@ -1,18 +1,32 @@
 package com.example.elearningplatform;
 
-import java.util.Locale.Category;
-
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import com.example.elearningplatform.user.User;
+import com.example.elearningplatform.course.CourseRepository;
+import com.example.elearningplatform.course.CourseService;
+import com.example.elearningplatform.course.cart.Cart;
+import com.example.elearningplatform.course.cart.CartRepository;
+import com.example.elearningplatform.user.UserRepository;
+
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @SpringBootApplication
-@SuppressWarnings({ "rawtypes", "unused" })
-public class ELearningPlatformApplication extends GenerateData
+@RequiredArgsConstructor
+@Transactional
+@SuppressWarnings({ "unused" })
+public class ELearningPlatformApplication
         implements ApplicationRunner {
+
+    private final EntityManager entityManager;
+    private final CourseRepository courseRepository;
+    private final CourseService courseService;
+    private final UserRepository userRepository;
+    private final CartRepository cartRepository;
 
     /*********************************************************************************** */
     public static void main(String[] args) {
@@ -20,12 +34,13 @@ public class ELearningPlatformApplication extends GenerateData
     }
 
     @Override
+    @Transactional
     public void run(ApplicationArguments args) throws Exception {
 
-        // generateData();
-        // System.out.println(courseService.getCourse(1).getReviews());
-        // System.out.println(categoryService.findByName(Category.class, "C"));
         System.out.println("HeLLO IN elearning platform");
+
+        // نجيب اخر حاجة اليوز اتفرج عليها
+        // الفيديوهات الي اتفرج عليها
 
     }
 }

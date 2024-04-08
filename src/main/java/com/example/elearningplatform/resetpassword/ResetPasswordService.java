@@ -3,7 +3,6 @@ package com.example.elearningplatform.resetpassword;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -11,35 +10,27 @@ import org.springframework.stereotype.Service;
 import com.example.elearningplatform.Response;
 import com.example.elearningplatform.email.EmailService;
 import com.example.elearningplatform.user.User;
-import com.example.elearningplatform.user.UserService;
+import com.example.elearningplatform.user.UserRepository;
 import com.example.elearningplatform.verficationtoken.VerficationTokenService;
 
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Service
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class ResetPasswordService {
 
-    @Autowired
-    private VerficationTokenService verficationTokenService;
-
-    @Autowired
-    private EmailService emailService;
-
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final VerficationTokenService verficationTokenService;
+    private final EmailService emailService;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
     /******************************************************************************************************************/
 
     public String resetPassword(String email) throws MessagingException, IOException, SQLException {
 
-        User user = userService.findByEmail(email);
+        User user = userRepository.findByEmail(email).orElse(null);
         String token = verficationTokenService.create(user);
         return token;
     }
@@ -49,7 +40,7 @@ public class ResetPasswordService {
             throws SQLException, IOException, MessagingException {
         try {
             user.setPassword(passwordEncoder.encode(password)); // encoded password);
-            userService.save(user);
+            userRepository.save(user);
             return new Response(HttpStatus.OK, "Password Changed Successfully", null);
         } catch (Exception e) {
             return new Response(HttpStatus.BAD_REQUEST, e.getMessage(), null);

@@ -1,9 +1,5 @@
 package com.example.elearningplatform.course.category;
 
-import java.util.List;
-
-import com.example.elearningplatform.course.Course;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

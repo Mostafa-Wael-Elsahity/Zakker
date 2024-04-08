@@ -1,25 +1,18 @@
 package com.example.elearningplatform.verficationtoken;
 
 import com.example.elearningplatform.user.User;
-
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @Service
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class VerficationTokenService {
 
-    @Autowired private  VerficationTokenRepository verficationTokenRepository;
+    private final VerficationTokenRepository verficationTokenRepository;
 
     /*******************************************************************************************************************/
     public String create(User user) {

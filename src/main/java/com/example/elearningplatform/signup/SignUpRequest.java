@@ -1,8 +1,6 @@
 package com.example.elearningplatform.signup;
 
-import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;

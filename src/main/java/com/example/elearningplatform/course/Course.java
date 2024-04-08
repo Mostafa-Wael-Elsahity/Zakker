@@ -2,7 +2,6 @@ package com.example.elearningplatform.course;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.example.elearningplatform.course.category.Category;
@@ -23,50 +22,40 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.ToString;
+import jakarta.persistence.Lob;
+import java.sql.Blob;
 
 @Entity
 @Data
 @Table(name = "course")
 public class Course {
         @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        @Column(name = "id")
+        @GeneratedValue(strategy = GenerationType.SEQUENCE)
         private Integer id;
 
-        @Column(name = "title")
         private String title;
 
-        @Column(name = "description")
         private String description;
 
-        @Column(name = "language")
         private String language;
 
-        @Column(name = "level")
         private String level;
 
-        @Column(name = "price")
         private Double price;
 
-        @Column(name = "duration")
         private BigDecimal duration;
 
-        @Column(name = "imageUrl")
-        private String imageUrl;
+        @Lob
+        private Blob imageUrl;
 
-        @Column(name = "is_published")
         private boolean isPublished;
 
-        @Column(name = "creation_date")
         private LocalDate creationDate;
 
-        @Column(name = "last_update_date")
         private LocalDate lastUpdateDate;
 
-        @Column(name = "average_rating")
         private Double averageRating;
 
-        @Column(name = "number_of_ratings")
         private Integer numberOfRatings;
 
         @Column(name = "number_of_enrollments")
@@ -83,17 +72,17 @@ public class Course {
         @ManyToMany
         @ToString.Exclude
         @JoinTable(name = "course_tag", joinColumns = @JoinColumn(name = "course_id", unique = false), inverseJoinColumns = @JoinColumn(name = "tag_id", unique = false))
-        private List<Tag> tags = new ArrayList<>();
+        private List<Tag> tags;
 
         @ManyToMany
         @ToString.Exclude
         @JoinTable(name = "instructed_courses", joinColumns = @JoinColumn(name = "course_id", unique = false), inverseJoinColumns = @JoinColumn(name = "user_id", unique = false))
-        private List<User> instructors = new ArrayList<>();;
+        private List<User> instructors;
 
         @ManyToMany
         @ToString.Exclude
         @JoinTable(name = "course_category", joinColumns = @JoinColumn(name = "course_id", unique = false), inverseJoinColumns = @JoinColumn(name = "category_id", unique = false))
-        private List<Category> categories = new ArrayList<>();;
+        private List<Category> categories;
 
         // @ManyToMany(mappedBy = "courses")
         // private List<Cart> carts = new ArrayList<>();

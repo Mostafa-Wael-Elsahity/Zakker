@@ -2,13 +2,10 @@ package com.example.elearningplatform.signup;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import jakarta.mail.Address;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -16,29 +13,24 @@ import org.springframework.web.servlet.ModelAndView;
 import com.example.elearningplatform.Response;
 import com.example.elearningplatform.email.EmailService;
 import com.example.elearningplatform.user.User;
-import com.example.elearningplatform.user.UserService;
+import com.example.elearningplatform.user.UserRepository;
 import com.example.elearningplatform.verficationtoken.VerficationTokenService;
 
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @RestController
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class SignUpController {
 
-    @Autowired
-    private SignUpService signUpService;
+    private final SignUpService signUpService;
 
-    @Autowired
-    private VerficationTokenService verficationTokenService;
+    private final VerficationTokenService verficationTokenService;
 
-    @Autowired
-    private EmailService emailService;
-    @Autowired
-    private UserService userService;
+    private final EmailService emailService;
+
+    private final UserRepository userRepository;
 
     /******************************************************************************************************************/
 
@@ -58,8 +50,7 @@ public class SignUpController {
             HttpServletRequest request) throws MessagingException, IOException, SQLException {
         // return new Response(HttpStatus.OK, "ok", signUpRequest.getEmail());
 
-        User user = userService.findByEmail(signUpRequest.getEmail());
-
+        User user = userRepository.findByEmail(signUpRequest.getEmail()).orElse(null);
         if (user != null) {
             return new Response(HttpStatus.BAD_REQUEST, "Email already exists , Please login", null);
 

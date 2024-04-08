@@ -1,46 +1,40 @@
 package com.example.elearningplatform.resetpassword;
 
-import com.example.elearningplatform.Response;
-import com.example.elearningplatform.email.EmailService;
-import com.example.elearningplatform.user.User;
-import com.example.elearningplatform.user.UserService;
-import com.example.elearningplatform.verficationtoken.VerficationTokenRepository;
-import com.example.elearningplatform.verficationtoken.VerficationTokenService;
-import com.example.elearningplatform.verficationtoken.VerificationToken;
-import jakarta.mail.MessagingException;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.Map;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.example.elearningplatform.Response;
+import com.example.elearningplatform.email.EmailService;
+import com.example.elearningplatform.user.User;
+import com.example.elearningplatform.user.UserRepository;
+import com.example.elearningplatform.verficationtoken.VerficationTokenRepository;
+import com.example.elearningplatform.verficationtoken.VerficationTokenService;
+import com.example.elearningplatform.verficationtoken.VerificationToken;
+
+import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 
 @RestController
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class ResetPasswordController {
 
-    @Autowired
-    private ResetPasswordService resetPasswordService;
-    @Autowired
-    private VerficationTokenService verficationTokenService;
-    @Autowired
-    private VerficationTokenRepository verficationTokenRepository;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private EmailService emailService;
+    private final ResetPasswordService resetPasswordService;
+    private final VerficationTokenService verficationTokenService;
+    private final VerficationTokenRepository verficationTokenRepository;
+    private final EmailService emailService;
+    private final UserRepository userRepository;
 
     /***************************************************************************************************************/
     @GetMapping("/forget-password/get-email")
@@ -55,7 +49,7 @@ public class ResetPasswordController {
     public Response sendEmail(@RequestBody Map<String, String> data, HttpServletRequest request)
             throws MessagingException, UnsupportedEncodingException {
 
-        User user = userService.findByEmail(data.get("email"));
+        User user = userRepository.findByEmail(data.get("email")).orElse(null);
         System.out.println(user);
         if (user == null)
             return new Response(HttpStatus.BAD_REQUEST, "User not found", null);

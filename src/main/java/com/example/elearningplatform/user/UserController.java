@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,17 +18,15 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.example.elearningplatform.Response;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @RestController
-@AllArgsConstructor
-@NoArgsConstructor
+
+@RequiredArgsConstructor
 
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserRepository userRepository;
 
     /**************************************************************************************************************/
 
@@ -39,7 +35,7 @@ public class UserController {
     public ModelAndView getAllUsers(@RequestHeader Map<String, String> headers) throws SQLException {
         System.out.println(headers);
         ModelAndView mv = new ModelAndView("showAllUsers");
-        List<User> users = userService.findAll(User.class);
+        List<User> users = userRepository.findAll();
 
         mv.addObject("users", users);
 
@@ -61,25 +57,25 @@ public class UserController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         // System.out.println(authentication.getName());
         return new Response(HttpStatus.OK, "success", authentication.getName());
-
     }
 
     @SuppressWarnings("null")
     @GetMapping("/user/display")
-    public ResponseEntity<byte[]> displayImage(@RequestParam("email") String email) throws IOException,
+    public ResponseEntity<String> displayImage(@RequestParam("email") String email) throws IOException,
             SQLException {
         // System.out.println("test: " + email);
 
-        User user = userService.findByEmail(email);
+        User user = userRepository.findByEmail(email).orElse(null);
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
         byte[] imageBytes = null;
         if (user.getProfilePicture() == null) {
-            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(imageBytes);
+            return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body("");
         }
         imageBytes = user.getProfilePicture().getBytes(1, (int) user.getProfilePicture().length());
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(imageBytes);
+        String image = new String(imageBytes);
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
     }
 
 }

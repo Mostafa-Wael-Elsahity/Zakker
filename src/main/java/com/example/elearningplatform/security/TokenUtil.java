@@ -12,10 +12,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author Khalid Elshafie <abolkog@gmail.com>
- * @Created 10/10/2018 10:15 PM.
- */
 @Component
 public class TokenUtil {
 

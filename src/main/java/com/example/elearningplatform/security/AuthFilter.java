@@ -17,16 +17,20 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-/**
- * @author Khalid Elshafie <abolkog@gmail.com>
- * @Created 10/10/2018 10:37 PM.
- */
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+@AllArgsConstructor
+@SuppressWarnings("null")
 public class AuthFilter extends OncePerRequestFilter {
 
     @Value("${auth.header}")
     private String TOKEN_HEADER;
+
     @Autowired
     private UserDetailsService userDetailsService;
+
     @Autowired
     private TokenUtil tokenUtil;
 
@@ -35,6 +39,7 @@ public class AuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         final String header = request.getHeader(TOKEN_HEADER);
+
         final SecurityContext securityContext = SecurityContextHolder.getContext();
 
         if (header != null && securityContext.getAuthentication() == null) {
@@ -43,6 +48,7 @@ public class AuthFilter extends OncePerRequestFilter {
             if (username != null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 if (tokenUtil.isTokenValid(token, userDetails)) {
+                    System.out.println(userDetails.getAuthorities());
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

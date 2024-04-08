@@ -1,6 +1,5 @@
 package com.example.elearningplatform.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,15 +12,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
 import com.example.elearningplatform.user.User;
-import com.example.elearningplatform.user.UserService;
+import com.example.elearningplatform.user.UserRepository;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
-    @Autowired
-    private UserService userService;
+
+    private final UserRepository userRepository;
 
     /*****************************************************************************************************/
 
@@ -37,7 +37,7 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService() {
 
         return username -> {
-            User user = userService.findByEmail(username);
+            User user = userRepository.findByEmail(username).orElse(null);
             // System.out.println(user);
             if (user != null)
                 return user;
@@ -64,14 +64,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(authorize -> authorize.requestMatchers("/user/display/**").permitAll());
+        http.csrf(csrf -> csrf.disable());
         http.authorizeHttpRequests(authorize -> authorize
-
-                .requestMatchers("/user/**", "/get-course/**", "/course/**").hasAnyRole("ADMIN", "USER")
-                .requestMatchers("/check-token/**", "/verifyEmail/**", "/signup/**", "/login/**", "/forget-password/**")
+                .requestMatchers("/user/**", "/check-course-subscription/**", "/check-cart/**")
+                .hasAnyRole("ADMIN", "USER")
+                .requestMatchers("/test").hasAnyRole("ADMIN")
+                .requestMatchers("/check-token/**", "/course/**", "/verifyEmail/**", "/signup/**", "/login/**",
+                        "/forget-password/**")
                 .permitAll())
                 .addFilterBefore(authFilter(), UsernamePasswordAuthenticationFilter.class);
+
+        http.formLogin(login -> login
+                .loginPage("/login/get-login") // custom login page
+                .permitAll());
         // http.httpBasic(Customizer.withDefaults());
         return http.build();
     }
