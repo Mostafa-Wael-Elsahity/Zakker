@@ -28,6 +28,10 @@ public class CartService {
         // System.out.println("user : " + user);
         // Cart cart = cartRepository.findByUser(user).orElse(null);
         Cart cart = cartRepository.findByUserName(userName).orElse(null);
+        if (cart == null)
+
+            return null;
+
         CartDto cartDto = new CartDto();
         for (Course c : cart.getCourses()) {
             SerchCourseDto serchCourseDto = new SerchCourseDto(c);

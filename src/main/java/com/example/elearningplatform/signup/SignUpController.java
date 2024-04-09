@@ -4,20 +4,21 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.example.elearningplatform.Response;
-import com.example.elearningplatform.email.EmailService;
+import com.example.elearningplatform.Validator;
 import com.example.elearningplatform.user.User;
 import com.example.elearningplatform.user.UserRepository;
 import com.example.elearningplatform.verficationtoken.VerficationTokenService;
 
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -28,27 +29,20 @@ public class SignUpController {
 
     private final VerficationTokenService verficationTokenService;
 
-    private final EmailService emailService;
-
     private final UserRepository userRepository;
 
     /******************************************************************************************************************/
 
-    @GetMapping("/signup/get-signup")
-    public ModelAndView signup() {
-        // model.addAttribute("registrationRequest", new RegistrationRequest());
-        ModelAndView mv = new ModelAndView("signup");
-        return mv;
-    }
-
     /******************************************************************************************************************/
 
-    //
     @PostMapping(value = "/signup/post-signup", consumes = { "multipart/form-data" })
 
-    public Response signUp(SignUpRequest signUpRequest,
+    public Response signUp(@Valid SignUpRequest signUpRequest, BindingResult result,
             HttpServletRequest request) throws MessagingException, IOException, SQLException {
         // return new Response(HttpStatus.OK, "ok", signUpRequest.getEmail());
+        if (result.hasErrors()) {
+            return Validator.validate(result);
+        }
 
         User user = userRepository.findByEmail(signUpRequest.getEmail()).orElse(null);
         if (user != null) {
@@ -63,9 +57,9 @@ public class SignUpController {
         }
         user = (User) response.getData();
 
-        String verficationToken = verficationTokenService.create(user);
+        String verficationToken = verficationTokenService.generateToken(signUpRequest.getEmail());
 
-        response = emailService.sendVerificationCode(user, request,
+        response = verficationTokenService.sendRegistrationVerificationCode(signUpRequest.getEmail(), request,
                 verficationToken);
         if (response.getStatus() != HttpStatus.OK) {
             return response;
@@ -80,8 +74,7 @@ public class SignUpController {
     @GetMapping("/verifyEmail")
 
     public Response verifyEmail(@RequestParam("token") String verficationToken) throws SQLException, IOException {
-
-        // System.out.println(verficationToken + " verifyemail1");
+        // System.out.println(verficationToken);
 
         return signUpService.verifyEmail(verficationToken);
     }

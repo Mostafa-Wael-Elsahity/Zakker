@@ -1,8 +1,8 @@
 package com.example.elearningplatform.signup;
 
 import org.springframework.web.multipart.MultipartFile;
+
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
@@ -10,23 +10,20 @@ import lombok.Data;
 @Data
 public class SignUpRequest {
 
-    @NotBlank
-    @NotEmpty
+    @Pattern(regexp = "^\\S*$", message = "Spaces are not allowed")
+    @NotEmpty(message = "First name cannot be empty")
     private String firstName;
-    @NotBlank
-    @NotEmpty
+    @Pattern(regexp = "^\\S*$", message = "Spaces are not allowed")
     private String lastName;
 
-    @NotBlank
-    @NotEmpty
-    @Email
+    @Email(message = "Invalid email address")
+    @NotEmpty(message = "Email cannot be empty")
     private String email;
 
-    @NotBlank
-    @NotEmpty
-    @Pattern(regexp = "^(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2})$")
+    @NotEmpty(message = "Password cannot be empty")
+    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$", message = "Password must contain at least one number, one uppercase letter, one lowercase letter, one special character, and be at least 8 characters long")
     private String password;
-
+    @Pattern(regexp = "^01\\d{9}$", message = "Invalid phone number")
     private String phoneNumber;
     private MultipartFile profilePicture;
     private String street;

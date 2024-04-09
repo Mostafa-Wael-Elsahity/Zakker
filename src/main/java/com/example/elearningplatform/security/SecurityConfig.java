@@ -74,10 +74,9 @@ public class SecurityConfig {
                 .permitAll())
                 .addFilterBefore(authFilter(), UsernamePasswordAuthenticationFilter.class);
 
-        http.formLogin(login -> login
-                .loginPage("/login/get-login") // custom login page
-                .permitAll());
-        // http.httpBasic(Customizer.withDefaults());
+        // http.formLogin(login -> login
+        // .loginPage("/login/get-login") // custom login page
+        // .permitAll());
         return http.build();
     }
     /***************************************************************************************************** */

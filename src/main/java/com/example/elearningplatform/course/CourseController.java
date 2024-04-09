@@ -52,7 +52,7 @@ public class CourseController {
     public Response checkCourse(@RequestParam Integer id, @RequestHeader Map<String, String> headers)
             throws SQLException {
         Boolean check = courseService.ckeckCourseSubscribe(headers.get("authorization"), id);
-        System.out.println(check);
+        // System.out.println(check);
         if (check)
             return new Response(HttpStatus.OK, "Success", courseService.getsubCourse(id));
         return new Response(HttpStatus.OK, "Success", courseService.getunsubCourse(id));
