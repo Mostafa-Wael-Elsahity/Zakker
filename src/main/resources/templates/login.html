@@ -63,9 +63,11 @@ button:hover {
 
         <div class="login-container">
             <h1>Login</h1>
-            <div th:if="${param.error}">
-                Invalid username and password.</div>
-            <form  th:action="@{/login/post-login}" th:object="${loginRequest}" method="post">
+            <a th:href="@{/oauth2/authorization/google}">Google</a>
+            <br><br>
+                <a th:href="@{/oauth2/authorization/github}">GitHub</a>
+                <br><br>
+            <form  th:action="@{/login/custom}" th:object="${loginRequest}" method="post">
 <!--                <div th:if= "${param.error}">! Invalid username or password</div>-->
 
                 <input type="text" id="email" name="email"  placeholder="Enter your Email" required>

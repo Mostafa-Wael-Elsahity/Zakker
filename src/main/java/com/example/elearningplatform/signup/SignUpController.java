@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.elearningplatform.Response;
-import com.example.elearningplatform.Validator;
+import com.example.elearningplatform.security.TokenUtil;
 import com.example.elearningplatform.user.User;
 import com.example.elearningplatform.user.UserRepository;
-import com.example.elearningplatform.verficationtoken.VerficationTokenService;
+import com.example.elearningplatform.validator.Validator;
 
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,9 +27,8 @@ public class SignUpController {
 
     private final SignUpService signUpService;
 
-    private final VerficationTokenService verficationTokenService;
-
     private final UserRepository userRepository;
+    private final TokenUtil tokenUtil;
 
     /******************************************************************************************************************/
 
@@ -57,10 +56,10 @@ public class SignUpController {
         }
         user = (User) response.getData();
 
-        String verficationToken = verficationTokenService.generateToken(signUpRequest.getEmail());
+        String token = tokenUtil.generateToken(signUpRequest.getEmail(), 1000L);
 
-        response = verficationTokenService.sendRegistrationVerificationCode(signUpRequest.getEmail(), request,
-                verficationToken);
+        response = signUpService.sendRegistrationVerificationCode(signUpRequest.getEmail(), request,
+                token);
         if (response.getStatus() != HttpStatus.OK) {
             return response;
         }

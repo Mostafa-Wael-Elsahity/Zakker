@@ -2,16 +2,22 @@ package com.example.elearningplatform.resetpassword;
 
 import java.io.IOException;
 import java.sql.SQLException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.elearningplatform.Response;
-import com.example.elearningplatform.Validator;
+import com.example.elearningplatform.security.TokenUtil;
+import com.example.elearningplatform.signup.SignUpService;
 import com.example.elearningplatform.user.User;
 import com.example.elearningplatform.user.UserRepository;
-import com.example.elearningplatform.verficationtoken.VerficationTokenService;
+import com.example.elearningplatform.validator.Validator;
+
+import ch.qos.logback.core.model.Model;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -22,8 +28,9 @@ import lombok.RequiredArgsConstructor;
 public class ResetPasswordController {
 
     private final ResetPasswordService resetPasswordService;
-    private final VerficationTokenService verficationTokenService;
+    private final SignUpService signUpService;
     private final UserRepository userRepository;
+    private final TokenUtil tokenUtil;
 
     /***************************************************************************************************************/
     /*************************************************************************************************************/
@@ -42,12 +49,11 @@ public class ResetPasswordController {
         if (user == null)
             return new Response(HttpStatus.BAD_REQUEST, "User not found", null);
         if (!user.isEnabled()) {
-            return verficationTokenService.sendRegistrationVerificationCode(data.getEmail(), request,
-                    verficationTokenService.generateToken(data.getEmail()));
+            return signUpService.sendRegistrationVerificationCode(data.getEmail(), request,
+                    tokenUtil.generateToken(data.getEmail(), 1000L));
         }
         return resetPasswordService.sendResetpasswordEmail(data.getEmail(), request,
-                verficationTokenService.generateToken(data.getEmail()));
-
+                tokenUtil.generateToken(data.getEmail(), 1000L));
     }
 
     /***************************************************************************************************************/
@@ -63,7 +69,16 @@ public class ResetPasswordController {
     }
 
     /***************************************************************************************************************/
+    @GetMapping("/check-token")
+    public Object savePassword(@RequestParam("token") String token, Model model)
+            throws SQLException, IOException {
 
+        if (tokenUtil.isTokenExpired(token)) {
+            return new Response(HttpStatus.BAD_REQUEST, "invalid token", null);
+        }
+        return new Response(HttpStatus.OK, "valid token",
+                tokenUtil.getUserNameFromToken(token));
+    }
     /***************************************************************************************************************/
 
 }

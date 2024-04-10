@@ -12,8 +12,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 import com.example.elearningplatform.user.User;
 import com.example.elearningplatform.user.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -38,6 +40,7 @@ public class SecurityConfig {
 
         return username -> {
             User user = userRepository.findByEmail(username).orElse(null);
+            // System.out.println(user.getRoles());
             // System.out.println(user);
             if (user != null)
                 return user;
@@ -62,21 +65,19 @@ public class SecurityConfig {
 
     /***************************************************************************************************** */
 
+    @SuppressWarnings("removal")
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable());
         http.authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/user/**", "/check-course-subscription/**", "/check-cart/**")
-                .hasAnyRole("ADMIN", "USER")
-                .requestMatchers("/test").hasAnyRole("ADMIN")
-                .requestMatchers("/check-token/**", "/course/**", "/verifyEmail/**", "/signup/**", "/login/**",
-                        "/forget-password/**")
-                .permitAll())
-                .addFilterBefore(authFilter(), UsernamePasswordAuthenticationFilter.class);
-
-        // http.formLogin(login -> login
-        // .loginPage("/login/get-login") // custom login page
-        // .permitAll());
+                .requestMatchers("/check-token/**", "/verifyEmail/**", "/signup/**", "/login/**",
+                        "/forget-password/**", "/user/display/**", "/course/**", "user/**")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .addFilterBefore(authFilter(), UsernamePasswordAuthenticationFilter.class));
+        http.oauth2Login(login -> login.loginPage("/login").defaultSuccessUrl("/login/outh2"));
         return http.build();
     }
     /***************************************************************************************************** */

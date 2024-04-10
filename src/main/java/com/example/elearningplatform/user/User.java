@@ -1,9 +1,9 @@
 package com.example.elearningplatform.user;
 
 import java.sql.Blob;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,10 +12,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.elearningplatform.course.Course;
-import com.example.elearningplatform.user.role.Role;
 
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -60,16 +63,14 @@ public class User implements UserDetails {
 
     private Integer age;
 
-    private LocalDate lastLogin;
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    @ToString.Exclude
-    @JoinTable(name = "users_roles", joinColumns = {
-            @JoinColumn(name = "USER_ID", referencedColumnName = "ID") }, inverseJoinColumns = {
-                    @JoinColumn(name = "ROLE_ID", referencedColumnName = "ID") })
+    private LocalDateTime lastLogin;
+    @ElementCollection(targetClass = Role.class, fetch = jakarta.persistence.FetchType.EAGER)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "roles")
     private List<Role> roles;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @ToString.Exclude
     @JoinTable(name = "course_users", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "course_id"))
     private List<Course> courses;
@@ -81,8 +82,12 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (roles == null) {
+            return Collections.emptyList();
+        }
+
         Collection<? extends GrantedAuthority> mapRoles = roles.stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
+                .map(role -> new SimpleGrantedAuthority(role.toString()))
                 .collect(Collectors.toList());
         return mapRoles;
     }

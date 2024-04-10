@@ -7,17 +7,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.example.elearningplatform.course.CourseRepository;
 import com.example.elearningplatform.course.CourseService;
-import com.example.elearningplatform.course.cart.Cart;
 import com.example.elearningplatform.course.cart.CartRepository;
+import com.example.elearningplatform.security.TokenUtil;
 import com.example.elearningplatform.user.UserRepository;
 
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @SpringBootApplication
 @RequiredArgsConstructor
-@Transactional
 @SuppressWarnings({ "unused" })
 public class ELearningPlatformApplication
         implements ApplicationRunner {
@@ -27,6 +25,7 @@ public class ELearningPlatformApplication
     private final CourseService courseService;
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
+    private final TokenUtil tokenUtil;
 
     /*********************************************************************************** */
     public static void main(String[] args) {
@@ -34,12 +33,8 @@ public class ELearningPlatformApplication
     }
 
     @Override
-    @Transactional
     public void run(ApplicationArguments args) throws Exception {
+        System.out.println("Hello, World!");
 
-        System.out.println("HeLLO IN elearning platform");
-
-        // نجيب اخر حاجة اليوز اتفرج عليها
-        // الفيديوهات الي اتفرج عليها
     }
 }

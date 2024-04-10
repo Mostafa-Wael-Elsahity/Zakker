@@ -9,10 +9,9 @@ import org.springframework.stereotype.Service;
 
 import com.example.elearningplatform.Response;
 import com.example.elearningplatform.email.EmailService;
+import com.example.elearningplatform.security.TokenUtil;
 import com.example.elearningplatform.user.User;
 import com.example.elearningplatform.user.UserRepository;
-import com.example.elearningplatform.verficationtoken.VerficationTokenService;
-
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ResetPasswordService {
 
-    private final VerficationTokenService verficationTokenService;
+    private final TokenUtil tokenUtil;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
@@ -30,7 +29,7 @@ public class ResetPasswordService {
 
     public String resetPassword(String email) throws MessagingException, IOException, SQLException {
 
-        String token = verficationTokenService.generateToken(email);
+        String token = tokenUtil.generateToken(email, 1000L);
         return token;
     }
 
@@ -50,11 +49,11 @@ public class ResetPasswordService {
 
     /********************************************************************************************************************/
 
-    public Response sendResetpasswordEmail(String email, HttpServletRequest request, String verficationToken) {
+    public Response sendResetpasswordEmail(String email, HttpServletRequest request, String token) {
 
         try {
             String url = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath()
-                    + "/check-token?token=" + verficationToken;
+                    + "/check-token?token=" + token;
             System.out.println("url : " + url);
             String subject = "Reset Password Verification";
             String senderName = "User Registration Portal Service";

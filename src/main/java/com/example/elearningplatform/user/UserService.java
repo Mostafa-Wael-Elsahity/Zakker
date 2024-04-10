@@ -11,9 +11,7 @@ import org.springframework.stereotype.Service;
 import com.example.elearningplatform.address.Address;
 import com.example.elearningplatform.address.AddressRepository;
 import com.example.elearningplatform.signup.SignUpRequest;
-import com.example.elearningplatform.user.role.Role;
-import com.example.elearningplatform.user.role.RoleRepository;
-import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -25,7 +23,6 @@ public class UserService {
     private final AddressRepository addressRepository;
 
     private final PasswordEncoder passwordEncoder;
-    private final RoleRepository roleRepository;
 
     /********************************************************************************************************* */
     // public List<User> getCourseInstructors(String searchKey) {
@@ -114,12 +111,11 @@ public class UserService {
         }
         userRepository.save(user);
 
-        Role role = roleRepository.findByName("ROLE_USER").orElse(null);
-        if (role == null) {
-            role = checkRoleExist();
-        }
+        // if (role == null) {
+        // role = checkRoleExist();
+        // }
 
-        user.setRoles(List.of(role));
+        user.setRoles(List.of(Role.ROLE_USER));
 
         userRepository.save(user);
         Address address = Address.builder().user(user).city(request.getCity()).country(request.getCountry())
@@ -130,11 +126,11 @@ public class UserService {
     }
 
     /********************************************************************************************************* */
-    @Transactional
-    public Role checkRoleExist() {
-        Role role = new Role();
-        role.setName("ROLE_USER");
-        return roleRepository.save(role);
-    }
+    // @Transactional
+    // public Role checkRoleExist() {
+    // Role role = new Role();
+    // role.setName("ROLE_USER");
+    // return roleRepository.save(role);
+    // }
 
 }
