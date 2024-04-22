@@ -1,60 +1,38 @@
-// package com.example.elearningplatform.course.lesson;
+package com.example.elearningplatform.course.lesson;
 
-// import java.util.List;
+import org.springframework.stereotype.Service;
 
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.jdbc.core.BeanPropertyRowMapper;
-// import org.springframework.jdbc.core.JdbcTemplate;
-// import org.springframework.stereotype.Service;
+import com.example.elearningplatform.course.comment.CommentRepository;
+import com.example.elearningplatform.course.comment.CommentService;
+import com.example.elearningplatform.security.TokenUtil;
 
-// import com.example.elearningplatform.base.BaseRepository;
+import lombok.Data;
 
-// import jakarta.persistence.EntityManager;
-// import jakarta.transaction.Transactional;
 
-// @Service
-// public class LessonService extends BaseRepository {
-// @Autowired
-// JdbcTemplate jdbcTemplate;
+@Service
+@Data
+public class LessonService {
+    private final CommentService commentService;
+    private final TokenUtil tokenUtil;
+    private final LessonRepository lessonRepository;
+    private final CommentRepository commentRepository;
 
-// /************************************************************************************************
-// */
+    /***********************************************************************************************
+    */
+    public LessonDto mapLessonToDto(Lesson lesson) {
 
-// public List<Lesson> findBySectionId(Integer section_id) {
-// String sql = "SELECT * FROM lesson WHERE section_id = " + section_id;
-// return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Lesson.class));
-// }
+        LessonDto lessonDto = new LessonDto();
+        lessonDto.setId(lesson.getId());
+        lessonDto.setTitle(lesson.getTitle());
+        lessonDto.setDuration(lesson.getDuration());
+        lessonDto.setVideoUrl(lesson.getVideoUrl());
 
-// /************************************************************************************************
-// */
+        return lessonDto;
+    }
 
-// // public Lesson getLessonById(Integer id) {
-// // String sql = "SELECT * FROM lesson WHERE id = ?";
-// // List<Lesson> lessons = jdbcTemplate.query(sql, new
-// // BeanPropertyRowMapper<>(Lesson.class), id);
-// // if (lessons.isEmpty()) {
-// // return null;
+    // public List<Lesson> getLessonsBySectionId(Integer sectionId) {
+    // return lessonRepository.findBySectionId(sectionId);
+    // }
 
-// // }
-// // return lessons.get(0);
-// // }
 
-// /************************************************************************************************
-// */
-// // @Transactional
-
-// // public void deleteLesson(Integer id) {
-// // String sql = "DELETE FROM lesson WHERE id = ?";
-// // jdbcTemplate.update(sql, id);
-// // }
-
-// /************************************************************************************************
-// */
-// // @Transactional
-// // public void saveLesson(Lesson lesson) {
-// // entityManager.persist(lesson);
-// // }
-// /************************************************************************************************
-// */
-
-// }
+}

@@ -27,7 +27,7 @@ public class Cart {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @ToString.Exclude
     @JoinTable(name = "courses-in-cart", joinColumns = {
             @JoinColumn(name = "COURSE_ID", referencedColumnName = "ID") }, inverseJoinColumns = {

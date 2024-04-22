@@ -3,7 +3,6 @@ package com.example.elearningplatform.course.category;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import lombok.ToString;
 
 @Entity
 @Data
@@ -18,7 +17,6 @@ public class Category {
     private String name;
 
     @NotBlank
-    @ToString.Exclude
     @Column(name = "description")
     private String description;
 

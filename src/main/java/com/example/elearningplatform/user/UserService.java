@@ -1,19 +1,19 @@
 package com.example.elearningplatform.user;
 
 import java.io.IOException;
-import java.sql.Blob;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.elearningplatform.address.Address;
 import com.example.elearningplatform.address.AddressRepository;
 import com.example.elearningplatform.signup.SignUpRequest;
-import com.example.elearningplatform.user.role.Role;
-import com.example.elearningplatform.user.role.RoleRepository;
-import jakarta.transaction.Transactional;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -21,11 +21,9 @@ import lombok.RequiredArgsConstructor;
 
 public class UserService {
     private final UserRepository userRepository;
-
     private final AddressRepository addressRepository;
 
     private final PasswordEncoder passwordEncoder;
-    private final RoleRepository roleRepository;
 
     /********************************************************************************************************* */
     // public List<User> getCourseInstructors(String searchKey) {
@@ -97,7 +95,19 @@ public class UserService {
     // }
 
     /********************************************************************************************************* */
+    // public User getUserFromToken(String token) throws SQLException {
+    // String userName = tokenUtil.getUserNameFromToken(token);
+    // User user = userRepository.findByEmail(userName).orElse(null);
+    // return user;
+    // }
+    public List<UserDto> findBySearchKey(String searchKey,Integer pageNumber) {
+        Pageable pageable = PageRequest.of(pageNumber, 8);
+        return userRepository.findBySearchKey(searchKey, pageable).stream().map(user -> {
+            UserDto instructor  = new UserDto(user);
+            return instructor;
+        }).toList();
 
+   }
     public User saveUser(SignUpRequest request) throws SQLException, IOException {
 
         User user = User.builder().email(request.getEmail()).password(passwordEncoder.encode(request.getPassword()))
@@ -105,36 +115,23 @@ public class UserService {
                 .bio(request.getBio()).firstName(request.getFirstName()).lastName(request.getLastName())
                 .enabled(false)
                 .phoneNumber(request.getPhoneNumber()).registrationDate(LocalDateTime.now()).build();
-        if (request.getProfilePicture() == null) {
-            user.setProfilePicture(null);
-        } else {
-            byte[] bytes = request.getProfilePicture().getBytes();
-            Blob blob = new javax.sql.rowset.serial.SerialBlob(bytes);
-            user.setProfilePicture(blob);
-        }
-        userRepository.save(user);
-
-        Role role = roleRepository.findByName("ROLE_USER").orElse(null);
-        if (role == null) {
-            role = checkRoleExist();
-        }
-
-        user.setRoles(List.of(role));
-
+        if (request.getProfilePicture() != null)
+            user.setProfilePicture(request.getProfilePicture().getBytes());
+        userRepository.save(user); 
+        user.setRoles(List.of(Role.ROLE_USER));
         userRepository.save(user);
         Address address = Address.builder().user(user).city(request.getCity()).country(request.getCountry())
                 .street(request.getStreet()).state(request.getState()).zipCode(request.getZipCode()).build();
         addressRepository.save(address);
-
         return user;
     }
 
     /********************************************************************************************************* */
-    @Transactional
-    public Role checkRoleExist() {
-        Role role = new Role();
-        role.setName("ROLE_USER");
-        return roleRepository.save(role);
-    }
+    // @Transactional
+    // public Role checkRoleExist() {
+    // Role role = new Role();
+    // role.setName("ROLE_USER");
+    // return roleRepository.save(role);
+    // }
 
 }

@@ -3,7 +3,7 @@ package com.example.elearningplatform.course.cart;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.elearningplatform.course.dto.SerchCourseDto;
+import com.example.elearningplatform.course.SearchCourseDto;
 
 import lombok.Data;
 
@@ -14,11 +14,17 @@ public class CartDto {
     private Double totalPrice = 0.0;
 
     private Integer numberOfCourses = 0;
-    private List<SerchCourseDto> courses = new ArrayList<>();
+    private List<SearchCourseDto> courses = new ArrayList<>();
 
-    public void addCourse(SerchCourseDto course) {
-        this.courses.add(course);
-        this.numberOfCourses++;
-        this.totalPrice += course.getPrice();
+   public CartDto(Cart cart) {
+        if (cart == null)
+            return;
+        this.id = cart.getId();
+        cart.getCourses().forEach(course -> {
+            SearchCourseDto searchCourseDto= new SearchCourseDto(course);
+            this.courses.add(searchCourseDto);
+        });
+        this.totalPrice = cart.getTotalPrice();
+        this.numberOfCourses = cart.getNumberOfCourses();
     }
 }

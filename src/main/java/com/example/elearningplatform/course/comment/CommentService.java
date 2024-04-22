@@ -1,115 +1,70 @@
-// package com.example.elearningplatform.course.comment;
+package com.example.elearningplatform.course.comment;
 
-// import java.util.List;
+import java.util.ArrayList;
+import java.util.List;
 
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.jdbc.core.BeanPropertyRowMapper;
-// import org.springframework.jdbc.core.JdbcTemplate;
-// import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Service;
 
-// import com.example.elearningplatform.base.BaseRepository;
+import com.example.elearningplatform.security.TokenUtil;
+import com.example.elearningplatform.user.UserDto;
 
-// import jakarta.persistence.EntityManager;
-// import jakarta.transaction.Transactional;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
-// @Service
-// public class CommentService extends BaseRepository {
-// @Autowired
-// JdbcTemplate jdbcTemplate;
+@Service
+@Data
+@RequiredArgsConstructor
+public class CommentService {
+    private final CommentRepository commentRepository;
+    private final TokenUtil tokenUtil;
 
-// /*******************************************************************************************************
-// */
-// // public List<Comment> getAllComments() {
-// // String sql = "SELECT * FROM comments";
-// // return jdbcTemplate.query(sql, new
-// BeanPropertyRowMapper<>(Comment.class));
-// // }
+    /************************************************************************************** */
 
-// /*******************************************************************************************************
-// */
 
-// // public Comment getCommentById(Integer id) {
-// // String sql = "SELECT * FROM comments WHERE id = " + id;
-// // List<Comment> comments = jdbcTemplate.query(sql, new
-// // BeanPropertyRowMapper<>(Comment.class));
-// // if (comments.isEmpty()) {
-// // return null;
-// // }
-// // return comments.get(0);
-// // }
+    public CommentDto mapCommentToDto(Comment comment, Boolean isVotedByUser, Boolean isCreatedByUser) {
+        CommentDto commentDto = new CommentDto();
+        commentDto.setId(comment.getId());
+        commentDto.setNumberOfVotes(comment.getNumberOfVotes());
+        commentDto.setNumberOfReplyes(comment.getNumberOfSubComments());
+        commentDto.setContent(comment.getContent());
+        commentDto.setUser(new UserDto(comment.getUser()));
+        commentDto.setIsVotedByUser(isVotedByUser);
+        commentDto.setIsCreatedByUser(isCreatedByUser);
 
-// /*******************************************************************************************************
-// */
+        return commentDto;
+    }
 
-// public List<Comment> getCommentsByLessonId(Integer id) {
-// String sql = "SELECT * FROM comments WHERE lesson_id = " + id;
-// return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Comment.class));
-// }
+    /************************************************************************************** */
 
-// /*******************************************************************************************************
-// */
+    public List<CommentDto> getRepliesByCommentId(Integer commentId) {
+        List<Comment> commentReplyes = commentRepository.findByParentCommentId(commentId);
+        List<CommentDto> commentReplyesDto = new ArrayList<>();
+        List<Comment> votedComments = commentRepository.findByVote(tokenUtil.getUserId());
+        commentReplyes.forEach(reply -> {
+            commentReplyesDto.add(mapCommentToDto(reply, votedComments.contains(reply),
+                    reply.getUser().getId().equals(tokenUtil.getUserId())));
+        });
+        return commentReplyesDto;
 
-// public List<Comment> getCommentsByUserId(Integer id) {
-// String sql = "SELECT * FROM comments WHERE user_id = " + id;
-// return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Comment.class));
-// }
+    }
 
-// /*******************************************************************************************************
-// */
+    /************************************************************************************** */
+    public List<CommentDto> getCommentsByLessonId(Integer lessonId) {
 
-// public List<Comment> getCommentsByParentId(Integer id) {
-// String sql = "SELECT * FROM comments WHERE parent_id = " + id;
-// return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Comment.class));
-// }
+    List<Comment> lessonComments = commentRepository.findByLessonId(lessonId);
+    List<CommentDto> lessonCommentDtos = new ArrayList<>();
+    List<Comment> votedComments = commentRepository.findByVote(tokenUtil.getUserId());
+    lessonComments.forEach(comment -> {
+        lessonCommentDtos.add(
+                mapCommentToDto(
+                        comment, votedComments.contains(comment),
+                        comment.getUser().getId().equals(tokenUtil.getUserId())));
+    });
+    return lessonCommentDtos;
+}
 
-// /*******************************************************************************************************
-// */
+    /************************************************************************************** */
+}
 
-// public List<Comment> getCommentsByCourseId(Integer id) {
-// String sql = "SELECT * FROM comments WHERE course_id = " + id;
-// return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Comment.class));
-// }
 
-// /*******************************************************************************************************
-// */
-// // @Transactional
-// // public void deleteComment(Integer id) {
-// // String sql = "DELETE FROM comments WHERE id = " + id;
-// // jdbcTemplate.update(sql);
-// // }
 
-// //
-// /*******************************************************************************************************
-// // */
-// // @Transactional
-// // public void updateComment(Comment comment) {
-// // String sql = "UPDATE comments SET content = '" + comment.getContent() + "'
-// // WHERE id = " + comment.getId();
-// // jdbcTemplate.update(sql);
-// // }
-
-// /*******************************************************************************************************
-// */
-// // @Transactional
-// // public void saveComment(Comment comment) {
-// // entityManager.persist(comment);
-// // }
-
-// /*******************************************************************************************************
-// */
-// // @Transactional
-// // public void addComment(Comment comment) {
-// // String sql = "INSERT INTO comments (content, parent_id, user_id,
-// lesson_id)
-// // VALUES (?, ?, ?, ?)";
-// // jdbcTemplate.update(sql, comment.getContent(), comment.getParentId(),
-// // comment.getUser().getId(),
-// // comment.getLesson().getId());
-// // }
-// /*******************************************************************************************************
-// */
-
-// /*******************************************************************************************************
-// */
-
-// }

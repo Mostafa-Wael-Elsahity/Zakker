@@ -10,7 +10,11 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
 
     Optional<Category> findByName(String name);
 
-    @Query(value = "SELECT * FROM category Join course_category ON category.id = course_category.category_id WHERE course_category.course_id = ?", nativeQuery = true)
+    @Query(value = """
+            SELECT * FROM category Join course_category 
+            ON category.id = course_category.category_id 
+            WHERE course_category.course_id = ?
+            """, nativeQuery = true)
     public List<Category> findByCourseId(Integer id);
 
 }
