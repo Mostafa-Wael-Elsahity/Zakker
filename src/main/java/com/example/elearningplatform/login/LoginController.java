@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,7 +43,7 @@ public class LoginController implements ErrorController {
     }
 
     /***************************************************************************************************************/
-
+    @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping("/custom")
     public Response loginCustom(@RequestBody @Valid LoginRequest loginRequest, BindingResult result,
             HttpServletRequest request)

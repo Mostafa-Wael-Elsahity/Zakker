@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import com.example.elearningplatform.course.Course;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,11 +32,11 @@ public class Section {
 
     private BigDecimal duration;
   
-    // @OneToMany(mappedBy = "section",fetch = jakarta.persistence.FetchType.EAGER)
+    // @OneToMany(mappedBy = "section",fetch = FetchType.LAZY)
     // @ToString.Exclude
     // private List<Lesson> lessons = new ArrayList<>();
 
-    @ManyToOne(fetch = jakarta.persistence.FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
     @JoinColumn(name = "course_id")
     private Course course;
