@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -16,7 +17,8 @@ import lombok.ToString;
 
 @Data
 @Entity
-@Table(name = "section")
+@Table(name = "section",
+       indexes = {@Index(name = "course_section_id_index",  columnList="course_id", unique = false)})
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

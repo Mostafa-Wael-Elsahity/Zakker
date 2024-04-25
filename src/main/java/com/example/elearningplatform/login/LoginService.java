@@ -47,11 +47,6 @@ public class LoginService {
 
         }
 
-        // final Authentication authentication = authenticationManager.authenticate(
-        // new UsernamePasswordAuthenticationToken(loginRequest.get("email"),
-        // loginRequest.get("password")));
-        // SecurityContextHolder.getContext().setAuthentication(authentication);
-
         String token = tokenUtil.generateToken(loginRequest.getEmail(),user.getId(), 3000000L);
         user.setLastLogin(LocalDateTime.now());
         userRepository.save(user);

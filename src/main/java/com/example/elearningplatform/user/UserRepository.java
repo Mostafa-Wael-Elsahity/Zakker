@@ -20,7 +20,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
                 OR lower(u.firstName) LIKE lower(concat('%', :searchKey, '%'))
                 OR lower(u.lastName) LIKE lower(concat('%', :searchKey, '%'))
             """)
-
     Page<User> findBySearchKey(@Param("searchKey") String searchKey, Pageable pageable);
 
 }

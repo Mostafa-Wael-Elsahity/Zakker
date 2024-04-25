@@ -5,10 +5,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.example.elearningplatform.course.lesson.Lesson;
-import com.example.elearningplatform.course.lesson.LessonDto;
-import com.example.elearningplatform.course.lesson.LessonRepository;
-import com.example.elearningplatform.course.lesson.LessonService;
+import com.example.elearningplatform.course.section.lesson.Lesson;
+import com.example.elearningplatform.course.section.lesson.LessonDto;
+import com.example.elearningplatform.course.section.lesson.LessonRepository;
+import com.example.elearningplatform.course.section.lesson.LessonService;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

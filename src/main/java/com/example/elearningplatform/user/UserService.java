@@ -3,16 +3,19 @@ package com.example.elearningplatform.user;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.elearningplatform.address.Address;
-import com.example.elearningplatform.address.AddressRepository;
+import com.example.elearningplatform.course.Course;
+import com.example.elearningplatform.security.TokenUtil;
 import com.example.elearningplatform.signup.SignUpRequest;
+import com.example.elearningplatform.user.address.Address;
+import com.example.elearningplatform.user.address.AddressDto;
+import com.example.elearningplatform.user.address.AddressRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,92 +25,22 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
     private final UserRepository userRepository;
     private final AddressRepository addressRepository;
-
+    private final TokenUtil tokenUtil;
     private final PasswordEncoder passwordEncoder;
 
-    /********************************************************************************************************* */
-    // public List<User> getCourseInstructors(String searchKey) {
-    // String sql = "SELECT * FROM users "
-    // +
-    // " JOIN instructed_courses ON users.id=instructed_courses.user_id" +
-    // " Join course ON course.id=instructed_courses.course_id WHERE course.id = 1";
-    // @SuppressWarnings({ "rawtypes", "unchecked" })
-    // List<User> users = jdbcTemplate.queryForList(sql, new Object[] { id }, new
-    // BeanPropertyRowMapper(User.class));
-    // return users;
-    // }
 
-    /********************************************************************************************************* */
-    // public List<User> getAllUsers() {
-    // String sql = "SELECT * from users";
-    // List<User> users = jdbcTemplate.query(
-    // sql,
-    // new BeanPropertyRowMapper(User.class));
-
-    // return users;
-    // }
-
-    /********************************************************************************************************* */
-
-    /********************************************************************************************************* */
-    // public void saveUser(User user) {
-    // String sql = "INSERT INTO users (email, password, age, bio, first_name,
-    // last_name, phone_number, registration_date) "
-    // + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    // jdbcTemplate.update(sql, user.getEmail(), user.getPassword(), user.getAge(),
-    // user.getBio(),
-    // user.getFirstName(), user.getLastName(), user.getPhoneNumber(),
-    // user.getRegistrationDate());
-    // }
-    // /*********************************************************************************************************
-    // */
-    // @Transactional
-    // public void saveUser(User user) {
-    // entityManager.persist(user);
-
-    // }
-
-    /********************************************************************************************************* */
-    // @Transactional
-    // public void updateUser(User user) {
-    // entityManager.merge(user);
-    // }
-
-    /********************************************************************************************************* */
-
-    /********************************************************************************************************* */
-
-    /********************************************************************************************************* */
-
-    // public User getUserByUserId(Integer id) {
-
-    // String sql = "SELECT * from users WHERE id =?";
-
-    // List<User> users = jdbcTemplate.query(
-    // sql,
-    // new BeanPropertyRowMapper(User.class), id);
-    // if (users.isEmpty()) {
-    // return null;
-
-    // }
-
-    // return users.get(0);
-    // }
-
-    /********************************************************************************************************* */
-    // public User getUserFromToken(String token) throws SQLException {
-    // String userName = tokenUtil.getUserNameFromToken(token);
-    // User user = userRepository.findByEmail(userName).orElse(null);
-    // return user;
-    // }
-    public List<UserDto> findBySearchKey(String searchKey,Integer pageNumber) {
+    /************************************************************************** */
+    public List<UserDto> findBySearchKey(String searchKey, Integer pageNumber) {
         Pageable pageable = PageRequest.of(pageNumber, 8);
         return userRepository.findBySearchKey(searchKey, pageable).stream().map(user -> {
-            UserDto instructor  = new UserDto(user);
+            UserDto instructor = new UserDto(user);
             return instructor;
         }).toList();
 
-   }
+    }
+
+    /************************************************************************** */
+
     public User saveUser(SignUpRequest request) throws SQLException, IOException {
 
         User user = User.builder().email(request.getEmail()).password(passwordEncoder.encode(request.getPassword()))
@@ -117,7 +50,7 @@ public class UserService {
                 .phoneNumber(request.getPhoneNumber()).registrationDate(LocalDateTime.now()).build();
         if (request.getProfilePicture() != null)
             user.setProfilePicture(request.getProfilePicture().getBytes());
-        userRepository.save(user); 
+        userRepository.save(user);
         user.setRoles(List.of(Role.ROLE_USER));
         userRepository.save(user);
         Address address = Address.builder().user(user).city(request.getCity()).country(request.getCountry())
@@ -127,11 +60,47 @@ public class UserService {
     }
 
     /********************************************************************************************************* */
-    // @Transactional
-    // public Role checkRoleExist() {
-    // Role role = new Role();
-    // role.setName("ROLE_USER");
-    // return roleRepository.save(role);
+    /********************************************************************************************************* */
+
+    // public void addToArchived(Course course) {
+    // User user = userRepository.findById(tokenUtil.getUserId()).orElse(null);
+    // user.addToArchived(course);
+    // userRepository.save(user);
+
     // }
 
+    /********************************************************************************************************* */
+    public ProfileDto getProfile() {
+        User user = userRepository.findById(tokenUtil.getUserId()).orElse(null);
+        ProfileDto profileDto = new ProfileDto();
+        if (user == null)
+            return profileDto;
+        profileDto.setId(user.getId());
+        profileDto.setEmail(user.getEmail());
+        profileDto.setFirstName(user.getFirstName());
+        profileDto.setLastName(user.getLastName());
+        profileDto.setPhoneNumber(user.getPhoneNumber());
+        profileDto.setEnabled(user.isEnabled());
+        profileDto.setRegistrationDate(user.getRegistrationDate());
+        profileDto.setBio(user.getBio());
+        profileDto.setLastLogin(user.getLastLogin());
+        profileDto.setAge(user.getAge());
+        profileDto.setAddress(new AddressDto(user.getAddress()));
+        return profileDto;
+    }
+
+    /********************************************************************************************************* */
+    public List<Course> getEnrolledCourses() {
+        User user = userRepository.findById(tokenUtil.getUserId()).orElse(null);
+        List<Course> courses = user.getEnrolledCourses();
+        return courses;
+    }
+
+    // public List<SearchCourseDto> getArchived() {
+    // User user = userRepository.findById(tokenUtil.getUserId()).orElse(null);
+    // List<SearchCourseDto> courses = user.getArchivedCourses().stream().map(course
+    // -> new SearchCourseDto(course))
+    // .toList();
+    // return courses;
+    // }
 }

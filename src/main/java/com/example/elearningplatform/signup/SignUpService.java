@@ -35,7 +35,6 @@ public class SignUpService {
     private final TokenUtil tokenUtil;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
-
     /******************************************************************************************************************/
 
     public Response registerUser(SignUpRequest request) throws MessagingException, IOException, SQLException {

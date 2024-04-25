@@ -13,10 +13,20 @@ import lombok.Data;
 @Data
 public class Tag {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
 
     @Column(name = "title")
     private String name;
+    
+    private Integer numberOfCourses;
+
+    public void incrementNumberOfCourses() {
+        this.numberOfCourses++;
+    }
+
+    public void decrementNumberOfCourses() {
+        this.numberOfCourses--;
+    }
 
 }

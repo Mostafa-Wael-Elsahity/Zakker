@@ -1,6 +1,10 @@
 package com.example.elearningplatform.course.category;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -9,15 +13,21 @@ import lombok.Data;
 @Table(name = "category")
 public class Category {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
 
-    @Column(name = "name")
     private String name;
-
     @NotBlank
-    @Column(name = "description")
     private String description;
+
+    private Integer numberOfCourses = 0;
+
+    public void incrementNumberOfCourses() {
+        this.numberOfCourses++;
+    }
+
+    public void decrementNumberOfCourses() {
+        this.numberOfCourses--;
+    }
 
 }

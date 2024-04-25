@@ -14,6 +14,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
@@ -23,7 +24,9 @@ import lombok.ToString;
 
 @Entity
 @Data
-@Table(name = "course")
+@Table(name = "course", indexes = {
+    @Index(name = "course_title_index", columnList = "title", unique = false),
+})
 public class Course {
 
         @Id
@@ -39,6 +42,8 @@ public class Course {
         private String language;
 
         private String level;
+        
+        private Boolean isPreviewd;
 
         private Double price;
 
@@ -57,6 +62,14 @@ public class Course {
         private Integer numberOfRatings = 0;
 
         private Integer numberOfEnrollments = 0;
+
+        public Course() {
+          this.totalRatings = 0.0;
+          this.numberOfRatings = 1;
+          this.numberOfEnrollments = 0;
+          this.creationDate = LocalDate.now();
+          this.lastUpdateDate = LocalDate.now();
+        }
 
 
         @ManyToMany(fetch = FetchType.EAGER)
