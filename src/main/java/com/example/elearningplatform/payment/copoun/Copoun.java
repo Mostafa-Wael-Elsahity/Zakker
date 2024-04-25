@@ -1,11 +1,11 @@
 package com.example.elearningplatform.payment.copoun;
 
 import java.time.LocalDateTime;
-import java.util.Random;
 
 import com.example.elearningplatform.course.Course;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,7 +27,7 @@ public class Copoun {
     private LocalDateTime expirationDate;
     private Integer numberOfCopouns;
     private Double discount;
-    @ManyToOne(fetch = jakarta.persistence.FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
     @JoinColumn(name = "course_id")
     private Course course;

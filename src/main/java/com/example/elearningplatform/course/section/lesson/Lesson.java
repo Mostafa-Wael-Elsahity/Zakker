@@ -3,9 +3,9 @@ package com.example.elearningplatform.course.section.lesson;
 import java.math.BigDecimal;
 
 import com.example.elearningplatform.course.section.Section;
-import com.example.elearningplatform.course.section.lesson.question.comment.Comment;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,7 +32,7 @@ public class Lesson {
     private BigDecimal duration;
     private String videoUrl;
 
-    @ManyToOne(fetch = jakarta.persistence.FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
     @JoinColumn(name = "section_id")
     private Section section;

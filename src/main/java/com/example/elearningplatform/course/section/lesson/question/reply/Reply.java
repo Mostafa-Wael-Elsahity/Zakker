@@ -8,6 +8,7 @@ import com.example.elearningplatform.course.section.lesson.question.comment.Comm
 import com.example.elearningplatform.user.User;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -31,11 +32,11 @@ import lombok.ToString;
 })
 
 public class Reply extends Question {
-    @ManyToOne(fetch = jakarta.persistence.FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id")
     private Comment comment;
 
-    @ManyToMany(fetch = jakarta.persistence.FetchType.EAGER, cascade = jakarta.persistence.CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = jakarta.persistence.CascadeType.ALL)
     @ToString.Exclude
     @JoinTable(name = "reply_likes", joinColumns = @JoinColumn(name = "reply_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     List<User> likes = new ArrayList<>();
