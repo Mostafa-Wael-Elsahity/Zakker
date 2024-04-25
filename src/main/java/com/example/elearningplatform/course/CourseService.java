@@ -5,23 +5,20 @@ import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.example.elearningplatform.course.review.Review;
 import com.example.elearningplatform.course.review.ReviewDto;
 import com.example.elearningplatform.course.review.ReviewRepository;
-import com.example.elearningplatform.course.section.Section;
 import com.example.elearningplatform.course.section.SectionDto;
 import com.example.elearningplatform.course.section.SectionRepository;
 import com.example.elearningplatform.course.section.SectionService;
-import com.example.elearningplatform.response.Response;
 import com.example.elearningplatform.security.TokenUtil;
 import com.example.elearningplatform.user.User;
 import com.example.elearningplatform.user.UserDto;
 import com.example.elearningplatform.user.UserRepository;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -37,15 +34,48 @@ public class CourseService {
 
         private final ReviewRepository reviewRepository;
 
+        /***************************************************************************************** */
+        public List<CourseDto> getAllCourses() {
+                List<Course> courses = courseRepository.findAll();
+                List<CourseDto> courseDtos = new ArrayList<>();
+                courses.forEach(course -> {
+                        courseDtos.add(mapCourseToDto(course));
+                });
+                return courseDtos;
+        }
 
+        /****************************************************************************************/
+        public List<SearchCourseDto> findByCategory(Integer categoryId, Integer pageNumber) {
 
+                Pageable pageable = PageRequest.of(pageNumber, 8);
+
+                List<SearchCourseDto> courses = courseRepository.findByCategoryId(categoryId, pageable).stream()
+                                .map(course -> {
+                                        SearchCourseDto searchCourseDto = new SearchCourseDto(course);
+                                        return searchCourseDto;
+                                }).toList();
+                return courses;
+        }
 
         /****************************************************************************************/
         public List<SearchCourseDto> findByTitle(String searchKey, Integer pageNumber) {
 
                 Pageable pageable = PageRequest.of(pageNumber, 8);
 
-                List<SearchCourseDto> courses = courseRepository.findByTitle(searchKey, pageable).stream()
+        List<SearchCourseDto> courses = courseRepository.findByTitle(searchKey, pageable).stream()
+                        .map(course -> {
+                                SearchCourseDto searchCourseDto = new SearchCourseDto(course);
+                                return searchCourseDto;
+                        }).toList();
+                return courses;
+        }
+
+        /**************************************************************************************** */
+        public List<SearchCourseDto> findByInstructorName(Integer instructorId, Integer pageNumber) {
+
+                Pageable pageable = PageRequest.of(pageNumber, 8);
+
+                List<SearchCourseDto> courses = courseRepository.findByInstructorId(instructorId, pageable).stream()
                                 .map(course -> {
                                         SearchCourseDto searchCourseDto = new SearchCourseDto(course);
                                         return searchCourseDto;
@@ -54,15 +84,15 @@ public class CourseService {
         }
 
         /**************************************************************************************** */
-        public Response getCourse(Integer id) {
+        public CourseDto getCourse(Integer id) {
                 Course course = courseRepository.findById(id).orElse(null);
 
                 if (course == null)
                         return null;
                 CourseDto courseDto = mapCourseToDto(course);
 
-                return new Response(HttpStatus.OK, "Success", courseDto);
-                // return new Response(HttpStatus.OK, "Success", null);
+                return courseDto;
+
         }
 
         /**************************************************************************************** */
@@ -76,7 +106,7 @@ public class CourseService {
                 if (user == null) {
                         return false;
                 }
-                for (Course c : user.getCourses()) {
+                for (Course c : user.getEnrolledCourses()) {
                         if (c.getId() == id)
                                 return true;
                 }
@@ -92,24 +122,23 @@ public class CourseService {
                 courseDto.setLastUpdateDate(course.getLastUpdateDate());
                 courseDto.setWhatYouWillLearn(course.getWhatYouWillLearn());
                 courseDto.setPrerequisite(course.getPrerequisite());
-                List<Section> sections = sectionRepository.findByCourseId(course.getId());
-                List<SectionDto> sectionDtos = new ArrayList<>();
+                List<SectionDto> sectionDtos = sectionRepository.findByCourseId(course.getId()).stream()
+                                .map(section -> sectionService.mapSectionToDto(section)).toList();
 
-                sections.forEach(section -> {
-                        sectionDtos.add(sectionService.mapSectionToDto(section));
-                });
                 courseDto.setSections(sectionDtos);
 
-                List<Review> courseReviews = reviewRepository.findByCourseId(course.getId());
+                List<ReviewDto> courseReviewDtos = reviewRepository.findByCourseId(course.getId()).stream().map(
+                                review -> {
+                                        ReviewDto reviewDto = new ReviewDto(review);
+                                        if (review.getUser().getId().equals(tokenUtil.getUserId())) {
+                                                courseDto.setIsReviewd(true);
+                                                courseDto.addReviewinFront(reviewDto);
+                                        }
+                                        return reviewDto;
+                                })
+                                .toList();
+                courseDto.setReviews(courseReviewDtos);
 
-                courseReviews.forEach(review -> {
-                        ReviewDto reviewDto = new ReviewDto(review);
-                        if (review.getUser().getId().equals(tokenUtil.getUserId())) {
-                                courseDto.setIsReviewd(true);
-                                courseDto.addReviewinFront(reviewDto);
-                        }
-                        courseDto.addReview(reviewDto);
-                });
                 course.getInstructors().forEach(instructor -> {
                         UserDto user = new UserDto(instructor);
                         courseDto.addInstructor(user);

@@ -3,8 +3,7 @@ package com.example.elearningplatform.course.section;
 import java.math.BigDecimal; // Import the BigDecimal class
 import java.util.List; // Import the List class
 
-
-import com.example.elearningplatform.course.lesson.LessonDto; // Import the LessonDto class
+import com.example.elearningplatform.course.section.lesson.LessonDto;
 
 import lombok.Data;
 import java.util.ArrayList; // Import the ArrayList class

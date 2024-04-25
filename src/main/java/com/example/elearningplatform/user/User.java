@@ -10,8 +10,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.example.elearningplatform.address.Address;
 import com.example.elearningplatform.course.Course;
+import com.example.elearningplatform.user.address.Address;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -23,6 +23,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -61,8 +63,6 @@ public class User implements UserDetails {
     private LocalDateTime lastLogin;
     private Integer age;
 
-    // @ManyToMany(mappedBy = "votes")
-    // private List<Comment> CommentVotes;
 
     @OneToOne(mappedBy = "user")
     @ToString.Exclude
@@ -76,20 +76,14 @@ public class User implements UserDetails {
     private List<Role> roles;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    private List<Course> courses;
+    @Builder.Default
+    private List<Course> enrolledCourses = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "instructors", fetch = FetchType.EAGER)
-    @ToString.Exclude
-    private List<Course> instructedCourses;
-
-    public void addCourse(Course course) {
-        courses = new ArrayList<>();
-        courses.add(course);
-    }
-
-    public void addInstructedCourse(Course course) {
-        instructedCourses = new ArrayList<>();
-        instructedCourses.add(course);
+    public void enrollCourse(Course course) {
+        if(course==null){
+            return;
+        }
+        enrolledCourses.add(course);
     }
 
     @Override

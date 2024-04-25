@@ -9,6 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -22,10 +23,12 @@ import lombok.ToString;
 @Entity
 @Getter
 @Setter
-@Table(name = "review", uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "course_id" }))
+@Table(name = "review", uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "course_id" }), indexes = {
+        @Index(name = "course_review_id_index", columnList = "course_id", unique = false),
+        @Index(name = "user_review_id_index", columnList = "user_id", unique = false) })
 public class Review {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
 
     @NotEmpty(message = "Content cannot be empty")

@@ -13,7 +13,7 @@ public class HomeController {
     public String home(@AuthenticationPrincipal Map<String, Object> principal) {
         System.out.println(principal);
 
-        return "home";
+        return "ya welcome ya welcome"; 
     }
 
     @GetMapping("/home")

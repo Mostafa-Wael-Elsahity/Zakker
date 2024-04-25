@@ -1,215 +1,266 @@
-// package com.example.elearningplatform;
+package com.example.elearningplatform;
 
-// import java.math.BigDecimal;
-// import java.util.ArrayList;
-// import java.util.List;
+import java.math.BigDecimal;
+import java.util.List;
 
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
-// import com.example.elearningplatform.course.Course;
-// import com.example.elearningplatform.course.CourseService;
-// import com.example.elearningplatform.course.category.Category;
-// import com.example.elearningplatform.course.category.CategoryService;
-// import com.example.elearningplatform.course.comment.Comment;
-// import com.example.elearningplatform.course.comment.CommentService;
-// import com.example.elearningplatform.course.lesson.Lesson;
-// import com.example.elearningplatform.course.lesson.LessonService;
-// import com.example.elearningplatform.course.review.Review;
-// import com.example.elearningplatform.course.review.ReviewService;
-// import com.example.elearningplatform.course.section.Section;
-// import com.example.elearningplatform.course.section.SectionService;
-// import com.example.elearningplatform.course.tag.Tag;
-// import com.example.elearningplatform.course.tag.TagService;
-// import com.example.elearningplatform.role.Role;
-// import com.example.elearningplatform.role.RoleService;
-// import com.example.elearningplatform.user.User;
-// import com.example.elearningplatform.user.UserService;
+import com.example.elearningplatform.course.Course;
+import com.example.elearningplatform.course.CourseRepository;
+import com.example.elearningplatform.course.category.Category;
+import com.example.elearningplatform.course.category.CategoryRepository;
+import com.example.elearningplatform.course.review.Review;
+import com.example.elearningplatform.course.review.ReviewRepository;
+import com.example.elearningplatform.course.section.Section;
+import com.example.elearningplatform.course.section.SectionRepository;
+import com.example.elearningplatform.course.section.lesson.Lesson;
+import com.example.elearningplatform.course.section.lesson.LessonRepository;
+import com.example.elearningplatform.course.section.lesson.question.comment.Comment;
+import com.example.elearningplatform.course.section.lesson.question.comment.CommentRepository;
+import com.example.elearningplatform.course.section.lesson.question.reply.Reply;
+import com.example.elearningplatform.course.section.lesson.question.reply.ReplyRepository;
+import com.example.elearningplatform.course.tag.Tag;
+import com.example.elearningplatform.course.tag.TagRepository;
+import com.example.elearningplatform.user.Role;
+import com.example.elearningplatform.user.User;
+import com.example.elearningplatform.user.UserRepository;
+import com.example.elearningplatform.user.cart.Cart;
+import com.example.elearningplatform.user.cart.CartRepository;
+import com.example.elearningplatform.user.lists.UserList;
+import com.example.elearningplatform.user.lists.UserListRepository;
 
-// import jakarta.transaction.Transactional;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
-// @Transactional
-// public class GenerateData {
+@Transactional
+@Component
+@RequiredArgsConstructor
+public class GenerateData {
+    private final ReviewRepository reviewRepository;
+    @PersistenceContext
+    private final EntityManager entityManager;
+    private final CourseRepository courseRepository;
+    private final UserRepository userRepository;
+    private final CartRepository cartRepository;
+    private final CommentRepository commentRepository;
+    private final LessonRepository lessonRepository;
+    private final CategoryRepository categoryRepository;
+    private final TagRepository tagRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final SectionRepository sectionRepository;
+    private final UserListRepository userListRepository;
+    private final ReplyRepository replyRepository;
 
-// @Autowired
-// RoleService roleService;
-// @Autowired
-// CourseService courseService;
-// @Autowired
-// UserService userService;
-// @Autowired
-// TagService tagService;
-// @Autowired
-// ReviewService reviewService;
-// @Autowired
-// CommentService commentService;
-// @Autowired
-// LessonService lessonService;
-// @Autowired
-// SectionService sectionService;
-// @Autowired
-// CategoryService categoryService;
-// @Autowired
-// PasswordEncoder passwordEncoder;
-// @Autowired
-// CourseService CourseService;
 
-// public void generateData() {
-// Role role = roleService.getByName("ROLE_USER");
-// if (role == null) {
-// role = new Role("ROLE_USER");
-// roleService.saveRole(role);
+    public void createData() {
+        Category category = new Category();
+        category.setName("Programming");
+        category.setDescription("Programming");
+        categoryRepository.save(category);
+        Category category1 = new Category();
+        category1.setName("Design");
+        category1.setDescription("Design");
+        categoryRepository.save(category1);
+        Category category2 = new Category();
+        category2.setName("Marketing");
+        category2.setDescription("Marketing");
+        categoryRepository.save(category2);
+        Tag tag = new Tag();
+        tag.setName("Java");
+        tagRepository.save(tag);
+        Tag tag1 = new Tag();
+        tag1.setName("Python");
+        tagRepository.save(tag1);
+        Tag tag2 = new Tag();
+        tag2.setName("C++");
+        tagRepository.save(tag2);
+        for (int i = 1; i <= 5; i++) {
+            Review review = new Review();
+            review.setContent("Review " + i);
+            review.setRating(5.0);
+            review.setCreationDate(java.time.LocalDate.now());
+            reviewRepository.save(review);
+        }
+        for (int i = 1; i <= 5; i++) {
+            Comment Comment = new Comment();
+            Comment.setContent("Comment " + i);
+            commentRepository.save(Comment);
+        }
+        for (int i = 1; i <= 5; i++) {
 
-// }
-// // roleService.saveRole(role);
+            Reply reply = new Reply();
+            reply.setContent("Reply " + i);
+            replyRepository.save(reply);
 
-// List<Tag> tags = new ArrayList<Tag>();
-// for (int i = 0; i < 5; i++) {
-// Tag tag = createTag(i);
-// tagService.save(tag);
-// tags.add(tag);
-// }
-// List<Category> categories = new ArrayList<Category>();
-// for (int i = 0; i < 5; i++) {
-// Category category = createCategory(i);
-// categoryService.save(category);
-// categories.add(createCategory(i));
-// }
-// List<Course> courses = new ArrayList<Course>();
+        }
 
-// for (int i = 0; i < 2; i++) {
-// User user = createUser(List.of(role), i);
-// userService.save(user);
-// List<Review> reviews = new ArrayList<Review>();
-// for (int j = i; j < i + 5; j++) {
-// Review review = createReview(user, j);
-// reviewService.save(review);
-// reviews.add(review);
-// }
+        for (int i = 1; i <= 5; i++) {
+            Lesson lesson = new Lesson();
+            lesson.setTitle("Lesson " + i);
+            lesson.setVideoUrl("https://www.youtube.com/watch?v=dQw4w9WgXcQ " + i);
+            lesson.setDuration(BigDecimal.valueOf(i));
 
-// for (int j = i; j < i + 5; j++) {
-// Course course = createCourse(j, reviews, categories, tags);
-// course.setInstructors(List.of(user));
-// CourseService.save(course);
-// courses.add(course);
-// }
-// user.setInstructedCourses(courses);
-// user.setCourses(courses);
-// userService.save(user);
-// }
-// }
+            lessonRepository.save(lesson);
+        }
+        for (int i = 1; i <= 5; i++) {
 
-// public Tag createTag(int i) {
-// Tag tag = new Tag();
-// tag.setName("Tag " + i);
-// tagService.save(tag);
-// return tag;
+            Section section = new Section();
+            section.setTitle("Section " + i);
+            section.setDescription("Description " + i);
+            section.setDuration(BigDecimal.valueOf(i));
+            sectionRepository.save(section);
+        }
+        for (int i = 1; i <= 5; i++) {
+            UserList userList = new UserList();
+            userList.setName("List " + i);
+            userListRepository.save(userList);
+        }
+        for (int i = 1; i <= 5; i++) {
 
-// }
+            User user = new User();
+            user.setEmail("user" + i + "@example.com");
+            user.setFirstName("user" + i);
+            user.setLastName("mohamed" + i);
+            user.setPassword(passwordEncoder.encode("password@M.reda.49"));
+            user.setRoles(List.of(Role.ROLE_USER));
+            user.setEnabled(true);
+            user.setLastLogin(java.time.LocalDateTime.now());
+            user.setRegistrationDate(java.time.LocalDateTime.now());
+            userRepository.save(user);
 
-// public Review createReview(User user, int i) {
-// Review review = new Review();
-// review.setUser(user);
-// review.setContent("Content " + i);
-// review.setRating(5.0);
-// review.setCreationDate(java.time.LocalDate.now());
-// review.setModificationDate(java.time.LocalDate.now());
-// reviewService.save(review);
-// return review;
-// }
+        }
+        for (int i = 1; i <= 5; i++) {
+            Cart cart = new Cart();
+            cartRepository.save(cart);
+        }
+        for (int i = 1; i <= 5; i++) {
+            Course course = new Course();
+            course.setTitle("course" + i);
+            course.setDescription("Description " + i);
+            course.setDuration(BigDecimal.valueOf(i));
+            course.setPrice(i * 100.2);
+            courseRepository.save(course);
+        }
 
-// public Category createCategory(int i) {
-// Category category = new Category();
-// category.setName("Category " + i);
-// category.setDescription("Description " + i);
-// categoryService.save(category);
-// return category;
-// }
+        
 
-// public Comment createComment(User user, Lesson lesson, int i) {
-// Comment comment = new Comment();
-// comment.setUser(user);
-// comment.setContent("Content " + i);
-// comment.setLesson(lesson);
-// commentService.save(comment);
-// return comment;
-// }
+    }
 
-// public Section createSection(Course course, int i) {
+    public void setRelationships() {
+        List<User> users = userRepository.findAll();
+        List<Course> courses = courseRepository.findAll();
+        List<Section> sections = sectionRepository.findAll();
+        List<Lesson> lessons = lessonRepository.findAll();
+        // List<Review> reviews = reviewRepository.findAll();
+        List<Comment> comments = commentRepository.findAll();
+        List<Reply> replies = replyRepository.findAll();
+        List<Tag> tags = tagRepository.findAll();
+        List<Category> categories = categoryRepository.findAll();
+        List<UserList> userLists = userListRepository.findAll();
+        // List<Cart> carts = cartRepository.findAll();
+        users.forEach(
+                user -> {
+                    user.setEnrolledCourses(courses);
+                });
+        courses.forEach(
+                course -> {
+                    course.setCategories(categories);
+                    course.setTags(tags);
+                    course.setInstructors(users);
+                    courseRepository.save(course);
+                });
+        sections.forEach(
+                section -> {
+                    section.setCourse(courses.get(0));
+                    sectionRepository.save(section);
+                }
 
-// Section section = new Section();
-// section.setCourse(course);
-// section.setTitle("Section " + i);
-// section.setDescription("Description " + i);
-// section.setDuration(BigDecimal.valueOf(i));
-// sectionService.save(section);
+        );
+        // carts.forEach(
+        // cart -> {
+        // cart.setUser(users.get(0));
+        // cartRepository.save(cart);
+        // });
+        lessons.forEach(
+                lesson -> {
+                    lesson.setSection(sections.get(0));
+                    lessonRepository.save(lesson);
+                });
+        // reviews.forEach(
+        //         review -> {
+        //             review.setCourse(courses.get(0));
+        //             review.setUser(users.get(0));
+        //             reviewRepository.save(review);
+        //         });
+        comments.forEach(
+                comment -> {
+                    comment.setLesson(lessons.get(0));
+                    comment.setUser(users.get(0));
+                    users.forEach(
+                            user -> {
+                                comment.addLike(user);
+                            });
 
-// List<Lesson> lessonList = new ArrayList<Lesson>();
-// for (int j = i; j < i + 5; j++) {
-// Lesson lesson = createLesson(section, j);
-// lessonService.save(lesson);
-// lessonList.add(lesson);
-// }
-// section.setLessons(lessonList);
-// sectionService.save(section);
-// return section;
-// }
+                    commentRepository.save(comment);
+                });
+        replies.forEach(
+                reply -> {
+                    reply.setComment(comments.get(0));
+                    reply.setUser(users.get(0));
+                    users.forEach(
+                            user -> {
+                                reply.addLike(user);
+                            });
+                    replyRepository.save(reply);
+                });
+        userLists.forEach(
+                userList -> {
+                    userList.setUser(users.get(0));
+                    courses.forEach(
+                            course -> {
+                                userList.addCourse(course);
+                            });
+                    userListRepository.save(userList);
+                });
+    }
 
-// public Lesson createLesson(Section section, int i) {
-// Lesson lesson = new Lesson();
-// lesson.setSection(section);
-// lesson.setTitle("Lesson " + i);
-// lesson.setDescription("Description " + i);
-// lesson.setVideoUrl("https://www.youtube.com/watch?v=dQw4w9WgXcQ " + i);
-// lessonService.save(lesson);
-// return lesson;
-// }
+    public void truncateDtabase() {
+        dropTable("tag");
+        dropTable("category");
+        dropTable("review");
+        dropTable("reply");
+        dropTable("comment");
+        dropTable("lesson");
+        dropTable("section");
+        dropTable("cart");
+        dropTable("course");
+        dropTable("user_list");
+        dropTable("users");
+        dropTable("address");
+        dropTable("comment_likes");
+        dropTable("copoun");
+        dropTable("instructed_courses");
+        dropTable("lists_courses");
+        dropTable("reply_likes");
+        dropTable("transaction");
+        dropTable("users_enrolled_courses");
+        dropTable("course_categories");
+        dropTable("course_tag");
+        dropTable("user_role");
+        dropTable("courses_in_cart");
 
-// public User createUser(List<Role> roles, int i) {
-// User user = new User();
-// user.setEnabled(false);
-// user.setEmail("user " + i);
-// user.setPassword(passwordEncoder.encode("password"));
-// user.setFirstName("User");
-// user.setLastName("User");
-// user.setPhoneNumber("0123456789");
-// user.setRegistrationDate(java.time.LocalDateTime.now());
-// user.setProfilePicture(null);
-// user.setAge(20);
-// user.setBio("bio");
-// userService.save(user);
-// user.setRoles(roles);
-// userService.save(user);
-// return user;
-// }
+    }
 
-// public Course createCourse(int j, List<Review> reviews, List<Category>
-// categories,
-// List<Tag> tags) {
-// Course course = new Course();
-// course.setTitle("Course " + j);
-// course.setDescription("Description " + j);
-// course.setDuration(BigDecimal.valueOf(j));
-// course.setPrice(j * 1000.2);
-// course.setLanguage("English");
-// course.setLevel("Beginner");
-// course.setCreationDate(java.time.LocalDate.now());
-// course.setLastUpdateDate(java.time.LocalDate.now());
-// course.setPublished(true);
-// course.setAverageRating(2.5);
-// courseService.save(course);
-// List<Section> sections = new ArrayList<Section>();
-// for (int i = j; i < j + 5; i++) {
-// Section section = createSection(course, i);
-// sectionService.save(section);
-// sections.add(section);
-// }
-// course.setSections(sections);
-// // instructors);
-// course.setReviews(reviews);
-// course.setCategories(categories);
-// // course.setTags(tags);
-// courseService.save(course);
-// return course;
-// }
-// }
+    public void dropTable(String tableName) {
+        entityManager.createNativeQuery("DROP TABLE IF EXISTS " + tableName + " CASCADE").executeUpdate();
+    }
+
+}
+
+
+
+
+
