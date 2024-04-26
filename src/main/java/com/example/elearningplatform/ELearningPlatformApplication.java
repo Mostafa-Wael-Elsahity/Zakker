@@ -25,9 +25,6 @@ public class ELearningPlatformApplication
         // generateData.truncateDtabase();
         // generateData.createData();
         // generateData.setRelationships();
-
-
-
     }
 }
 

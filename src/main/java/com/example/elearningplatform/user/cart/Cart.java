@@ -50,4 +50,16 @@ public class Cart {
         this.numberOfCourses++;
         this.totalPrice += course.getPrice();
     }
+
+    public void removeCourse(Course course) {
+        this.courses.remove(course);
+        this.numberOfCourses--;
+        this.totalPrice -= course.getPrice();
+    }
+
+    public void clearCart() {
+        this.courses.clear();
+        this.numberOfCourses = 0;
+        this.totalPrice = 0.0;
+    }
 }

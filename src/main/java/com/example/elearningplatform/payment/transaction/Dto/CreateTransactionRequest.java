@@ -1,4 +1,4 @@
-package com.example.elearningplatform.payment.transaction.Dto;
+package com.example.elearningplatform.payment.transaction.dto;
 
 import lombok.Data;
 @Data

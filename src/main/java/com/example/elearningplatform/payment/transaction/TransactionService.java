@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.elearningplatform.course.Course;
 import com.example.elearningplatform.course.CourseRepository;
-import com.example.elearningplatform.payment.transaction.Dto.CreateTransactionRequest;
+import com.example.elearningplatform.payment.transaction.dto.CreateTransactionRequest;
 import com.example.elearningplatform.response.Response;
 import com.example.elearningplatform.security.TokenUtil;
 import com.example.elearningplatform.user.User;
@@ -56,9 +56,7 @@ public class TransactionService {
                     transactionRepository.findByUserId(tokenUtil.getUserId()));
         } catch (Exception e) {
             return new Response(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", e.getMessage());
-
         }
-
     }
     /*********************************************************************** */
 

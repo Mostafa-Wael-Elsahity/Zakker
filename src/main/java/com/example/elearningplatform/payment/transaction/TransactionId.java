@@ -12,5 +12,4 @@ public class TransactionId implements Serializable {
     private Integer courseId;
     private Integer userId;
 
-    // Getters and setters
 }
