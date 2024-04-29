@@ -1,10 +1,7 @@
 package com.example.elearningplatform.security;
 
-import java.io.IOException;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,7 +11,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -22,8 +18,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.example.elearningplatform.user.user.User;
 import com.example.elearningplatform.user.user.UserRepository;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -83,21 +77,6 @@ public class SecurityConfig {
     }
 
     /***************************************************************************************************** */
-    // @Bean
-    // public AccessDeniedHandler accessDeniedHandler() {
-    //     return new AccessDeniedHandler() {
-    //         @Override
-    //         public void handle(HttpServletRequest request, HttpServletResponse response,
-    //                 AccessDeniedException accessDeniedException) throws IOException {
-    //             response.setContentType("application/json;charset=UTF-8");
-    //             response.setStatus(HttpServletResponse.SC_GATEWAY_TIMEOUT);
-    //             response.getWriter()
-    //                     .write("{\"message\":\"Access Denied: " + accessDeniedException.getMessage() + "\"}");
-    //         }
-    //     };
-    // }
-
-    /***************************************************************************************************** */
 
     @SuppressWarnings("removal")
     @Bean
@@ -105,7 +84,7 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable());
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(
-                    "/api/v1/auth/**", "/v3/api-docs/**", "/swagger-ui/**",
+                        "/api/v1/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "/",
                     
                     "/user/get-user/**", "/check-token/**", "/verifyEmail/**", "/signup/**", "/login/**",
                         "/forget-password/**", "/course/**")
