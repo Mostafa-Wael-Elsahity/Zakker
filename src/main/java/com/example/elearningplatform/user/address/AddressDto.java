@@ -23,6 +23,9 @@ public class AddressDto {
 
     private String zipCode;
     public AddressDto(Address address) {
+        if (address == null) {
+            return;
+        }
         this.id = address.getId();
         this.street = address.getStreet();
         this.city = address.getCity();

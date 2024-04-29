@@ -13,13 +13,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.example.elearningplatform.response.Response;
 import com.example.elearningplatform.validator.Validator;
@@ -37,13 +35,12 @@ public class LoginController implements ErrorController {
     private final LoginService loginService;
 
     /*****************************************************************************************************************/
-    @GetMapping
-    public ModelAndView login() {
-        return new ModelAndView("login");
-    }
+    // @GetMapping
+    // public ModelAndView login() {
+    //     return new ModelAndView("login");
+    // }
 
     /***************************************************************************************************************/
-    @CrossOrigin(origins = "http://localhost:5173")
     @PostMapping("/custom")
     public Response loginCustom(@RequestBody @Valid LoginRequest loginRequest, BindingResult result,
             HttpServletRequest request)

@@ -19,14 +19,5 @@ public class Tag {
     @Column(name = "title")
     private String name;
     
-    private Integer numberOfCourses;
-
-    public void incrementNumberOfCourses() {
-        this.numberOfCourses++;
-    }
-
-    public void decrementNumberOfCourses() {
-        this.numberOfCourses--;
-    }
 
 }

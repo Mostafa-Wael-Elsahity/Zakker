@@ -1,6 +1,6 @@
 package com.example.elearningplatform.user.address;
 
-import com.example.elearningplatform.user.User;
+import com.example.elearningplatform.user.user.User;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -36,7 +36,7 @@ public class Address {
     @Column(name = "zip_code")
     private String zipCode;
 
-    @OneToOne
+    @OneToOne( fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 }

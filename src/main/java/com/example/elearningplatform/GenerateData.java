@@ -6,29 +6,28 @@ import java.util.List;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import com.example.elearningplatform.course.Course;
-import com.example.elearningplatform.course.CourseRepository;
 import com.example.elearningplatform.course.category.Category;
 import com.example.elearningplatform.course.category.CategoryRepository;
+import com.example.elearningplatform.course.comment.Comment;
+import com.example.elearningplatform.course.comment.CommentRepository;
+import com.example.elearningplatform.course.course.Course;
+import com.example.elearningplatform.course.course.CourseRepository;
+import com.example.elearningplatform.course.lesson.Lesson;
+import com.example.elearningplatform.course.lesson.LessonRepository;
+import com.example.elearningplatform.course.reply.Reply;
+import com.example.elearningplatform.course.reply.ReplyRepository;
 import com.example.elearningplatform.course.review.Review;
 import com.example.elearningplatform.course.review.ReviewRepository;
 import com.example.elearningplatform.course.section.Section;
 import com.example.elearningplatform.course.section.SectionRepository;
-import com.example.elearningplatform.course.section.lesson.Lesson;
-import com.example.elearningplatform.course.section.lesson.LessonRepository;
-import com.example.elearningplatform.course.section.lesson.question.comment.Comment;
-import com.example.elearningplatform.course.section.lesson.question.comment.CommentRepository;
-import com.example.elearningplatform.course.section.lesson.question.reply.Reply;
-import com.example.elearningplatform.course.section.lesson.question.reply.ReplyRepository;
 import com.example.elearningplatform.course.tag.Tag;
 import com.example.elearningplatform.course.tag.TagRepository;
-import com.example.elearningplatform.user.Role;
-import com.example.elearningplatform.user.User;
-import com.example.elearningplatform.user.UserRepository;
-import com.example.elearningplatform.user.cart.Cart;
-import com.example.elearningplatform.user.cart.CartRepository;
+
 import com.example.elearningplatform.user.lists.UserList;
 import com.example.elearningplatform.user.lists.UserListRepository;
+import com.example.elearningplatform.user.user.Role;
+import com.example.elearningplatform.user.user.User;
+import com.example.elearningplatform.user.user.UserRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -44,7 +43,7 @@ public class GenerateData {
     private final EntityManager entityManager;
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
-    private final CartRepository cartRepository;
+
     private final CommentRepository commentRepository;
     private final LessonRepository lessonRepository;
     private final CategoryRepository categoryRepository;
@@ -100,7 +99,6 @@ public class GenerateData {
         for (int i = 1; i <= 5; i++) {
             Lesson lesson = new Lesson();
             lesson.setTitle("Lesson " + i);
-            lesson.setVideoUrl("https://www.youtube.com/watch?v=dQw4w9WgXcQ " + i);
             lesson.setDuration(BigDecimal.valueOf(i));
 
             lessonRepository.save(lesson);
@@ -132,10 +130,7 @@ public class GenerateData {
             userRepository.save(user);
 
         }
-        for (int i = 1; i <= 5; i++) {
-            Cart cart = new Cart();
-            cartRepository.save(cart);
-        }
+   
         for (int i = 1; i <= 5; i++) {
             Course course = new Course();
             course.setTitle("course" + i);
@@ -160,7 +155,7 @@ public class GenerateData {
         List<Tag> tags = tagRepository.findAll();
         List<Category> categories = categoryRepository.findAll();
         List<UserList> userLists = userListRepository.findAll();
-        // List<Cart> carts = cartRepository.findAll();
+        // List<Cart> carts = userRepository.findAll();
         users.forEach(
                 user -> {
                     user.setEnrolledCourses(courses);
@@ -169,7 +164,7 @@ public class GenerateData {
                 course -> {
                     course.setCategories(categories);
                     course.setTags(tags);
-                    course.setInstructors(users);
+                    // course.setInstructors(users);
                     courseRepository.save(course);
                 });
         sections.forEach(
@@ -182,7 +177,7 @@ public class GenerateData {
         // carts.forEach(
         // cart -> {
         // cart.setUser(users.get(0));
-        // cartRepository.save(cart);
+        // userRepository.save(cart);
         // });
         lessons.forEach(
                 lesson -> {
@@ -199,10 +194,10 @@ public class GenerateData {
                 comment -> {
                     comment.setLesson(lessons.get(0));
                     comment.setUser(users.get(0));
-                    users.forEach(
-                            user -> {
-                                comment.addLike(user);
-                            });
+                    // users.forEach(
+                    // user -> {
+                    // comment.addLike(user);
+                    // });
 
                     commentRepository.save(comment);
                 });
@@ -212,7 +207,7 @@ public class GenerateData {
                     reply.setUser(users.get(0));
                     users.forEach(
                             user -> {
-                                reply.addLike(user);
+
                             });
                     replyRepository.save(reply);
                 });
@@ -221,7 +216,7 @@ public class GenerateData {
                     userList.setUser(users.get(0));
                     courses.forEach(
                             course -> {
-                                userList.addCourse(course);
+
                             });
                     userListRepository.save(userList);
                 });
@@ -241,7 +236,7 @@ public class GenerateData {
         dropTable("users");
         dropTable("address");
         dropTable("comment_likes");
-        dropTable("copoun");
+        dropTable("coupon");
         dropTable("instructed_courses");
         dropTable("lists_courses");
         dropTable("reply_likes");

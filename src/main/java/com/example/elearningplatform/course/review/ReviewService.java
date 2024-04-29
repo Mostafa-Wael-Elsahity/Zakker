@@ -1,28 +1,53 @@
  package com.example.elearningplatform.course.review;
 
+ import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.example.elearningplatform.course.course.CourseRepository;
+import com.example.elearningplatform.course.review.dto.ReviewDto;
+import com.example.elearningplatform.response.ReviewResponse;
+import com.example.elearningplatform.security.TokenUtil;
+
+import jakarta.transaction.Transactional;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Data
 @Service
+@Transactional
 public class ReviewService {
     private final ReviewRepository reviewRepository;
-    public List<Review> getReviewsByCourseId (Integer courseID){
-        if(courseID == null)return null;
-        return reviewRepository.findByCourseId(courseID);
+    private final CourseRepository courseRepository;
+    private final TokenUtil tokenUtil;
+
+    /************************************************************************************************* */
+    @SuppressWarnings("unlikely-arg-type")
+    public ReviewResponse getReviewsByCourseId(Integer courseId) {
+        try {
+
+            List<ReviewDto> reviews = new ArrayList<>();
+            ReviewResponse reviewResponse = new ReviewResponse();
+
+
+            courseRepository.findCourseReviews(courseId).forEach(review -> {
+                ReviewDto reviewDto = new ReviewDto(review);
+           
+                if (reviewDto.getUser().getId().equals(tokenUtil.getUserId())) {
+                    reviewResponse.setIsReviewd(true);
+                    reviews.addFirst(reviewDto);
+                }
+                reviews.add(reviewDto);
+            });
+            return new ReviewResponse(HttpStatus.OK, "Success", reviews);
+        } catch (Exception e) {
+            return new ReviewResponse(HttpStatus.NOT_FOUND, "Reviews not found", null);
+        }
     }
-    public List<Review> getReviewsByUserId (Integer userId){
-        if(userId == null)return null;
-        return reviewRepository.findByUserId(userId);
-    }
-    // public List<Review> getReviewsByVote (Integer voteId){
-    //     if(voteId == null)return null;
-    //     return reviewRepository.findByVote(voteId);
-    // }
+
+    /************************************************************************************************* */
 
     
 }

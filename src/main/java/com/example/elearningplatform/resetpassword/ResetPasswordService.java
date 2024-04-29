@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 
 import com.example.elearningplatform.email.EmailService;
 import com.example.elearningplatform.response.Response;
-import com.example.elearningplatform.user.User;
-import com.example.elearningplatform.user.UserRepository;
+import com.example.elearningplatform.user.user.User;
+import com.example.elearningplatform.user.user.UserRepository;
 
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;

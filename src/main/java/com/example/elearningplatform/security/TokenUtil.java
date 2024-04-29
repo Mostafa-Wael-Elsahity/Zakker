@@ -1,22 +1,27 @@
 package com.example.elearningplatform.security;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+
+import com.example.elearningplatform.user.user.User;
+import com.example.elearningplatform.user.user.UserRepository;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletRequest;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 @Component
 public class TokenUtil {
 @Autowired HttpServletRequest request;
+@Autowired
+UserRepository userRepository;
 
     /****************** */
 
@@ -56,15 +61,23 @@ public class TokenUtil {
     }
 
     public Integer getUserId() {
-        try {
+
             if(request.getHeader("Authorization") == null) return null;
             String token = request.getHeader("Authorization").substring("Bearer ".length());
             Claims claims = getClaims(token);
 
             return (Integer) claims.get("userId");
-        } catch (Exception ex) {
-            return null;
         }
+
+        public User getUser() {
+
+            if (request.getHeader("Authorization") == null)
+            return null;
+        String token = request.getHeader("Authorization").substring("Bearer ".length());
+        Claims claims = getClaims(token);
+
+        return userRepository.findById((Integer) claims.get("userId")).orElseThrow();
+
     }
 
     private Date generateExpirationDate(Long TOKEN_VALIDITY) {

@@ -3,8 +3,10 @@ package com.example.elearningplatform.response;
 import org.springframework.http.HttpStatus;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class Response {
    private HttpStatus status;
    private String message;
@@ -17,6 +19,4 @@ public class Response {
 
     }
 
-    public Response() {
-    }
 }

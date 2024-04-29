@@ -5,13 +5,13 @@ import java.time.LocalDateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.example.elearningplatform.course.Course;
-import com.example.elearningplatform.course.CourseRepository;
+import com.example.elearningplatform.course.course.Course;
+import com.example.elearningplatform.course.course.CourseRepository;
 import com.example.elearningplatform.payment.transaction.Dto.CreateTransactionRequest;
 import com.example.elearningplatform.response.Response;
 import com.example.elearningplatform.security.TokenUtil;
-import com.example.elearningplatform.user.User;
-import com.example.elearningplatform.user.UserRepository;
+import com.example.elearningplatform.user.user.User;
+import com.example.elearningplatform.user.user.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 

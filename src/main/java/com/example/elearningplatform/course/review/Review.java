@@ -2,11 +2,10 @@ package com.example.elearningplatform.course.review;
 
 import java.time.LocalDate;
 
-import com.example.elearningplatform.course.Course;
-import com.example.elearningplatform.user.User;
+import com.example.elearningplatform.course.course.Course;
+import com.example.elearningplatform.user.user.User;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -42,12 +41,12 @@ public class Review {
 
     private LocalDate modificationDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = jakarta.persistence.FetchType.EAGER)
     @ToString.Exclude
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @ToString.Exclude
     @JoinColumn(name = "course_id")
     private Course course;

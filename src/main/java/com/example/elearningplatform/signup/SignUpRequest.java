@@ -1,7 +1,5 @@
 package com.example.elearningplatform.signup;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -25,7 +23,6 @@ public class SignUpRequest {
     private String password;
     @Pattern(regexp = "^01\\d{9}$", message = "Invalid phone number")
     private String phoneNumber;
-    private MultipartFile profilePicture;
     private String street;
     private String city;
     private String state;

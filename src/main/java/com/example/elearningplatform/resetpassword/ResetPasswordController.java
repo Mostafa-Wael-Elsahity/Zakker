@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.elearningplatform.response.Response;
 import com.example.elearningplatform.security.TokenUtil;
 import com.example.elearningplatform.signup.SignUpService;
-import com.example.elearningplatform.user.User;
-import com.example.elearningplatform.user.UserRepository;
+import com.example.elearningplatform.user.user.User;
+import com.example.elearningplatform.user.user.UserRepository;
 import com.example.elearningplatform.validator.Validator;
 
 import ch.qos.logback.core.model.Model;

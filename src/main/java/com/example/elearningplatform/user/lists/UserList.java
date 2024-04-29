@@ -3,8 +3,8 @@ package com.example.elearningplatform.user.lists;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.elearningplatform.course.Course;
-import com.example.elearningplatform.user.User;
+import com.example.elearningplatform.course.course.Course;
+import com.example.elearningplatform.user.user.User;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -34,10 +34,4 @@ public class UserList {
     @JoinTable(name = "lists_courses", joinColumns = @JoinColumn(name = "list_id"), inverseJoinColumns = @JoinColumn(name = "course_id"))
     private List<Course> courses = new ArrayList<>();
 
-    public void addCourse(Course course) {
-        this.courses.add(course);
-    }
-    public void removeCourse(Course course) {
-        this.courses.remove(course);
-    }
 }

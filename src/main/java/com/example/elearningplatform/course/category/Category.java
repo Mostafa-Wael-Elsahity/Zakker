@@ -20,14 +20,5 @@ public class Category {
     @NotBlank
     private String description;
 
-    private Integer numberOfCourses = 0;
-
-    public void incrementNumberOfCourses() {
-        this.numberOfCourses++;
-    }
-
-    public void decrementNumberOfCourses() {
-        this.numberOfCourses--;
-    }
 
 }
