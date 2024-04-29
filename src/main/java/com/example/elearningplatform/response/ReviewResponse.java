@@ -16,8 +16,9 @@ public class ReviewResponse extends Response {
         this.isReviewd = false;
     }
 
-    public ReviewResponse(HttpStatus status, String message, Object data) {
+    public ReviewResponse(HttpStatus status, String message, Object data, Boolean isReviewd) {
         super(status, message, data);
+        this.isReviewd = isReviewd;
 
     }
 

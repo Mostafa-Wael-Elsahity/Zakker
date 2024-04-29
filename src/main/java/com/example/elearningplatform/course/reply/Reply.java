@@ -8,7 +8,6 @@ import com.example.elearningplatform.course.comment.Comment;
 import com.example.elearningplatform.course.reply.dto.CreateReplyRequest;
 import com.example.elearningplatform.user.user.User;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

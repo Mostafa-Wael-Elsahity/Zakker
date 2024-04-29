@@ -2,6 +2,7 @@ package com.example.elearningplatform.course.comment;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,6 @@ import com.example.elearningplatform.security.TokenUtil;
 import com.example.elearningplatform.user.user.User;
 import com.example.elearningplatform.user.user.UserRepository;
 
-import aj.org.objectweb.asm.Type;
 import jakarta.transaction.Transactional;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -29,11 +29,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional
 public class CommentService {
-    private final TokenUtil tokenUtil;
-    private final UserRepository userRepository;
-    private final LessonRepository lessonRepository;
-    private final CommentRepository commentRepository;
-    private final CourseService courseService;
+    @Autowired
+    private TokenUtil tokenUtil;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private LessonRepository lessonRepository;
+    @Autowired
+    private CommentRepository commentRepository;
+    @Autowired
+    private CourseService courseService;
 
     /************************************************************************************** */
 
@@ -120,12 +125,6 @@ public class CommentService {
 
             comment.incrementNumberOfLikes();
             commentRepository.save(comment);
-            // User user = userRepository.findById(userId).orElseThrow(() -> new
-            // Exception("User not found"));
-            // List<User> likes = commentRepository.findLikes(commentId);
-            // likes.add(user);
-            // comment.setLikes(likes);
-            // commentRepository.save(comment);
 
             return new Response(HttpStatus.OK, "Comment liked successfully", null);
         } catch (CustomException e) {

@@ -24,26 +24,27 @@ public class ReviewService {
     private final TokenUtil tokenUtil;
 
     /************************************************************************************************* */
-    @SuppressWarnings("unlikely-arg-type")
+
     public ReviewResponse getReviewsByCourseId(Integer courseId) {
         try {
 
             List<ReviewDto> reviews = new ArrayList<>();
-            ReviewResponse reviewResponse = new ReviewResponse();
+            Boolean[] isReviewd = { false };
 
 
             courseRepository.findCourseReviews(courseId).forEach(review -> {
                 ReviewDto reviewDto = new ReviewDto(review);
            
                 if (reviewDto.getUser().getId().equals(tokenUtil.getUserId())) {
-                    reviewResponse.setIsReviewd(true);
+                    isReviewd[0] = true;
                     reviews.addFirst(reviewDto);
                 }
-                reviews.add(reviewDto);
+                else reviews.add(reviewDto);
             });
-            return new ReviewResponse(HttpStatus.OK, "Success", reviews);
+
+            return new ReviewResponse(HttpStatus.OK, "Reviews found", reviews, isReviewd[0]);
         } catch (Exception e) {
-            return new ReviewResponse(HttpStatus.NOT_FOUND, "Reviews not found", null);
+            return new ReviewResponse(HttpStatus.NOT_FOUND, "Reviews not found", null, false);
         }
     }
 
