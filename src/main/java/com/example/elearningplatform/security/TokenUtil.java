@@ -40,7 +40,7 @@ UserRepository userRepository;
         claims.put(CLAIMS_SUBJECT, email);
         claims.put("userId", userId);
         claims.put(CLAIMS_CREATED, new Date());
-
+    
         return Jwts.builder()
                 .setClaims(claims)
                 .setExpiration(generateExpirationDate(TOKEN_VALIDITY))
@@ -76,7 +76,7 @@ UserRepository userRepository;
         String token = request.getHeader("Authorization").substring("Bearer ".length());
         Claims claims = getClaims(token);
 
-        return userRepository.findById((Integer) claims.get("userId")).orElseThrow();
+        return userRepository.findById((Integer) claims.get("userId")).orElse(null);
 
     }
 

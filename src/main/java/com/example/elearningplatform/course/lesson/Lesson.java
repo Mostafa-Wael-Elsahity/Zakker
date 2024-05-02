@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.example.elearningplatform.course.comment.Comment;
+import com.example.elearningplatform.course.lesson.dto.CreateLessonRequest;
+import com.example.elearningplatform.course.lesson.note.Note;
 import com.example.elearningplatform.course.section.Section;
 
 import jakarta.persistence.CascadeType;
@@ -15,20 +17,26 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
 @Entity
+@NoArgsConstructor
 @Table(name = "lesson", indexes = {
         @Index(name = "section_lesson_id_index", columnList = "section_id", unique = false) })
 public class Lesson {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
+    private String guid;
+    private String videoUrl;
     private Integer numberOfComments = 0;
     private String title;
+    private String description;
     private String type;
     private Boolean free;
     private Boolean isPreviewed;
@@ -44,12 +52,23 @@ public class Lesson {
     @ToString.Exclude
     private List<Comment> comments;
 
+    @OneToOne(fetch = jakarta.persistence.FetchType.LAZY,cascade = CascadeType.REMOVE)
+    @ToString.Exclude
+    private Note note;
+
     public void incrementNumberOfComments() {
         this.numberOfComments++;
     }
 
     public void decrementNumberOfComments() {
         this.numberOfComments--;
+    }
+
+    public Lesson(CreateLessonRequest createLessonRequest) {
+        this.title = createLessonRequest.getTitle();
+        this.description = createLessonRequest.getDescription();
+        this.free = createLessonRequest.getFree();
+
     }
 
 }

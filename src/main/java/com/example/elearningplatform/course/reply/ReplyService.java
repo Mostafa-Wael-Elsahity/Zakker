@@ -44,10 +44,13 @@ public class ReplyService {
     public Response createReply(CreateReplyRequest createReply) {
 
         try {
-            Lesson lesson = commentRepository.findLesson(createReply.getCommentId()).orElseThrow();
+            Lesson lesson = commentRepository.findLesson(createReply.getCommentId()).orElseThrow(
+                    () -> new CustomException("Comment not found", HttpStatus.NOT_FOUND));
             commentService.checkCommentAuth(lesson.getId());
-            User user = userRepository.findById(tokenUtil.getUserId()).orElseThrow();
-            Comment comment = commentRepository.findById(createReply.getCommentId()).orElseThrow();
+            User user = userRepository.findById(tokenUtil.getUserId()).orElseThrow(
+                    () -> new CustomException("User not found", HttpStatus.NOT_FOUND));
+            Comment comment = commentRepository.findById(createReply.getCommentId()).orElseThrow(
+                    () -> new CustomException("Comment not found", HttpStatus.NOT_FOUND));
             comment.incrementNumberOfReplies();
             commentRepository.save(comment);
             Reply reply = new Reply(createReply, comment, user);
@@ -55,6 +58,8 @@ public class ReplyService {
             replyRepository.save(reply);
             return new Response(HttpStatus.OK, "Reply created successfully",
                     new ReplyDto(reply, false, true));
+        } catch (CustomException e) {
+            return new Response(e.getStatus(), e.getMessage(), null);
         } catch (Exception e) {
             return new Response(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", e.getMessage());
         }
@@ -65,7 +70,8 @@ public class ReplyService {
     public Response getRepliesByCommentId(Integer commentId, Integer pageNumber) {
         try {
             
-            Lesson lesson = commentRepository.findLesson(commentId).orElseThrow();
+            Lesson lesson = commentRepository.findLesson(commentId).orElseThrow(
+                    () -> new CustomException("Comment not found", HttpStatus.NOT_FOUND));
             commentService.checkCommentAuth(lesson.getId());
 
             List<Reply> replyes = replyRepository.findByCommentId(commentId, PageRequest.of(pageNumber, 8));
@@ -77,6 +83,8 @@ public class ReplyService {
                     .toList();
 
             return new Response(HttpStatus.OK, "Replies fetched successfully", replyesDto);
+        } catch (CustomException e) {
+            return new Response(e.getStatus(), e.getMessage(), null);
         } catch (Exception e) {
             return new Response(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", e.getMessage());
 
@@ -87,16 +95,19 @@ public class ReplyService {
     public Response deleteReply(Integer replyId) {
         try {
 
-            Reply reply = replyRepository.findById(replyId).orElseThrow();
+            Reply reply = replyRepository.findById(replyId).orElseThrow(
+                    () -> new CustomException("Reply not found", HttpStatus.NOT_FOUND));
             if (!reply.getUser().getId().equals(tokenUtil.getUserId())) {
-                return new Response(HttpStatus.UNAUTHORIZED, "Unauthorized",
-                        null);
+                throw new CustomException("Unauthorized", HttpStatus.UNAUTHORIZED);
             }
-            Comment comment = replyRepository.findComment(replyId).orElseThrow();
+            Comment comment = replyRepository.findComment(replyId).orElseThrow(
+                    () -> new CustomException("Comment not found", HttpStatus.NOT_FOUND));
             comment.decrementNumberOfReplies();
             commentRepository.save(comment);
             replyRepository.delete(reply);
             return new Response(HttpStatus.OK, "Reply deleted successfully", null);
+        } catch (CustomException e) {
+            return new Response(e.getStatus(), e.getMessage(), null);
         } catch (Exception e) {
             return new Response(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", e.getMessage());
         }
@@ -105,7 +116,8 @@ public class ReplyService {
     /*************************************************************************************************** */
     public Response updateReply(UpdateReplyRequest request) {
         try {
-            Reply reply = replyRepository.findById(request.getReplyId()).orElseThrow();
+            Reply reply = replyRepository.findById(request.getReplyId()).orElseThrow(
+                    () -> new CustomException("Reply not found", HttpStatus.NOT_FOUND));
             if (!reply.getUser().getId().equals(tokenUtil.getUserId())) {
                 throw new CustomException("Unauthorized", HttpStatus.UNAUTHORIZED);
             }
@@ -163,7 +175,7 @@ public class ReplyService {
 
     public void checkReplyAuth(Integer replyId) {
         Course course = replyRepository.findCourseByReplyId(replyId).orElseThrow();
-        if (courseService.ckeckCourseSubscribe(course.getId()) == false)
+        if (courseService.ckeckCourseSubscribe(course.getId()).equals(false))
             throw new CustomException("Unauthorized", HttpStatus.UNAUTHORIZED);
     }
 }

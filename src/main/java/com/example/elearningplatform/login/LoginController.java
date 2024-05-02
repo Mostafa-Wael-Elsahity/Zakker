@@ -16,9 +16,10 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
 
+import com.example.elearningplatform.exception.CustomException;
 import com.example.elearningplatform.response.Response;
 import com.example.elearningplatform.validator.Validator;
 
@@ -29,19 +30,20 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/login")
+
 public class LoginController implements ErrorController {
 
     private final LoginService loginService;
 
+
     /*****************************************************************************************************************/
-    // @GetMapping
-    // public ModelAndView login() {
-    //     return new ModelAndView("login");
+    // @GetMapping("/")
+    // public Response login() {
+    // return new Response( HttpStatus.OK, "ok", null);
     // }
 
     /***************************************************************************************************************/
-    @PostMapping("/custom")
+    @PostMapping("/login/custom")
     public Response loginCustom(@RequestBody @Valid LoginRequest loginRequest, BindingResult result,
             HttpServletRequest request)
             throws MessagingException, SQLException, IOException {
@@ -55,12 +57,34 @@ public class LoginController implements ErrorController {
     }
 
     /*****************************************************************************************************************/
+    @GetMapping("/login/google")
+    public RedirectView loginWithGoogle() {
+        RedirectView redirectView = new RedirectView();
+        redirectView.setUrl("http://localhost:8080/oauth2/authorization/google");
 
-    @GetMapping("/outh2")
+        return redirectView;
+    }
+
+    /*****************************************************************************************************************/
+    /*****************************************************************************************************************/
+    @GetMapping("/login/github")
+    public RedirectView loginWithGithub() {
+
+        RedirectView redirectView = new RedirectView();
+        redirectView.setUrl("http://localhost:8080/oauth2/authorization/github");
+        return redirectView;
+       
+    }
+
+    /*****************************************************************************************************************/
+
+    @GetMapping("/login/oauth2/success")
     public Response loginOuth2(@AuthenticationPrincipal OAuth2User oAuth2User)
             throws SerialException, IOException, SQLException {
+        System.out.println("mohamed");
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // System.out.println(authentication);
         try {
             if (authentication instanceof OAuth2AuthenticationToken) {
 
@@ -72,12 +96,33 @@ public class LoginController implements ErrorController {
 
             } else {
 
-                return new Response(HttpStatus.UNAUTHORIZED, "User is not authenticated with OAuth2", null);
+                throw new CustomException("User is not authenticated with OAuth2", HttpStatus.UNAUTHORIZED);
             }
+        } catch (CustomException e) {
+            return new Response(e.getStatus(), e.getMessage(), null);
         } catch (Exception e) {
             return new Response(HttpStatus.BAD_REQUEST, "login failed ! : " + e.getMessage(), null);
         }
     }
+
+    // @GetMapping("/login/oauth2/code/{provider}")
+    // public String loginSuccess(@PathVariable String provider,
+    // OAuth2AuthenticationToken authenticationToken) {
+
+    // OAuth2AuthorizedClient client = clientService.loadAuthorizedClient(
+    // authenticationToken.getAuthorizedClientRegistrationId(),
+    // authenticationToken.getName());
+    // System.out.println(client);
+
+    // return "/login-success";
+    // }
+
+    // @GetMapping("/login-error")
+    // public String loginSuccess() {
+
+    // return "error";
+    // }
 }
+
 
 /*****************************************************************************************************************/

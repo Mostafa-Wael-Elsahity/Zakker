@@ -73,6 +73,22 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.paypal.sdk</groupId>
+            <artifactId>paypal-core</artifactId>
+            <version>1.7.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.paypal.sdk</groupId>
+            <artifactId>rest-api-sdk</artifactId>
+            <version>1.14.0</version>
+        </dependency>
+		<dependency>
+			<groupId>com.paypal.sdk</groupId>
+			<artifactId>payouts-sdk</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
         <!--	Parameter names	-->
         <!-- <dependency>
             <groupId>org.hibernate</groupId>
@@ -89,6 +105,7 @@
             <artifactId>jjwt-api</artifactId>
             <version>0.11.5</version>
         </dependency>
+
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
@@ -99,6 +116,12 @@
             <artifactId>jjwt-jackson</artifactId>
             <version>0.11.5</version>
       </dependency> -->
+      		
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+    <version>2.17.0</version>
+</dependency>
       <dependency> 
         <groupId>javax.xml.bind</groupId> 
         <artifactId>jaxb-api</artifactId>
@@ -108,7 +131,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
-       
 
         <dependency>
             <groupId>org.postgresql</groupId>

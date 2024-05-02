@@ -43,12 +43,7 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
     void likeComment(@Param("userId") Integer userId, @Param("commentId") Integer commentId);
 
     /**************************************************************************** */
-    // @Query("""
-    // SELECT c.likes FROM Comment c
-    // join c.likes l WHERE l.id = :userId AND c.id=:commentId
-    // """)
-    // Optional<User> findLikeByUserIdAndCommentId(@Param("commentId") Integer
-    // commentId, @Param("userId") Integer userId);
+
     @Query("""
                 SELECT c FROM Comment c
                 JOIN c.likes l

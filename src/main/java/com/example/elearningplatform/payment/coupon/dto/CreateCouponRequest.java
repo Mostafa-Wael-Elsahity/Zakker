@@ -14,6 +14,6 @@ public class CreateCouponRequest {
     @NotEmpty(message = "Number of coupons cannot be empty")
     private Integer numberOfCoupons;
     @NotEmpty(message = "Discount cannot be empty")
-    private Double discount;
+    private Integer discount;
     private Integer courseId;
 }

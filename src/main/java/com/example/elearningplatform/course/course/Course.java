@@ -21,9 +21,11 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
@@ -31,14 +33,19 @@ import lombok.ToString;
 @Table(name = "course", indexes = {
     @Index(name = "course_title_index", columnList = "title", unique = false),
 })
-
+@NoArgsConstructor
 public class Course {
 
         @Id
         @GeneratedValue(strategy = GenerationType.SEQUENCE)
         private Integer id;
 
+        private Integer guid;
+
         private String title;
+
+        private String ApiKey;
+
         private String whatYouWillLearn;
         private String prerequisite;
 
@@ -68,13 +75,34 @@ public class Course {
 
         private Integer numberOfEnrollments = 0;
 
-        public Course() {
+        public Course(CreateCourseRequesrt createCourseRequesrt) {
+          this.title = createCourseRequesrt.getTitle();
+          this.whatYouWillLearn = createCourseRequesrt.getWhatYouWillLearn();
+          this.prerequisite = createCourseRequesrt.getPrerequisite();
+          this.description = createCourseRequesrt.getDescription();
+          this.language = createCourseRequesrt.getLanguage();
+          this.level = createCourseRequesrt.getLevel();
+
           this.totalRatings = 0.0;
           this.numberOfRatings = 0;
           this.numberOfEnrollments = 0;
           this.creationDate = LocalDate.now();
           this.lastUpdateDate = LocalDate.now();
         }
+
+        public void addRating(Double rating) {
+          this.totalRatings += rating;
+          this.numberOfRatings += 1;
+        }
+        public void removeRating(Double rating) {
+          this.totalRatings -= rating;
+          this.numberOfRatings -= 1;
+        }
+
+        @ManyToOne(fetch = FetchType.LAZY)
+        @ToString.Exclude
+        @JoinColumn(name = "user_id")
+        private User owner;
 
         @OneToMany(fetch = FetchType.LAZY,mappedBy = "course",cascade = CascadeType.REMOVE)
         @ToString.Exclude
@@ -84,16 +112,23 @@ public class Course {
         @ToString.Exclude
         private List<Review> reviews = new ArrayList<>();
 
-        @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
+        @ManyToMany(fetch = FetchType.LAZY)
         @ToString.Exclude
         @JoinTable(name = "course_tag", joinColumns = @JoinColumn(name = "course_id", unique = false), inverseJoinColumns = @JoinColumn(name = "tag_id", unique = false))
         private List<Tag> tags = new ArrayList<>();
 
-        @ManyToMany(fetch = FetchType.LAZY, mappedBy = "instructoredCourses",cascade = CascadeType.REMOVE)
+        @ManyToMany(fetch = FetchType.LAZY)
+        @JoinTable(name = "instructed_courses", joinColumns = @JoinColumn(name = "course_id", unique = false), inverseJoinColumns = @JoinColumn(name = "user_id", unique = false))
         @ToString.Exclude
         private List<User> instructors = new ArrayList<>();
 
-        @ManyToMany(fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
+        @ManyToMany(fetch = FetchType.LAZY)
+        @JoinTable(name = "user_enrolled_courses", joinColumns = @JoinColumn(name = "course_id", unique = false), inverseJoinColumns = @JoinColumn(name = "user_id", unique = false))
+        @ToString.Exclude
+        private List<User> enrolledStudents = new ArrayList<>();
+
+
+        @ManyToMany(fetch = FetchType.LAZY)
         @ToString.Exclude
         @JoinTable(joinColumns = @JoinColumn(name = "course_id", unique = false), inverseJoinColumns = @JoinColumn(name = "category_id", unique = false))
         private List<Category> categories = new ArrayList<>();
@@ -104,13 +139,11 @@ public class Course {
         public void incrementNumberOfEnrollments() {
           this.numberOfEnrollments++;
         }
-
-        public void incrementNumberOfRatings() {
-          this.numberOfRatings++;
+        public void decrementNumberOfEnrollments() {
+          this.numberOfEnrollments--;
         }
 
-        public void addRating(Double rating) {
-          this.totalRatings += rating;
-        }
+       
+
 
 }

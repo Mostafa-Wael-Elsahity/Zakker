@@ -28,6 +28,14 @@ public interface CourseRepository extends JpaRepository<Course, Integer> {
     /******************************************************************************************* */
 
     @Query("""
+                    SELECT c.owner FROM Course c
+                     WHERE c.id = :courseId
+                        """)
+    Optional<User> findOwner(@Param("courseId") Integer courseId);
+
+    /******************************************************************************************* */
+
+    @Query("""
             SELECT c FROM Course c WHERE lower(c.title) LIKE lower(concat('%', :title, '%'))
                                     """)
     Page<Course> findByTitle(@Param("title") String title, Pageable pageable);
