@@ -47,13 +47,12 @@ public class CommentService {
     public Response createComment(CreateCommentRequest createComment) {
         try {
             Lesson lesson = lessonRepository.findById(createComment.getLessonId())
-                    .orElseThrow(() -> new Exception("Lesson not found"));
-            checkCommentAuth(lesson.getId());
+                    .orElseThrow(() -> new CustomException("Lesson not found", HttpStatus.NOT_FOUND));
             lesson.incrementNumberOfComments();
             lessonRepository.save(lesson);
 
             User user = userRepository.findById(tokenUtil.getUserId())
-                    .orElseThrow(() -> new Exception("User not found"));
+                    .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
             Comment comment = new Comment();
             comment.setContent(createComment.getContent());
             comment.setUser(user);
@@ -75,7 +74,7 @@ public class CommentService {
                     .orElseThrow(() -> new CustomException("Comment not found", HttpStatus.NOT_FOUND));
 
 
-            if (!tokenUtil.getUserId().equals(comment.getUser().getId())) {
+            if (!comment.getUser().getId().equals(tokenUtil.getUserId())) {
                 throw new CustomException("Unauthorized", HttpStatus.UNAUTHORIZED);
             }
 
@@ -179,7 +178,7 @@ public class CommentService {
 
         Course course = lessonRepository.findCourseByLessonId(lessonId)
                 .orElseThrow(() -> new CustomException("Course not found", HttpStatus.NOT_FOUND));
-        if (courseService.ckeckCourseSubscribe(course.getId()) == false)
+        if (courseService.ckeckCourseSubscribe(course.getId()).equals(false))
             throw new CustomException("Unauthorized", HttpStatus.UNAUTHORIZED);
     }
 }

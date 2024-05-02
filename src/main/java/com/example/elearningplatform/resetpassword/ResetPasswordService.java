@@ -53,7 +53,7 @@ public class ResetPasswordService {
 
         try {
             String url = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath()
-                    + "/check-token?token=" + token;
+                    + "/check-token/" + token;
             System.out.println("url : " + url);
             String subject = "Reset Password Verification";
             String senderName = "User Registration Portal Service";

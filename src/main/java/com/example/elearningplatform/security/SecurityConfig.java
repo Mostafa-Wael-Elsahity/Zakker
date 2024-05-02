@@ -2,8 +2,6 @@ package com.example.elearningplatform.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,6 +16,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.example.elearningplatform.user.user.User;
 import com.example.elearningplatform.user.user.UserRepository;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -28,13 +27,6 @@ public class SecurityConfig {
 
     private final UserRepository userRepository;
 
-    /*****************************************************************************************************/
-
-    @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .build();
-    }
 
     /*****************************************************************************************************/
 
@@ -78,26 +70,34 @@ public class SecurityConfig {
 
     /***************************************************************************************************** */
 
-    @SuppressWarnings("removal")
+
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable());
+
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(
-                        "/api/v1/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "/",
-                    
+                        "/api/v1/auth/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html",
+                        "/oauth2/**","/category/all/**","/user/get-all-users","/user/delete-user/**",
                     "/user/get-user/**", "/check-token/**", "/verifyEmail/**", "/signup/**", "/login/**",
-                        "/forget-password/**", "/course/**")
+                        "/forget-password/**", "/course/**","/review/get-reviews/**")
                 .permitAll()
-                .anyRequest()
-                .authenticated()
-                .and()
-                .addFilterBefore(authFilter(), UsernamePasswordAuthenticationFilter.class));
-                // .oauth2Login(login -> login.loginPage("/login").defaultSuccessUrl("/login/outh2"));
-        // http.oauth2Login(login -> login.loginPage("/login").defaultSuccessUrl("/login/outh2"));
-    
+                .anyRequest().hasAnyRole("USER", "ADMIN", "INSTRUCTOR")
+               
+        ).addFilterAfter(authFilter(), UsernamePasswordAuthenticationFilter.class);
+
+        http.exceptionHandling(exceptionHandling -> exceptionHandling
+                .authenticationEntryPoint((request, response, authException) -> {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.getWriter().write("Access Denied");
+                }));
+
+        http.oauth2Login(login -> login.defaultSuccessUrl("/login/oauth2/success"));
+
+
         return http.build();
     }
     /***************************************************************************************************** */
-
+            
 }

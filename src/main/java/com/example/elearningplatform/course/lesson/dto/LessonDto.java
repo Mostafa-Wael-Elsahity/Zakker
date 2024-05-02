@@ -1,7 +1,5 @@
 package com.example.elearningplatform.course.lesson.dto;
 
-import java.math.BigDecimal; // Import the BigDecimal class
-
 import com.example.elearningplatform.course.lesson.Lesson;
 
 import lombok.Data;
@@ -16,16 +14,22 @@ public class LessonDto {
 
     private Integer id;
     private String title;
-    private BigDecimal duration;
-    // private String videoUrl;
-    // private List<CommentDto> Comments = new ArrayList<>();
+    private String description;
+    private String type;
+    private String videoUrl;
 
     public LessonDto(Lesson lesson) {
 
         this.id = lesson.getId();
         this.title = lesson.getTitle();
-        this.duration = lesson.getDuration();
-        // this.videoUrl = lesson.getVideoUrl();
+        this.description = lesson.getDescription();
+        this.type = lesson.getType();
+        if(lesson.getFree())
+            this.videoUrl = lesson.getVideoUrl();
+            else
+                this.videoUrl = null;
+  
+
 
     }
 

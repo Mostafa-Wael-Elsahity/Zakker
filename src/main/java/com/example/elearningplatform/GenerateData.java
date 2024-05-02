@@ -22,10 +22,10 @@ import com.example.elearningplatform.course.section.Section;
 import com.example.elearningplatform.course.section.SectionRepository;
 import com.example.elearningplatform.course.tag.Tag;
 import com.example.elearningplatform.course.tag.TagRepository;
-
 import com.example.elearningplatform.user.lists.UserList;
 import com.example.elearningplatform.user.lists.UserListRepository;
-import com.example.elearningplatform.user.user.Role;
+import com.example.elearningplatform.user.role.Role;
+import com.example.elearningplatform.user.role.RoleRepository;
 import com.example.elearningplatform.user.user.User;
 import com.example.elearningplatform.user.user.UserRepository;
 
@@ -43,6 +43,7 @@ public class GenerateData {
     private final EntityManager entityManager;
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
     private final CommentRepository commentRepository;
     private final LessonRepository lessonRepository;
@@ -123,12 +124,13 @@ public class GenerateData {
             user.setFirstName("user" + i);
             user.setLastName("mohamed" + i);
             user.setPassword(passwordEncoder.encode("password@M.reda.49"));
-            user.setRoles(List.of(Role.ROLE_USER));
+            Role role = roleRepository.findByRole("ROLE_USER").orElse(null);
+            user.setRoles(List.of(role));
+
             user.setEnabled(true);
             user.setLastLogin(java.time.LocalDateTime.now());
             user.setRegistrationDate(java.time.LocalDateTime.now());
             userRepository.save(user);
-
         }
    
         for (int i = 1; i <= 5; i++) {
@@ -224,6 +226,7 @@ public class GenerateData {
 
     public void truncateDtabase() {
         dropTable("tag");
+        dropTable("user_roles");
         dropTable("category");
         dropTable("review");
         dropTable("reply");

@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.elearningplatform.exception.CustomException;
 import com.example.elearningplatform.response.Response;
 import com.example.elearningplatform.user.user.dto.InstructorDto;
 
@@ -18,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/user")
 public class UserController {
 
@@ -37,6 +38,7 @@ public class UserController {
     }
 
     /***********************************************************************************************/
+
     @GetMapping("/get-all-users")
 
     public Response getUsers() {
@@ -47,96 +49,47 @@ public class UserController {
     }
 
     /**********************************************************************************************/
-
+@SecurityRequirement(name = "bearerAuth")
     @GetMapping("/profile")
     public Response getProfile() {
 
-        return new Response(HttpStatus.OK, "success", userService.getProfile());
+        return userService.getProfile();
     }
 
     /************************************************************************************************/
-
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/my-learning")
     public Response myLearning() {
-        return new Response(HttpStatus.OK, "success", userService.getEnrolledCourses());
+        return  userService.getEnrolledCourses();
 
     }
 
     /***************************************************************************************************/
+    @SecurityRequirement(name = "bearerAuth")
+    @DeleteMapping("/delete-user")
+    public Response deleteUser() throws SQLException {
 
-    /*****************************************************************************************************/
-
-    @GetMapping("/get-wishlist")
-    public Response getWishlist() {
-        return userService.getWishlist();
+        return userService.deleteUser();  
     }
-
-    /*****************************************************************************************************/
-
-    @GetMapping("/get-archived")
-    public Response getarchived() {
-        return userService.getArchived();
-    }
-
-    /************************************************************************************************* */
-    @GetMapping("/get-cart")
-    public Response getCart() throws SQLException {
-        // return new Response(HttpStatus.OK, "Success",
-        // cartService.getCart(headers.get("authorization")));
-        return userService.getCart();
-    }
-
-    /****************************************************************************************************/
-
-    @GetMapping("/add-to-wishlist/{courseId}")
-    public Response addCourseToWishlist(@PathVariable("courseId") Integer courseId) throws SQLException {
-
-        return userService.addToWishlist(courseId);
-    }
-
-    /****************************************************************************************************/
-    @GetMapping("/add-to-archived/{courseId}")
-    public Response addToArchived(@PathVariable("courseId") Integer courseId) throws SQLException {
-
-        return userService.addToArchived(courseId);
-    }
-
-    /***************************************************************************************************/
-
-    @GetMapping("/add-to-cart/{courseId}")
-    public Response addToCart(@PathVariable("courseId") Integer courseId) throws SQLException {
-        return userService.addToCart(courseId);
-    }
-
-    /***************************************************************************************************/
-
-    @DeleteMapping("/delete-from-wishlist/{courseId}")
-    public Response deleteFromWishlist(@PathVariable("courseId") Integer courseId) throws SQLException {
-
-        return userService.deleteFromoWishlist(courseId);
+    
+    @DeleteMapping("/delete-user/{id}")
+    public Response deleteUserById(@RequestParam ("id") Integer id) throws SQLException {
+  try {
+            User user = userRepository.findById(id)
+                    .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
+                    
+            // List<Course> courses = userRepository.findInstructedCourses(tokenUtil.getUserId());
+            userRepository.delete(user);
+            return new Response(HttpStatus.OK, "User deleted successfully", null);
+        } catch (CustomException e) {
+            return new Response(e.getStatus(), e.getMessage(), null);
+        } catch (Exception e) {
+            return new Response(HttpStatus.NOT_FOUND, e.getMessage(), null);
+        }
     }
 
 
 
-
-    /****************************************************************************************************/
-    @DeleteMapping("/delete-from-archived/{courseId}")
-    public Response deleteFromArchived(@PathVariable("courseId") Integer courseId) throws SQLException {
-
-        return userService.deleteFromArchived(courseId);
-    }
-
-    /****************************************************************************************************/
-
-    /****************************************************************************************************/
-
-    /****************************************************************************************************/
-    @DeleteMapping("/delete-from-cart/{courseId}")
-    public Response deleteFromCart(@PathVariable("courseId") Integer courseId) throws SQLException {
-        return userService.deleteFromCart(courseId);
-    }
-
-    /*****************************************************************************************************/
 
 
 }

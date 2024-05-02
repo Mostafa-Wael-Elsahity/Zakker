@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.elearningplatform.course.reply.dto.CreateReplyRequest;
@@ -48,7 +49,7 @@ public class ReplyController {
 
     /*************************************************************************************** */
     @DeleteMapping("/delete-reply/{replyId}")
-    public Response deleteReply(@PathVariable("replyId") Integer replyId) {
+    public Response deleteReply(@RequestParam("replyId") Integer replyId) {
 
         return replyService.deleteReply(replyId);
 

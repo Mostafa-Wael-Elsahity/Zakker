@@ -1,28 +1,31 @@
 package com.example.elearningplatform.payment.transaction;
 
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import lombok.Setter;
+import com.example.elearningplatform.payment.transaction.dto.CreateTransactionRequest;
+import com.example.elearningplatform.response.Response;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
-@Setter
+@RequiredArgsConstructor
 public class TransactionController {
-    // @Autowired
-    // private TransactionService transactionService;
+    private final TransactionService transactionService;
 
     /************************************************************************************************* */
-    // @PostMapping("/create-transaction")
-    // public Response createTransaction(@RequestBody CreateTransactionRequest
-    // request) {
+    @PostMapping("/create-transaction")
+    public Response createTransaction(@RequestBody CreateTransactionRequest request) {
 
-    // return transactionService.saveTransaction(request);
-    // }
+        return transactionService.saveTransaction(request);
+    }
 
-    // /*************************************************************************************************
-    // */
-    // @GetMapping("/get-transactions")
-    // public Response getTransactions() {
+    /************************************************************************************************* */
+    @GetMapping("/get-transactions")
+    public Response getTransactions() {
 
-    // return transactionService.getTransactions();
-    // }
+        return transactionService.getTransactions();
+    }
 }

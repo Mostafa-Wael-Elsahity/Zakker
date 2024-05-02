@@ -2,11 +2,13 @@ package com.example.elearningplatform.course.comment;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.elearningplatform.course.comment.dto.CreateCommentRequest;
@@ -59,22 +61,22 @@ public class CommentCotroller {
 
     /*************************************************************************************** */
 
-    @PostMapping("/delete-comment/{commentId}")
-    public Response deleteComment(@PathVariable("commentId") Integer commentId) {
+    @DeleteMapping("/delete-comment/{commentId}")
+    public Response deleteComment(@RequestParam("commentId") Integer commentId) {
 
         return commentService.deleteComment(commentId);
     }
 
     /*************************************************************************************** */
-    @GetMapping("/like-comment/{commentId}")
-    public Response likeComment(@PathVariable("commentId") Integer commentId) {
+    @PostMapping("/like-comment/{commentId}")
+    public Response likeComment(@RequestParam("commentId") Integer commentId) {
 
         return commentService.likeComment(commentId);
     }
     /*************************************************************************************** */
 
-    @GetMapping("/remove-like-comment/{commentId}")
-    public Response removeLikeComment(@PathVariable("commentId") Integer commentId) {
+    @DeleteMapping("/remove-like-comment/{commentId}")
+    public Response removeLikeComment(@RequestParam("commentId") Integer commentId) {
 
         return commentService.removeLikeComment(commentId);
     }

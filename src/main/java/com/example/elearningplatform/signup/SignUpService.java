@@ -19,8 +19,8 @@ import com.example.elearningplatform.response.Response;
 import com.example.elearningplatform.security.TokenUtil;
 import com.example.elearningplatform.user.address.Address;
 import com.example.elearningplatform.user.address.AddressRepository;
-
-import com.example.elearningplatform.user.user.Role;
+import com.example.elearningplatform.user.role.Role;
+import com.example.elearningplatform.user.role.RoleRepository;
 import com.example.elearningplatform.user.user.User;
 import com.example.elearningplatform.user.user.UserRepository;
 
@@ -37,6 +37,7 @@ public class SignUpService {
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
     private final AddressRepository addressRepository;
+    private final RoleRepository roleRepository;
 
     /******************************************************************************************************************/
 
@@ -49,7 +50,8 @@ public class SignUpService {
                     .enabled(false)
                     .phoneNumber(request.getPhoneNumber()).registrationDate(LocalDateTime.now()).build();
             userRepository.save(user);
-            user.setRoles(List.of(Role.ROLE_USER));
+            Role role = roleRepository.findByRole("ROLE_USER").orElse(null);
+            user.setRoles(List.of(role));
             userRepository.save(user);
             Address address = Address.builder().user(user).city(request.getCity()).country(request.getCountry())
                     .street(request.getStreet()).state(request.getState()).zipCode(request.getZipCode()).build();
@@ -93,7 +95,7 @@ public class SignUpService {
 
         try {
             String url = "http://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath()
-                    + "/verifyEmail?token=" + verficationToken;
+                    + "/verifyEmail/" + verficationToken;
 
             System.out.println("url : " + url);
             String subject = "Email Verification";
@@ -121,11 +123,12 @@ public class SignUpService {
         user.setFirstName(oAuth2UserDetails.getFirstName());
         user.setLastName(oAuth2UserDetails.getLastName());
         user.setEnabled(true);
-        user.setRoles(List.of(Role.ROLE_USER));
+        Role role = roleRepository.findByRole("ROLE_USER").orElse(null);
+            user.setRoles(List.of(role));
         user.setLastLogin(LocalDateTime.now());
-        user.setPassword(passwordEncoder.encode("123456"));
+        user.setPassword(passwordEncoder.encode("password@M.reda.49"));
         user.setRegistrationDate(LocalDateTime.now());
-        user.setProfilePicture(downloadImage(oAuth2UserDetails.getPicture()));
+        // user.setProfilePicture(downloadImage(oAuth2UserDetails.getPicture()));
 
         return user;
     }
