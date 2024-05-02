@@ -33,4 +33,8 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
             """)
     Optional<Course> findCourseByLessonId(@Param("lessonId") Integer lessonId);
     /**************************************************************************************** */
+    @Query("""
+                    SELECT l FROM Lesson l WHERE l.section.course.id = :courseId
+                    """)
+    List<Lesson> findLessonsByCourseId(@Param("courseId") Integer courseId);
 }

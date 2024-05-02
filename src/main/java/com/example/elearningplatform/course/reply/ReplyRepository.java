@@ -16,6 +16,12 @@ public interface ReplyRepository extends JpaRepository<Reply, Integer> {
 
     @Query("""
                 SELECT r FROM Reply r
+                WHERE r.comment.id = :commentId
+            """)
+    List<Reply> findByComment(@Param("commentId") Integer commentId);
+
+    @Query("""
+                SELECT r FROM Reply r
                 JOIN r.likes l
                 WHERE l.id = :userId AND r.comment.id = :commentId
             """)
@@ -36,6 +42,16 @@ public interface ReplyRepository extends JpaRepository<Reply, Integer> {
                 WHERE r.id = :replyId
             """)
     Optional<Course> findCourseByReplyId(@Param("replyId") Integer replyId);
+
+    /************************************************************************************************* */
+    @Query("""
+                SELECT r FROM Reply r
+                join r.likes l
+                WHERE r.id = :replyId
+                And l.id = :userId
+
+            """)
+    Optional<Reply> findLikedRepliesByUserId(@Param("replyId") Integer replyId, @Param("userId") Integer userId);
 
     /************************************************************************************************* */
     @Modifying

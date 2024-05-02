@@ -295,11 +295,12 @@ public class CourseService {
                         HttpResponse<String> response = HttpClient.newHttpClient().send(request,
                                         HttpResponse.BodyHandlers.ofString());
                         System.out.println(response);
-                        if (response.statusCode() >= 200 && response.statusCode() < 300)
+                        if (response.statusCode() >=200 && response.statusCode() < 300)
                                 courseRepository.delete(course);
 
                         else
                                 throw new CustomException(response.body(), HttpStatus.INTERNAL_SERVER_ERROR);
+
 
                         return new Response(HttpStatus.OK, "Course deleted successfully", null);
                 } catch (CustomException e) {
