@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class RefundRequest {
       private Integer courseId;
-      private Integer userId;
+      // private Integer userId;
 }

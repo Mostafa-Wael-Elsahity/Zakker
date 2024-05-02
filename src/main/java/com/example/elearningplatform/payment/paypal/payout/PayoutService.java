@@ -34,16 +34,16 @@ import lombok.Data;
 @Data
 public class PayoutService {
       @Autowired
-      private final TempTransactionUserRepository tempTransactionUserRepository;
+      private TempTransactionUserRepository tempTransactionUserRepository;
 
       @Autowired
-      private final TransactionRepository transactionRepository;
+      private TransactionRepository transactionRepository;
 
       @Autowired
-      private final UserRepository userRepository;
+      private UserRepository userRepository;
 
       @Autowired
-      private final CourseRepository courseRepository;
+      private CourseRepository courseRepository;
 
       @Value("${paypal.access-token-url}")
       private String paypalAccessTokenUrl;

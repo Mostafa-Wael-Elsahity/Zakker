@@ -15,6 +15,11 @@ import com.example.elearningplatform.user.user.User;
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
     List<Comment> findByLessonId(Integer lessonId, Pageable pageable);
+    @Query("""
+            SELECT c FROM Comment c
+            WHERE c.lesson.id = :lessonId
+            """)
+    List<Comment> findByLesson(Integer lessonId);
 
     List<Comment> findByUserId(Integer userId);
 
@@ -43,6 +48,15 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
     void likeComment(@Param("userId") Integer userId, @Param("commentId") Integer commentId);
 
     /**************************************************************************** */
+    @Modifying
+    @Query("""
+                        SELECT c FROM Comment c
+                        WHERE c.lesson.section.course.id = :courseId
+                        And c.user.id= :userId
+                    """)
+    List<Comment> findCommentsByCourseIdAndUserId(@Param("courseId") Integer courseId, @Param("userId") Integer userId);
+
+    /**************************************************************************** */
 
     @Query("""
                 SELECT c FROM Comment c
@@ -51,6 +65,28 @@ public interface CommentRepository extends JpaRepository<Comment, Integer> {
             """)
     List<Comment> findLikedCommentsByUserIdAndLesson(@Param("userId") Integer userId,
             @Param("lessonId") Integer lessonId);
+
+    /**************************************************************************** */
+    @Query("""
+                SELECT c FROM Comment c
+                JOIN c.likes l
+                WHERE l.id = :userId AND c.id = :commentId
+            """)
+    Optional<Comment> findLikedCommentsByUserIdAndCommentId(@Param("userId") Integer userId,@Param("commentId") Integer commentId);
+
+    /*******************************************
+     * 
+     * @param userId
+     * @param lessonId
+     * @return
+     */
+    @Query("""
+                SELECT c FROM Comment c
+                JOIN c.likes l
+                WHERE l.id = :userId AND c.lesson.section.course.id = :courseId
+            """)
+    List<Comment> findLikedCommentsByUserIdAndCourse(@Param("userId") Integer userId,
+            @Param("courseId") Integer courseId);
 
     /**************************************************************************** */
     @Query("""
