@@ -1,15 +1,22 @@
 package com.example.elearningplatform.course.course;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.elearningplatform.course.course.dto.CreateCourseRequest;
+import com.example.elearningplatform.course.course.dto.UpdateCourseRequest;
 import com.example.elearningplatform.response.Response;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -22,7 +29,7 @@ public class CourseController {
     private final CourseService courseService;
 
     /*******************************************************************************************/
-    @GetMapping("/search/{searchKey}/{pageNumber}")
+    @GetMapping("/public/search/{searchKey}/{pageNumber}")
     public Response searchCourse(@PathVariable("searchKey") String searchKey,
             @PathVariable("pageNumber") Integer pageNumber) throws SQLException {
 
@@ -31,14 +38,14 @@ public class CourseController {
 
 
     /*******************************************************************************************/
-    @GetMapping("/get-by-category/{categoryId}/{pageNumber}")
+    @GetMapping("/public/get-by-category/{categoryId}/{pageNumber}")
     public Response searchCourseWithCategory(@PathVariable("categoryId") Integer categoryId,
             @PathVariable("pageNumber") Integer pageNumber) throws SQLException {
         return courseService.getCoursesByCategoryId(categoryId, pageNumber);
     }
 
     /*******************************************************************************************/
-    @GetMapping("/get-by-tag/{tagId}/{pageNumber}")
+    @GetMapping("/public/get-by-tag/{tagId}/{pageNumber}")
     public Response searchCourseWithTag(@PathVariable("tagId") Integer tagId,
             @PathVariable("pageNumber") Integer pageNumber)
             throws SQLException {
@@ -47,7 +54,7 @@ public class CourseController {
 
     /*******************************************************************************************/
 
-    @GetMapping("/get-course/{id}")
+    @GetMapping("/public/get-course/{id}")
 
     public Response getCourse(@PathVariable("id") Integer id)
             throws SQLException {
@@ -55,12 +62,39 @@ public class CourseController {
     }
 
     /***************************************************************************************** */
-    @GetMapping("/get-courses")
+    @GetMapping("/public/get-courses")
     public Response getAllCourses() {
         return new Response(HttpStatus.OK, "Success", courseService.getAllCourses());
     }
 
-    /*****************************************************************************************/
+    /**
+     * @throws InterruptedException
+     * @throws IOException
+     ***************************************************************************************/
+    @SecurityRequirement(name = "bearerAuth")
+    @PostMapping("/create-course")
+    public Response createCourse(@RequestBody CreateCourseRequest course) throws IOException, InterruptedException {
+      
+        return courseService.createCourse(course);
+    }
+
+    /***********************************************************************************************************/
+    @SecurityRequirement(name = "bearerAuth")
+    @PostMapping("/update-course")
+    public Response updateCourse(@RequestBody UpdateCourseRequest course) throws IOException, InterruptedException {
+
+        return courseService.updateCourse(course);
+    }
+
+    /*********************************************************************************************************** */
+    @SecurityRequirement(name = "bearerAuth")
+    @DeleteMapping("/delete-course/{id}")
+    public Response deleteCourse(@PathVariable("id") Integer id) throws SQLException {
+
+        return courseService.deleteCourse(id);
+    }
+    /*************************************************************************************************** */
+
     // @GetMapping("/display-image/{id}")
     // public Response displayImage(@PathVariable("id") Integer id) throws
     // SQLException {

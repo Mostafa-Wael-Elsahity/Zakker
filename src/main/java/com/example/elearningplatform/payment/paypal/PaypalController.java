@@ -2,6 +2,7 @@ package com.example.elearningplatform.payment.paypal;
 
 import java.time.LocalDateTime;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,20 +19,22 @@ import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
-@RequiredArgsConstructor
+@Data
 @Slf4j
 public class PaypalController {
 
-	private final PaypalService paypalService;
-	private final HttpServletRequest request;
+	@Autowired
+	private PaypalService paypalService;
+	@Autowired
+	private HttpServletRequest request;
+	@Autowired
+	private TempTransactionUserRepository tempTransactionUserRepository;
+	
 	private final String prefixHttp = "http://";
-      private final TempTransactionUserRepository tempTransactionUserRepository;
-
-
 	@GetMapping("/paypal")
 	public String home() {
 		return "paypal";
@@ -52,14 +55,13 @@ public class PaypalController {
 		return new RedirectView("/payment/error");
 	}
 
-
 	@GetMapping("/payment/success")
 	public String paymentSuccess(
 			@RequestParam("paymentId") String paymentId,
 			@RequestParam("PayerID") String payerId) {
-            TempTransactionUser tempTransactionUser = tempTransactionUserRepository
-                        .findByPaymentIdAndPayerId(paymentId, payerId)
-                        .orElseThrow(() -> new RuntimeException("Transaction not found"));
+		TempTransactionUser tempTransactionUser = tempTransactionUserRepository
+				.findByPaymentIdAndPayerId(paymentId, payerId)
+				.orElseThrow(() -> new RuntimeException("Transaction not found"));
 		String url = prefixHttp + request.getServerName() + ":" + request.getServerPort()
 				+ request.getContextPath() + "/course/retrieve-course/{id}";
 		try {

@@ -27,15 +27,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import lombok.AllArgsConstructor;
+import lombok.Data;
 
 @Service
-@AllArgsConstructor
+@Data
 public class RefundService {
       @Autowired
-      private final TempTransactionUserRepository tempTransactionUserRepository;
-      private final UserRepository userRepository;
-      private final CourseRepository courseRepository;
+      private TempTransactionUserRepository tempTransactionUserRepository;
+      @Autowired
+      private UserRepository userRepository;
+      @Autowired
+      private CourseRepository courseRepository;
       @Value("${paypal.access-token-url}")
       private String paypalAccessTokenUrl;
       @Value("${paypal.client-id}")
@@ -44,8 +46,7 @@ public class RefundService {
       private String paypalClientSecret;
       @Value("${paypal.payout-url}")
       private String paypalPayoutUrl;
-      @Value("${paypal.email}")
-      private String emailPaypal;
+ 
 
       public Boolean check(RefundRequest refundRequest) {
             TempTransactionUser tempTransactionUser = tempTransactionUserRepository
@@ -87,8 +88,9 @@ public class RefundService {
                                     "items": [ { "recipient_type": "%s", "amount": { "value": "%s", "currency": "%s" }, "note": "%s",
                                     "sender_item_id": "%s", "receiver": "%s", "recipient_wallet": "%s" } ] }
                                     """,
-                        senderBatchId, emailSubject, emailMessage, recipientType, tempTransactionUser.getPrice()/100.0, "USD",
-                        "NOTE", emailPaypal, receiver, "PAYPAL");
+                        senderBatchId, emailSubject, emailMessage, recipientType,
+                        tempTransactionUser.getPrice() / 100.0, "USD",
+                        "NOTE", receiver, "PAYPAL");
 
             HttpHeaders headers = new HttpHeaders();
             String token = getAccessToken();

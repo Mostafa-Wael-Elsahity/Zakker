@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.elearningplatform.course.category.Category;
+import com.example.elearningplatform.course.course.dto.CreateCourseRequest;
 import com.example.elearningplatform.course.review.Review;
 import com.example.elearningplatform.course.section.Section;
 import com.example.elearningplatform.course.tag.Tag;
@@ -75,13 +76,13 @@ public class Course {
 
         private Integer numberOfEnrollments = 0;
 
-        public Course(CreateCourseRequesrt createCourseRequesrt) {
-          this.title = createCourseRequesrt.getTitle();
-          this.whatYouWillLearn = createCourseRequesrt.getWhatYouWillLearn();
-          this.prerequisite = createCourseRequesrt.getPrerequisite();
-          this.description = createCourseRequesrt.getDescription();
-          this.language = createCourseRequesrt.getLanguage();
-          this.level = createCourseRequesrt.getLevel();
+        public Course(CreateCourseRequest createCourseRequest) {
+          this.title = createCourseRequest.getTitle();
+          this.whatYouWillLearn = createCourseRequest.getWhatYouWillLearn();
+          this.prerequisite = createCourseRequest.getPrerequisite();
+          this.description = createCourseRequest.getDescription();
+          this.language = createCourseRequest.getLanguage();
+          this.level = createCourseRequest.getLevel();
 
           this.totalRatings = 0.0;
           this.numberOfRatings = 0;

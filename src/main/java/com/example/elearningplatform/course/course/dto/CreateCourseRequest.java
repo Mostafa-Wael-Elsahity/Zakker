@@ -4,13 +4,13 @@ import lombok.Data;
 
 @Data
 public class CreateCourseRequest {
-    String title;
-    String description;
-    String whatYouWillLearn;
-    String prerequisite;
-    String language;
-    String level;
-    Integer categoryId;
-    Integer tagId;
+    private String title;
+    private String description;
+    private String whatYouWillLearn;
+    private String prerequisite;
+    private String language;
+    private String level;
+    private Integer categoryId;
+    private Integer tagId;
 
 }
