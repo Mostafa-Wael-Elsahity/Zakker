@@ -1,0 +1,47 @@
+{"properties": [
+  {
+    "name": "auth.secret",
+    "type": "java.lang.String",
+    "description": "A description for 'auth.secret'"
+  },
+  {
+    "name": "auth.header",
+    "type": "java.lang.String",
+    "description": "A description for 'auth.header'"
+  },
+  {
+    "name": "paypal.client-id",
+    "type": "java.lang.String",
+    "description": "A description for 'paypal.client-id'"
+  },
+  {
+    "name": "paypal.client-secret",
+    "type": "java.lang.String",
+    "description": "A description for 'paypal.client-secret'"
+  },
+  {
+    "name": "paypal.mode",
+    "type": "java.lang.String",
+    "description": "A description for 'paypal.mode'"
+  },
+  {
+    "name": "paypal.access-token-url",
+    "type": "java.lang.String",
+    "description": "A description for 'paypal.access-token-url'"
+  },
+  {
+    "name": "paypal.payout-url",
+    "type": "java.lang.String",
+    "description": "A description for 'paypal.payout-url'"
+  },
+  {
+    "name": "schedulingProcessTempTransaction",
+    "type": "java.lang.String",
+    "description": "A description for 'schedulingProcessTempTransaction'"
+  },
+  {
+    "name": "schedulingProcessTempTransaction",
+    "type": "java.lang.String",
+    "description": "A description for 'schedulingProcessTempTransaction'"
+  }
+]}

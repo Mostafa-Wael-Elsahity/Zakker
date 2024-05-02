@@ -3,7 +3,6 @@ package com.example.elearningplatform.payment.paypal.payout;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,7 +46,7 @@ public class RefundService {
       @Value("${paypal.email}")
       private String emailPaypal;
 
-      public Boolean check(RefundRequest refundRequest) {
+      public Boolean check(RefundRequest refundRequest) throws JsonProcessingException {
             TempTransactionUser tempTransactionUser = tempTransactionUserRepository
                         .findByUserIdAndCourseId(refundRequest.getUserId(), refundRequest.getCourseId());
             if (tempTransactionUser.getConfirmDate()
@@ -56,17 +55,24 @@ public class RefundService {
                   tempTransactionUserRepository.delete(tempTransactionUser);
                   return false;
             } else {
-
+                  if (tempTransactionUser.getPrice() > 0) {
+                        createPayout(tempTransactionUser);
+                  }
+                  // remove user from course and delete relation like note and comment and review
+                  // userRepository.findById(tempTransactionUser.getUserId()).ifPresent(user -> {
+                  //       user.getCourseList().removeIf(course -> course.getId() == tempTransactionUser.getCourseId());
+                  //       userRepository.save(user);
+                  // });
+                  tempTransactionUserRepository.delete(tempTransactionUser);
                   return true;
             }
-
       }
 
-      public String createPayout(TempTransactionUser tempTransactionUser,
-                  String recipientType,
-                  String senderItemId)
+      public String createPayout(TempTransactionUser tempTransactionUser)
                   throws JsonProcessingException {
             RestTemplate restTemplate = new RestTemplate();
+            String code = tempTransactionUser.getPayerId() + "$" + tempTransactionUser.getPaymentId();
+            String senderBatchId = code;
             Course course = courseRepository.findById(tempTransactionUser.getCourseId()).orElse(null);
             String emailSubject = String.format(
                         """
@@ -77,9 +83,10 @@ public class RefundService {
                                     The Refund have been approved for course %s and Now you can receive the payment for the course. Please check your PayPal account.
                                     """,
                         course.getTitle());
-            String senderBatchId = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
+            String price = calculatePrice(tempTransactionUser.getPrice());
             Optional<User> user = userRepository.findById(tempTransactionUser.getUserId());
             String receiver = user.get().getEmail();
+            String senderItemId = code;
             String requestJson = String.format(
                         """
                                     { "sender_batch_header": { "sender_batch_id": "%s",
@@ -87,8 +94,8 @@ public class RefundService {
                                     "items": [ { "recipient_type": "%s", "amount": { "value": "%s", "currency": "%s" }, "note": "%s",
                                     "sender_item_id": "%s", "receiver": "%s", "recipient_wallet": "%s" } ] }
                                     """,
-                        senderBatchId, emailSubject, emailMessage, recipientType, tempTransactionUser.getPrice()/100.0, "USD",
-                        "NOTE", emailPaypal, receiver, "PAYPAL");
+                        senderBatchId, emailSubject, emailMessage, "EMAIL", price, "USD",
+                        "NOTE", senderItemId, receiver, "PAYPAL");
 
             HttpHeaders headers = new HttpHeaders();
             String token = getAccessToken();
@@ -102,7 +109,9 @@ public class RefundService {
 
             return response.getBody();
       }
-
+      private String calculatePrice(Integer price) {
+            return String.format("%.2f", price / 100.0);
+      }
       public String getAccessToken() throws JsonProcessingException {
             RestTemplate restTemplate = new RestTemplate();
 

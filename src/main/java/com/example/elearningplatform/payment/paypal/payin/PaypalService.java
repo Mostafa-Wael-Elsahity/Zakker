@@ -88,6 +88,7 @@ public class PaypalService {
             String paymentId = payment.getId();
             tempTransactionUser.setPayerId(payerId);
             tempTransactionUser.setPaymentId(paymentId);
+            tempTransactionUser.setPaymentMethod("paypal");
             tempTransactionUserRepository.save(tempTransactionUser);
             return createdPayment;
       }
