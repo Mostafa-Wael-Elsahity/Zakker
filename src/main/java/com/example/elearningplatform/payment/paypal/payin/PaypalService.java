@@ -3,7 +3,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -25,24 +24,18 @@ import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 @Service
-@Data
+@RequiredArgsConstructor
 public class PaypalService {
 
-      @Autowired
-      private APIContext apiContext;
-      @Autowired
-      private CouponService couponService;
-      @Autowired
-      private HttpServletRequest request;
-      @Autowired
-      private TempTransactionUserRepository tempTransactionUserRepository;
-      @Autowired
-      private CouponRepository couponRepository;
-      @Autowired
-      private TokenUtil tokenUtil;
+      private final APIContext apiContext;
+      private final CouponService couponService;
+      private final HttpServletRequest request;
+      private final TempTransactionUserRepository tempTransactionUserRepository;
+      private final CouponRepository couponRepository;
+      private final TokenUtil tokenUtil;
 
       public Payment createPayment(ApplyCouponRequest applyCouponRequest) throws PayPalRESTException {
 
@@ -95,7 +88,6 @@ public class PaypalService {
             String paymentId = payment.getId();
             tempTransactionUser.setPayerId(payerId);
             tempTransactionUser.setPaymentId(paymentId);
-            tempTransactionUser.setPaymentMethod("paypal");
             tempTransactionUserRepository.save(tempTransactionUser);
             return createdPayment;
       }

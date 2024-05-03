@@ -14,11 +14,14 @@ import org.springframework.stereotype.Service;
 
 import com.example.elearningplatform.course.course.Course;
 import com.example.elearningplatform.course.course.CourseRepository;
+import com.example.elearningplatform.course.course.CourseService;
 import com.example.elearningplatform.course.section.dto.CreateSectionRequest;
 import com.example.elearningplatform.course.section.dto.SectionDto;
 import com.example.elearningplatform.course.section.dto.UpdateSectionRequest;
 import com.example.elearningplatform.exception.CustomException;
 import com.example.elearningplatform.response.Response;
+import com.example.elearningplatform.security.TokenUtil;
+import com.example.elearningplatform.user.user.User;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -35,6 +38,10 @@ public class SectionService {
     private SectionRepository sectionRepository;
     @Autowired
     private CourseRepository courseRepository;
+    @Autowired
+    CourseService courseService;
+    @Autowired
+    private TokenUtil tokenUtil;
 
     /************************************************************************************** */
     /************************************************************************************** */
@@ -49,6 +56,11 @@ public class SectionService {
         try {
             Course course = courseRepository.findById(createSectionRequest.getCourseId())
                     .orElseThrow(() -> new CustomException("Course not found", HttpStatus.NOT_FOUND));
+            // User user = courseRepository.findOwner(course.getId())
+            //         .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
+            // if (user.getId().equals(tokenUtil.getUserId())) {
+            //     throw new CustomException("You are not the owner of this course", HttpStatus.UNAUTHORIZED);
+            // }
 
             String ApiKey = course.getApiKey();
             HttpRequest request = HttpRequest.newBuilder()
@@ -89,6 +101,7 @@ public class SectionService {
     /******************************************************************************************************************/
     public Response updateSection(UpdateSectionRequest updateSectionRequest) throws IOException, InterruptedException {
         try {
+
             Section section = sectionRepository.findById(updateSectionRequest.getSectionId())
                     .orElseThrow(() -> new CustomException("Section not found", HttpStatus.NOT_FOUND));
 

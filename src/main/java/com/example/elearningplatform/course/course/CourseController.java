@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import com.example.elearningplatform.response.Response;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -73,16 +75,20 @@ public class CourseController {
      ***************************************************************************************/
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/create-course")
-    public Response createCourse(@RequestBody CreateCourseRequest course) throws IOException, InterruptedException {
-      
+    public Response createCourse(@RequestBody @Valid CreateCourseRequest course,BindingResult bindingResult) throws IOException, InterruptedException {
+      if(bindingResult.hasErrors()){
+        return new Response(HttpStatus.BAD_REQUEST, "Validation Error", bindingResult.getAllErrors());
+      }
         return courseService.createCourse(course);
     }
 
     /***********************************************************************************************************/
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/update-course")
-    public Response updateCourse(@RequestBody UpdateCourseRequest course) throws IOException, InterruptedException {
-
+    public Response updateCourse(@RequestBody @Valid UpdateCourseRequest course,BindingResult bindingResult) throws IOException, InterruptedException {
+if(bindingResult.hasErrors()){
+    return new Response(HttpStatus.BAD_REQUEST, "Validation Error", bindingResult.getAllErrors());
+}
         return courseService.updateCourse(course);
     }
 

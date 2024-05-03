@@ -28,7 +28,6 @@ public class TransactionService {
     @Autowired
     private TransactionRepository transactionRepository;
 
-  
 
     /*********************************************************************** */
 
@@ -38,8 +37,8 @@ public class TransactionService {
                     .orElseThrow(() -> new Exception("User not found"));
             Course course = courseRepository.findById(request.getCourseId())
                     .orElseThrow(() -> new Exception("Course not found"));
-            
-            Transaction transaction = new Transaction();
+                    Transaction transaction = new Transaction();
+                    
             transaction.setCourse(course);
             transaction.setUser(user);
 

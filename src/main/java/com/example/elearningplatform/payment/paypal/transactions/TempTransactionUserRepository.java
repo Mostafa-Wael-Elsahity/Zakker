@@ -9,7 +9,7 @@ public interface TempTransactionUserRepository extends JpaRepository<TempTransac
 
       Optional<TempTransactionUser> findByPaymentIdAndPayerId(String paymentId, String payerId);
 
-      Optional<TempTransactionUser> findByUserIdAndCourseId(Integer userId, Integer courseId);
+      TempTransactionUser findByUserIdAndCourseId(Integer userId, Integer courseId);
 
       void deleteByPaymentIdAndPayerId(String paymentId, String payerId);
 }
