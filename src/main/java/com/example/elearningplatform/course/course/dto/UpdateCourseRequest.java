@@ -3,7 +3,8 @@ package com.example.elearningplatform.course.course.dto;
 import lombok.Data;
 
 @Data
-public class CreateCourseRequest {
+public class UpdateCourseRequest {
+    private Integer courseId;
     private String title;
     private String description;
     private String whatYouWillLearn;
@@ -12,5 +13,4 @@ public class CreateCourseRequest {
     private String level;
     private Integer categoryId;
     private Integer tagId;
-
 }

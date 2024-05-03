@@ -10,10 +10,12 @@ import com.example.elearningplatform.response.Response;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.Data;
 
 @RestController
 @Data
+@SecurityRequirement(name = "bearerAuth")
 public class RefundController {
 
       @Autowired

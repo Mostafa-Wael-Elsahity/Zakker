@@ -14,7 +14,7 @@ import com.example.elearningplatform.course.lesson.dto.CreateLessonRequest;
 import com.example.elearningplatform.course.lesson.dto.UploadVideoRequest;
 import com.example.elearningplatform.response.Response;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.web.bind.annotation.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 
