@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.example.elearningplatform.course.course.Course;
 import com.example.elearningplatform.course.course.CourseRepository;
 import com.example.elearningplatform.payment.coupon.dto.ApplyCouponRequest;
+import com.example.elearningplatform.payment.coupon.dto.CouponDto;
 import com.example.elearningplatform.payment.coupon.dto.CreateRequest;
 import com.example.elearningplatform.response.Response;
 
@@ -43,7 +44,8 @@ public class CouponService {
             coupon.setCode(request.getCode());
             couponRepository.save(coupon);
 
-            return new Response(HttpStatus.OK, "coupon created successfully", coupon);
+            return new Response(HttpStatus.OK, "coupon created successfully",
+                    new CouponDto(coupon.getCode(), coupon.getExpirationDate(), coupon.getNumberOfCoupons()));
         } catch (Exception e) {
             return new Response(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", e.getMessage());
         }

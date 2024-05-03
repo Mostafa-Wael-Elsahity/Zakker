@@ -1,9 +1,15 @@
 package com.example.elearningplatform.course.course;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Map;
 
+import javax.imageio.ImageIO;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,10 +17,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.example.elearningplatform.cloudinary.CloudinaryService;
 import com.example.elearningplatform.course.course.dto.CreateCourseRequest;
 import com.example.elearningplatform.course.course.dto.UpdateCourseRequest;
+import com.example.elearningplatform.exception.CustomException;
 import com.example.elearningplatform.response.Response;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -28,7 +39,12 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/course")
 public class CourseController {
 
-    private final CourseService courseService;
+    @Autowired
+    private CourseService courseService;
+    @Autowired
+    private CloudinaryService cloudinaryService;
+    @Autowired
+    private CourseRepository courseRepository;
 
     /*******************************************************************************************/
     @GetMapping("/public/search/{searchKey}/{pageNumber}")
@@ -56,9 +72,9 @@ public class CourseController {
 
     /*******************************************************************************************/
 
-    @GetMapping("/public/get-course/{id}")
+    @GetMapping("/public/get-course")
 
-    public Response getCourse(@PathVariable("id") Integer id)
+    public Response getCourse(@RequestParam("id") Integer id)
             throws SQLException {
         return new Response(HttpStatus.OK, "Success", courseService.getCourse(id));
     }
@@ -75,27 +91,29 @@ public class CourseController {
      ***************************************************************************************/
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/create-course")
-    public Response createCourse(@RequestBody @Valid CreateCourseRequest course,BindingResult bindingResult) throws IOException, InterruptedException {
-      if(bindingResult.hasErrors()){
-        return new Response(HttpStatus.BAD_REQUEST, "Validation Error", bindingResult.getAllErrors());
-      }
+    public Response createCourse(@RequestBody @Valid CreateCourseRequest course, BindingResult bindingResult)
+            throws IOException, InterruptedException {
+        if (bindingResult.hasErrors()) {
+            return new Response(HttpStatus.BAD_REQUEST, "Validation Error", bindingResult.getAllErrors());
+        }
         return courseService.createCourse(course);
     }
 
     /***********************************************************************************************************/
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/update-course")
-    public Response updateCourse(@RequestBody @Valid UpdateCourseRequest course,BindingResult bindingResult) throws IOException, InterruptedException {
-if(bindingResult.hasErrors()){
-    return new Response(HttpStatus.BAD_REQUEST, "Validation Error", bindingResult.getAllErrors());
-}
+    public Response updateCourse(@RequestBody @Valid UpdateCourseRequest course, BindingResult bindingResult)
+            throws IOException, InterruptedException {
+        if (bindingResult.hasErrors()) {
+            return new Response(HttpStatus.BAD_REQUEST, "Validation Error", bindingResult.getAllErrors());
+        }
         return courseService.updateCourse(course);
     }
 
     /*********************************************************************************************************** */
     @SecurityRequirement(name = "bearerAuth")
-    @DeleteMapping("/delete-course/{id}")
-    public Response deleteCourse(@PathVariable("id") Integer id) throws SQLException {
+    @DeleteMapping("/delete-course")
+    public Response deleteCourse(@RequestParam("id") Integer id) throws SQLException {
 
         return courseService.deleteCourse(id);
     }
@@ -112,4 +130,57 @@ if(bindingResult.hasErrors()){
 
     // }
 
+    /*************************************************************************************************** */
+    @PostMapping("/upload-image")
+    @ResponseBody
+    public ResponseEntity<String> upload(@RequestParam MultipartFile image, @RequestParam("courseId") int courseId)
+            throws IOException {
+        try {
+            BufferedImage bi = ImageIO.read(image.getInputStream());
+            if (bi == null) {
+                throw new CustomException("Invalid image file", HttpStatus.BAD_REQUEST);
+            }
+            Course course = courseRepository.findById(courseId)
+                    .orElseThrow(() -> new CustomException("Course not found", HttpStatus.NOT_FOUND));
+            if (course.getImageId() != null) {
+                cloudinaryService.delete(course.getImageId());
+            }
+            @SuppressWarnings("rawtypes")
+            Map result = cloudinaryService.upload(image);
+            course.setImageId((String) result.get("public_id"));
+            course.setImageUrl((String) result.get("url"));
+            courseRepository.save(course);
+
+            return new ResponseEntity<>("image uploaded  ! ", HttpStatus.OK);
+        } catch (CustomException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Failed to upload image to Cloudinary", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /******************************************************************************************** */
+
+    @DeleteMapping("/delete-image")
+    public ResponseEntity<String> delete(@RequestParam("courseId") int courseId) {
+        try {
+            Course course = courseRepository.findById(courseId)
+                    .orElseThrow(() -> new CustomException("Course not found", HttpStatus.NOT_FOUND));
+            String cloudinaryImageId = course.getImageId();
+            try {
+                cloudinaryService.delete(cloudinaryImageId);
+            } catch (IOException e) {
+                throw new CustomException("Failed to delete image from Cloudinary", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            course.setImageId(null);
+            courseRepository.save(course);
+            return new ResponseEntity<>("image deleted !", HttpStatus.OK);
+        } catch (CustomException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Failed to delete image from Cloudinary", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /******************************************************************************************** */
 }

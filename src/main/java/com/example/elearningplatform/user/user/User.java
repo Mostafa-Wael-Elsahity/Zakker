@@ -47,13 +47,17 @@ public class User implements UserDetails {
     private String email;
     private String firstName;
 
+    private String paypalEmail;
+
     private String lastName;
 
     private String password;
 
     private String phoneNumber;
 
-    private byte[] profilePicture;
+    private String imageUrl;
+    
+    private String imageId;
 
     private Boolean enabled;
 

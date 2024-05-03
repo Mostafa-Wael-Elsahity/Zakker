@@ -27,8 +27,8 @@ import lombok.RequiredArgsConstructor;
 public class NoteCotroller {
     private final NoteService NoteService;
 
-    @GetMapping("/get-Notes/{lessonId}")
-    public Response getNotes(@PathVariable("lessonId") Integer lessonId,
+    @GetMapping("/get-Notes")
+    public Response getNotes(@RequestParam("lessonId") Integer lessonId,
             @PathVariable("pageNumber") Integer pageNumber) throws Exception {
 
         return new Response(HttpStatus.OK, "Success", NoteService.getNotesByLessonId(lessonId));
@@ -61,7 +61,7 @@ public class NoteCotroller {
 
     /*************************************************************************************** */
 
-    @DeleteMapping("/delete-Note/{NoteId}")
+    @DeleteMapping("/delete-Note")
     public Response deleteNote(@RequestParam("NoteId") Integer NoteId) {
 
         return NoteService.deleteNote(NoteId);

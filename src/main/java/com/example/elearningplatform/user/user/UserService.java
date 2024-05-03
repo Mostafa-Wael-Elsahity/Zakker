@@ -11,7 +11,10 @@ import com.example.elearningplatform.course.course.dto.SearchCourseDto;
 import com.example.elearningplatform.exception.CustomException;
 import com.example.elearningplatform.response.Response;
 import com.example.elearningplatform.security.TokenUtil;
+import com.example.elearningplatform.user.address.Address;
+import com.example.elearningplatform.user.address.AddressRepository;
 import com.example.elearningplatform.user.user.dto.ProfileDto;
+import com.example.elearningplatform.user.user.dto.UpdateProfileRequest;
 import com.example.elearningplatform.user.user.dto.UserDto;
 
 import jakarta.transaction.Transactional;
@@ -24,6 +27,8 @@ public class UserService {
     @Autowired private UserRepository userRepository;
     @Autowired private TokenUtil tokenUtil;
     @Autowired private CourseRepository courseRepository;
+    @Autowired
+    private AddressRepository addressRepository;
 
     /************************************************************************************************************/
     public Response getUser(Integer userId) {
@@ -59,7 +64,8 @@ public class UserService {
         try {
             User user = userRepository.findById(tokenUtil.getUserId())
                     .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
-            ProfileDto profileDto = new ProfileDto(user);
+            Address address = userRepository.findAdress(tokenUtil.getUserId()).orElse(null);
+            ProfileDto profileDto = new ProfileDto(user, address);
 
             return new Response(HttpStatus.OK, "Success", profileDto);
         } catch (CustomException e) {
@@ -70,6 +76,35 @@ public class UserService {
         }
     }
 
+    /*************************************************************************************************************** */
+
+    // to do
+    public Response updateprofile(UpdateProfileRequest updateProfileRequest) {
+
+        try {
+            User user = userRepository.findById(tokenUtil.getUserId())
+                    .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
+
+            user.setFirstName(updateProfileRequest.getFirstName());
+            user.setLastName(updateProfileRequest.getLastName());
+            user.setPhoneNumber(updateProfileRequest.getPhoneNumber());
+            user.setAbout(updateProfileRequest.getAbout());
+            user.setAge(updateProfileRequest.getAge());
+            user.setPaypalEmail(updateProfileRequest.getPaypalEmail());
+            Address address = userRepository.findAdress(tokenUtil.getUserId()).orElse(null);
+            address.setStreet(updateProfileRequest.getStreet());
+            address.setCity(updateProfileRequest.getCity());
+            address.setState(updateProfileRequest.getState());
+            address.setCountry(updateProfileRequest.getCountry());
+            addressRepository.save(address);
+            userRepository.save(user);
+            return new Response(HttpStatus.OK, "Profile updated successfully", null);
+
+        } catch (Exception e) {
+            return new Response(HttpStatus.NOT_FOUND, e.getMessage(), null);
+        }
+
+    }
     /*************************************************************************************************************** */
     public Response getEnrolledCourses() {
         try {
@@ -85,6 +120,7 @@ public class UserService {
         }
     }
 
+    /*************************************************************************************************************** */
 
     public Response deleteUser() {
         try {

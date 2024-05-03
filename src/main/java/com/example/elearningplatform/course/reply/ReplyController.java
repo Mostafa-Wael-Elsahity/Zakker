@@ -28,9 +28,9 @@ public class ReplyController {
     private final ReplyService replyService;
 
     /*************************************************************************************** */
-    @GetMapping("/get-replyes/{commentId}/{pageNumber}")
-    public Response getReplyes(@PathVariable("commentId") Integer commentId,
-            @PathVariable("pageNumber") Integer pageNumber) {
+    @GetMapping("/get-replyes")
+    public Response getReplyes(@RequestParam("commentId") Integer commentId,
+            @RequestParam("pageNumber") Integer pageNumber) {
 
         return replyService.getRepliesByCommentId(commentId, pageNumber);
 
@@ -48,7 +48,7 @@ public class ReplyController {
     }
 
     /*************************************************************************************** */
-    @DeleteMapping("/delete-reply/{replyId}")
+    @DeleteMapping("/delete-reply")
     public Response deleteReply(@RequestParam("replyId") Integer replyId) {
 
         return replyService.deleteReply(replyId);
@@ -65,14 +65,14 @@ public class ReplyController {
         return replyService.updateReply(request);
     }
     /*************************************************************************************** */
-    @GetMapping("/like-reply/{replyId}")
-    public Response likeReply(@PathVariable("replyId") Integer replyId) {
+    @GetMapping("/like-reply")
+    public Response likeReply(@RequestParam("replyId") Integer replyId) {
 
         return replyService.likeReply(replyId);
     }
     /*************************************************************************************** */
-    @GetMapping("/remove-like-reply/{replyId}/{userId}")
-    public Response removeLikeReply(@PathVariable("replyId") Integer replyId) {
+    @GetMapping("/remove-like-reply")
+    public Response removeLikeReply(@RequestParam("replyId") Integer replyId) {
 
         return replyService.removeLikeReply(replyId);
     }

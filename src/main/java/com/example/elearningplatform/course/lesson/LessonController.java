@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.elearningplatform.course.lesson.dto.CreateLessonRequest;
@@ -32,9 +33,9 @@ public class LessonController {
 
     /*************************************************************************************** */
 
-    @GetMapping("/get-lesson/{lessonId}/{pageNumber}")
-    public Response getLesson(@PathVariable("lessonId") Integer lessonId,
-            @PathVariable("pageNumber") Integer pageNumber) {
+    @GetMapping("/get-lesson")
+    public Response getLesson(@RequestParam("lessonId") Integer lessonId,
+            @RequestParam("pageNumber") Integer pageNumber) {
         return lessonService.getLesson(lessonId, pageNumber);
     }
 
@@ -79,8 +80,8 @@ public class LessonController {
 
     /***************************************************************************************/
 
-    @DeleteMapping("/delete-lesson/{lessonId}")
-    public Response deleteLesson(@PathVariable("lessonId") Integer lessonId) {
+    @DeleteMapping("/delete-lesson")
+    public Response deleteLesson(@RequestParam("lessonId") Integer lessonId) {
 
         return lessonService.deleteLesson(lessonId);
     }

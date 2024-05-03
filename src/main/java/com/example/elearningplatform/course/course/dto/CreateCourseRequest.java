@@ -18,6 +18,7 @@ public class CreateCourseRequest {
     private String language;
     @NotBlank(message = "Level cannot be empty")
     private String level;
+    private Double price;
     
     private Integer categoryId;
     private Integer tagId;

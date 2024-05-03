@@ -5,16 +5,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.example.elearningplatform.payment.coupon.dto.ApplyCouponRequest;
 import com.example.elearningplatform.payment.coupon.dto.CreateRequest;
 import com.example.elearningplatform.response.Response;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 
 
 @RestController
 @RequiredArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
 public class CouponController {
 
     private final CouponService couponService;
@@ -36,6 +39,7 @@ public class CouponController {
         return couponService.applyCoupon(coupon);
     }
 
+ 
     
     
 }

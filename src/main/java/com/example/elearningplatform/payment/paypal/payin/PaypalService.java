@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,7 @@ import com.example.elearningplatform.response.Response;
 import com.example.elearningplatform.security.TokenUtil;
 import com.paypal.api.payments.Amount;
 import com.paypal.api.payments.Payer;
+import com.paypal.api.payments.PayerInfo;
 import com.paypal.api.payments.Payment;
 import com.paypal.api.payments.PaymentExecution;
 import com.paypal.api.payments.RedirectUrls;
@@ -24,27 +26,33 @@ import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
 
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
+import lombok.Data;
 
 @Service
-@RequiredArgsConstructor
+@Data
 public class PaypalService {
 
-      private final APIContext apiContext;
-      private final CouponService couponService;
-      private final HttpServletRequest request;
-      private final TempTransactionUserRepository tempTransactionUserRepository;
-      private final CouponRepository couponRepository;
-      private final TokenUtil tokenUtil;
+      @Autowired
+      private APIContext apiContext;
+      @Autowired
+      private CouponService couponService;
+      @Autowired
+      private HttpServletRequest request;
+      @Autowired
+      private TempTransactionUserRepository tempTransactionUserRepository;
+      @Autowired
+      private CouponRepository couponRepository;
+      @Autowired
+      private TokenUtil tokenUtil;
 
       public Payment createPayment(ApplyCouponRequest applyCouponRequest) throws PayPalRESTException {
 
             String successUrl = "http://" + request.getServerName() + ":" + request.getServerPort()
                         + request.getContextPath()
-                        + "/payment/success";
+                        + "/paypal/payment/success";
             String cancelUrl = "http://" + request.getServerName() + ":" + request.getServerPort()
                         + request.getContextPath()
-                        + "/payment/cancel";
+                        + "/paypal/payment/cancel";
 
             Response response = couponService.applyCoupon(applyCouponRequest);
             if (response.getStatus() != HttpStatus.OK) {
@@ -62,10 +70,13 @@ public class PaypalService {
 
             List<Transaction> transactions = new ArrayList<>();
             transactions.add(transaction);
-
+            
             Payer payer = new Payer();
             payer.setPaymentMethod("paypal");
-
+            PayerInfo payerInfo = new PayerInfo();
+            payerInfo.setPayerId("1703");
+            payer.setPayerInfo(payerInfo);
+   
             RedirectUrls redirectUrls = new RedirectUrls();
             redirectUrls.setCancelUrl(cancelUrl);
             redirectUrls.setReturnUrl(successUrl);
@@ -78,16 +89,17 @@ public class PaypalService {
 
             TempTransactionUser tempTransactionUser = new TempTransactionUser();
             tempTransactionUser.setCourseId(applyCouponRequest.getCourseId());
-            tempTransactionUser.setUserId(tokenUtil.getUserId());
+            tempTransactionUser.setUserId(1703);
             Coupon coupon = couponRepository.findByCodeAndCourseId(applyCouponRequest.getCouponCode(),applyCouponRequest.getCourseId()).orElseThrow(() -> new IllegalArgumentException("Coupon not found"));
             tempTransactionUser.setCouponId(coupon.getId());
             tempTransactionUser.setPrice(((int) (price * 100)));
             tempTransactionUser.setConfirmed(false);
             Payment createdPayment = payment.create(apiContext);
-            String payerId = payer.getPayerInfo().getPayerId();
-            String paymentId = payment.getId();
+            String payerId = createdPayment.getPayer().getPayerInfo().getPayerId();
+            String paymentId = createdPayment.getId();
             tempTransactionUser.setPayerId(payerId);
             tempTransactionUser.setPaymentId(paymentId);
+            tempTransactionUser.setPaymentMethod("paypal");
             tempTransactionUserRepository.save(tempTransactionUser);
             return createdPayment;
       }

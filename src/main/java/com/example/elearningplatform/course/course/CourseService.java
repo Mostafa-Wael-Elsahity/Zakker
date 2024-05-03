@@ -232,6 +232,7 @@ public class CourseService {
                         }
                         Course course = new Course(createCourseRequest);
                         course.setOwner(user);
+                        course.setPrice(createCourseRequest.getPrice());
                         course.setGuid(Integer.parseInt(responseMap.get("Id").toString()));
                         course.setApiKey(responseMap.get("ApiKey").toString());
 

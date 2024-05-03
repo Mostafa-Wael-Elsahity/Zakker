@@ -62,7 +62,9 @@ public class Course {
 
         private BigDecimal duration;
 
-        private byte[] image;
+        private String imageUrl;
+        private String imageId;
+    
 
         private boolean isPublished;
 
