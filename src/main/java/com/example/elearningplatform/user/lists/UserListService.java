@@ -124,10 +124,8 @@ public class UserListService {
             UserList list = userListRepository.findById(newlist.getListId())
                     .orElseThrow(() -> new CustomException("List not found", HttpStatus.NOT_FOUND));
 
-            if (newlist.getName() != null)
-                list.setName(newlist.getName());
-            if (newlist.getDescription() != null)
-                list.setDescription(newlist.getDescription());
+          list.setName(newlist.getName());
+          list.setDescription(newlist.getDescription());
             userListRepository.save(list);
 
             return new Response(HttpStatus.OK, "Success", new UserListDto(list));

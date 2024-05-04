@@ -20,7 +20,7 @@ public class TempTransactionUser {
       private Boolean confirmed;
       private LocalDateTime confirmDate;
       private String paymentId;
-      private String payerId;
+      // private String payerId;
       private String currency;
       private Integer courseId;
       private Integer userId;

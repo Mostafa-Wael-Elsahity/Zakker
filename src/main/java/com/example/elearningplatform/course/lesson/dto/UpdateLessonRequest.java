@@ -5,16 +5,14 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class CreateLessonRequest {
-
+public class UpdateLessonRequest {
     @NotEmpty(message = "Description cannot be empty")
     private String description;
-    // private Integer courseId;
-    private Integer sectionId;
+
+    private Integer lessonId;
     @NotEmpty(message = "Title cannot be empty")
     private String title;
     // private String type;
     @NotNull(message = "Free field cannot be null")
     private Boolean free;
-
 }

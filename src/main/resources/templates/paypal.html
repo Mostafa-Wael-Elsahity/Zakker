@@ -1,0 +1,10 @@
+<form th:action="@{/paypal/payment/create}" th:object="${applyCouponRequest}" method="post">
+    <!--                <div th:if= "${param.error}">! Invalid username or password</div>-->
+
+    <input type="text" id="couponCode" name="couponCode" placeholder="Enter your couponCode" th:field="*{couponCode}" required>
+
+    <input type="courseId" id="courseId" name="courseId" placeholder="Enter your courseId"  th:field="*{courseId}" required>
+
+    <button type="submit">Submit</button>
+</form>
+

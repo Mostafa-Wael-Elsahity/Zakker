@@ -7,7 +7,7 @@ import java.util.List;
 import com.example.elearningplatform.course.category.Category;
 import com.example.elearningplatform.course.course.Course;
 import com.example.elearningplatform.course.section.dto.SectionDto;
-import com.example.elearningplatform.course.tag.Tag;
+import com.example.elearningplatform.course.tag.CourseTag;
 import com.example.elearningplatform.user.user.User;
 
 import lombok.Getter;
@@ -38,7 +38,7 @@ public class CourseDto extends SearchCourseDto {
 
     public CourseDto(
             Course course, Boolean isSubscribed,
-            List<User> instructorList, List<Category> categories, List<Tag> tags) {
+            List<User> instructorList, List<Category> categories, List<CourseTag> tags) {
         super(course, instructorList, categories, tags);
         if (course == null)
             return;

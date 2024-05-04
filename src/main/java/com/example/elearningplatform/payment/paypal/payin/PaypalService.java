@@ -1,4 +1,5 @@
 package com.example.elearningplatform.payment.paypal.payin;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -17,6 +18,7 @@ import com.example.elearningplatform.response.Response;
 import com.example.elearningplatform.security.TokenUtil;
 import com.paypal.api.payments.Amount;
 import com.paypal.api.payments.Payer;
+import com.paypal.api.payments.PayerInfo;
 import com.paypal.api.payments.Payment;
 import com.paypal.api.payments.PaymentExecution;
 import com.paypal.api.payments.RedirectUrls;
@@ -44,14 +46,17 @@ public class PaypalService {
       @Autowired
       private TokenUtil tokenUtil;
 
+
+      /****************************************************************************************/
       public Payment createPayment(ApplyCouponRequest applyCouponRequest) throws PayPalRESTException {
+         
 
             String successUrl = "http://" + request.getServerName() + ":" + request.getServerPort()
                         + request.getContextPath()
-                        + "/payment/success";
+                        + "/paypal/payment/success";
             String cancelUrl = "http://" + request.getServerName() + ":" + request.getServerPort()
                         + request.getContextPath()
-                        + "/payment/cancel";
+                        + "/paypal/payment/cancel";
 
             Response response = couponService.applyCoupon(applyCouponRequest);
             if (response.getStatus() != HttpStatus.OK) {
@@ -72,6 +77,7 @@ public class PaypalService {
 
             Payer payer = new Payer();
             payer.setPaymentMethod("paypal");
+        
 
             RedirectUrls redirectUrls = new RedirectUrls();
             redirectUrls.setCancelUrl(cancelUrl);
@@ -83,23 +89,29 @@ public class PaypalService {
             payment.setTransactions(transactions);
             payment.setRedirectUrls(redirectUrls);
 
+            Coupon coupon = couponRepository
+                        .findByCodeAndCourseId(applyCouponRequest.getCouponCode(), applyCouponRequest.getCourseId())
+                        .orElseThrow(() -> new IllegalArgumentException("Coupon not found"));
+
+            payment = payment.create(apiContext);
+
             TempTransactionUser tempTransactionUser = new TempTransactionUser();
             tempTransactionUser.setCourseId(applyCouponRequest.getCourseId());
-            tempTransactionUser.setUserId(tokenUtil.getUserId());
-            Coupon coupon = couponRepository.findByCodeAndCourseId(applyCouponRequest.getCouponCode(),applyCouponRequest.getCourseId()).orElseThrow(() -> new IllegalArgumentException("Coupon not found"));
+            tempTransactionUser.setUserId(1703);
+            // tempTransactionUser.setUserId(tokenUtil.getUserId());
             tempTransactionUser.setCouponId(coupon.getId());
             tempTransactionUser.setPrice(((int) (price * 100)));
             tempTransactionUser.setConfirmed(false);
-            Payment createdPayment = payment.create(apiContext);
-            String payerId = payer.getPayerInfo().getPayerId();
-            String paymentId = payment.getId();
-            tempTransactionUser.setPayerId(payerId);
-            tempTransactionUser.setPaymentId(paymentId);
+      
+            tempTransactionUser.setPaymentId(payment.getId());
+            tempTransactionUser.setCurrency("USD");
             tempTransactionUser.setPaymentMethod("paypal");
             tempTransactionUserRepository.save(tempTransactionUser);
-            return createdPayment;
+            System.out.println("Created Payment ID: " + payment.toString());
+            return payment;
       }
-
+/********************************************** PayPal Payment Execution ************************************************/
+ 
       public Payment executePayment(
                   String paymentId,
                   String payerId) throws PayPalRESTException {
@@ -109,6 +121,8 @@ public class PaypalService {
 
             PaymentExecution paymentExecution = new PaymentExecution();
             paymentExecution.setPayerId(payerId);
+            System.out.println(payment.toString());
+            System.out.println(paymentExecution.toString());
 
             return payment.execute(apiContext, paymentExecution);
       }

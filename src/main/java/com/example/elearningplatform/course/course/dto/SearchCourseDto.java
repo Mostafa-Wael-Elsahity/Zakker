@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.example.elearningplatform.course.category.Category;
 import com.example.elearningplatform.course.course.Course;
-import com.example.elearningplatform.course.tag.Tag;
+import com.example.elearningplatform.course.tag.CourseTag;
 import com.example.elearningplatform.user.user.User;
 import com.example.elearningplatform.user.user.dto.InstructorDto;
 
@@ -27,7 +27,7 @@ public class SearchCourseDto {
     private Double averageRating;
     private List<Category> categories = new ArrayList<>();
     private List<InstructorDto> instructors = new ArrayList<>();
-    private List<Tag> tags = new ArrayList<>();
+    private List<CourseTag> tags = new ArrayList<>();
 
     public void addInstructor(InstructorDto instructor) {
         if (instructor == null)
@@ -41,7 +41,7 @@ public class SearchCourseDto {
         this.categories.add(category);
     }
 
-    public SearchCourseDto(Course course, List<User> instructors, List<Category> categories, List<Tag> tags) {
+    public SearchCourseDto(Course course, List<User> instructors, List<Category> categories, List<CourseTag> tags) {
         if (course == null)
             return;
         this.numberOfEnrollments = course.getNumberOfEnrollments();

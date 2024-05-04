@@ -3,6 +3,8 @@ package com.example.elearningplatform.course.section;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +16,7 @@ import com.example.elearningplatform.course.section.dto.UpdateSectionRequest;
 import com.example.elearningplatform.response.Response;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 
 @RestController
 @SecurityRequirement(name = "bearerAuth")
@@ -22,8 +25,12 @@ public class SectionController {
     private SectionService sectionService;
 
     @PostMapping("/create-section")
-    public Response createSection(@RequestBody CreateSectionRequest createSectionRequest)
+    public Response createSection(@RequestBody @Valid CreateSectionRequest createSectionRequest,
+            BindingResult bindingResult)
             throws IOException, InterruptedException {
+        if (bindingResult.hasErrors()) {
+            return new Response(HttpStatus.BAD_REQUEST, "Validation Error", bindingResult.getAllErrors());
+        }
 
         return sectionService.createSection(createSectionRequest);
     }
@@ -32,8 +39,12 @@ public class SectionController {
      * ******************************************************************************
      */
     @PostMapping("/update-section")
-    public Response updateSection(@RequestBody UpdateSectionRequest updateSectionRequest)
+    public Response updateSection(@RequestBody @Valid UpdateSectionRequest updateSectionRequest,
+            BindingResult bindingResult)
             throws IOException, InterruptedException {
+        if (bindingResult.hasErrors()) {
+            return new Response(HttpStatus.BAD_REQUEST, "Validation Error", bindingResult.getAllErrors());
+        }
 
         return sectionService.updateSection(updateSectionRequest);
     }

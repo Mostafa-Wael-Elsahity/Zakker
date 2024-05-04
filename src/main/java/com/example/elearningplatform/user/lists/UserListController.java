@@ -71,7 +71,10 @@ public class UserListController {
     }
     /*****************************************************************************************************/
     @PutMapping("/update-list")
-    public Response updateList(@RequestBody UpdateUserList list) {
+    public Response updateList(@RequestBody @Valid UpdateUserList list, BindingResult result) {
+        if (result.hasErrors()) {
+            return Validator.validate(result);
+        }
 
         return userListService.updateList(list);
     }

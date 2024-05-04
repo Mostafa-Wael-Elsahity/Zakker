@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.example.elearningplatform.course.course.Course;
+import com.example.elearningplatform.user.address.Address;
 
 public interface UserRepository extends JpaRepository<User, Integer> {
     Optional<User> findByEmail(String email);
@@ -48,6 +49,12 @@ public interface UserRepository extends JpaRepository<User, Integer> {
                     WHERE u.id = :id
                     """)
     List<Course> findOwnerCourses(Integer id);
+
+    /************************************************************************************************/
+    @Query("""
+                    SELECT u.address FROM User u WHERE u.id = :userId
+                    """)
+    Optional<Address> findAdress(@Param("userId") Integer userId);
 
     /************************************************************************************************/
 

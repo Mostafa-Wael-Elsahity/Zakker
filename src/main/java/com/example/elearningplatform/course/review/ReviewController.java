@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.elearningplatform.course.review.dto.CreateReviewRequest;
@@ -27,8 +28,8 @@ public class ReviewController {
     private ReviewService reviewService;
 
     /************************************************************************************************ */
-    @GetMapping("/get-reviews/{courseId}")
-    public ReviewResponse getReview(@PathVariable("courseId") Integer courseId) {
+    @GetMapping("/get-reviews")
+    public ReviewResponse getReview(@RequestParam("courseId") Integer courseId) {
         return reviewService.getReviewsByCourseId(courseId);
 
     }
@@ -44,8 +45,8 @@ public class ReviewController {
     }
 
     /************************************************************************************************ */
-    @GetMapping("/delete-review/{reviewId}")
-    public Response deleteReview(@PathVariable("reviewId") Integer reviewId) {
+    @GetMapping("/delete-review")
+    public Response deleteReview(@RequestParam("reviewId") Integer reviewId) {
 
         return reviewService.deleteReview(reviewId);
     }
