@@ -22,7 +22,7 @@ public class CouponController {
 
     private final CouponService couponService;
 
-    /********************************************************************************* */
+    /****************************** *************************************************** */
     @GetMapping("/create-coupon")
     public Response createCoupon(CreateRequest request) {
         return couponService.createCoupon(request);

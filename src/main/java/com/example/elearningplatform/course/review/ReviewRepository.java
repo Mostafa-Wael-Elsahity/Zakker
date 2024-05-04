@@ -27,12 +27,11 @@ public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
     /**********************************************************************************/
     @Modifying
-    @Transactional
     @Query("""
                     DeLETE FROM Review r
                     WHERE r.course.id = :courseId And r.user.id = :userId
                     """)
-    void DeleteReviewsByCourseIdAndUserId(@Param("courseId") Integer courseId,
+    void deleteReviewsByCourseIdAndUserId(@Param("courseId") Integer courseId,
                     @Param("userId") Integer userId);
     /**********************************************************************************/
     @Query("""

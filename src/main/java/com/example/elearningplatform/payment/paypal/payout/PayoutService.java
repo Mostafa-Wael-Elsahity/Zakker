@@ -3,6 +3,7 @@ package com.example.elearningplatform.payment.paypal.payout;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +28,7 @@ import com.example.elearningplatform.user.user.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.Data;
 
 @Service
@@ -84,19 +86,15 @@ public class PayoutService {
              * String recipientType, String value, String currency, String note,
              * String senderItemId, String receiver, String recipientWallet
              */
-            String code = tempTransactionUser.getPayerId() + "$" + tempTransactionUser.getPaymentId();
-            String senderBatchId = code;
+            String code = tempTransactionUser.getUserId() + tempTransactionUser.getPaymentId();
+            String senderBatchId = code + generate();
             String emailSubject = String.format(
-                        """
-                                    Payment for course %s
-                                    """, tempTransactionUser.getCourseId());
+                        "Payment for course %s", tempTransactionUser.getCourseId());
             String emailMessage = String.format(
-                        """
-                                    The user %s have register for you course and now you can receive the payment for the course. Please check your PayPal account.
-                                    """,
+                        "The user %s have register for you course and now you can receive the payment for the course. Please check your PayPal account.",
                         tempTransactionUser.getUserId());
             String price = calculatePrice(tempTransactionUser.getPrice());
-            String senderItemId = code;
+            String senderItemId = code + generate();
             Course course = courseRepository.findById(tempTransactionUser.getCourseId()).orElse(null);
             User ownerCourse = course.getOwner();
             String receiver = ownerCourse.getPaypalEmail();
@@ -121,6 +119,16 @@ public class PayoutService {
             ResponseEntity<String> response = restTemplate.postForEntity(paypalPayoutUrl, entity, String.class);
 
             return response.getBody();
+      }
+
+      public String generate() {
+            Random random = new Random();
+            StringBuilder builder = new StringBuilder(10);
+            for (int i = 0; i < 10; i++) {
+                  int digit = random.nextInt(10); // generates a random digit from 0 to 9
+                  builder.append(digit);
+            }
+            return builder.toString();
       }
 
       private String calculatePrice(Integer price) {

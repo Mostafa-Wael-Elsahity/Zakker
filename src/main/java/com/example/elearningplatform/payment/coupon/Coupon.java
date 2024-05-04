@@ -40,4 +40,6 @@ public class Coupon {
     @JoinColumn(name = "course_id")
     private Course course;
 
+
+
 }

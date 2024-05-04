@@ -6,10 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TempTransactionUserRepository extends JpaRepository<TempTransactionUser, Integer> {
 
-
-      Optional<TempTransactionUser> findByPaymentIdAndPayerId(String paymentId, String payerId);
+      Optional<TempTransactionUser> findByPaymentIdAndUserId(String paymentId, Integer userId);
 
       Optional<TempTransactionUser> findByUserIdAndCourseId(Integer userId, Integer courseId);
 
-      void deleteByPaymentIdAndPayerId(String paymentId, String payerId);
+      void deleteByPaymentIdAndUserId(String paymentId, Integer userId);
 }

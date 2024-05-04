@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.example.elearningplatform.course.course.Course;
@@ -67,7 +68,7 @@ public class CouponService {
             Course course = courseRepository.findById(applyCouponRequest.getCourseId())
                     .orElseThrow(() -> new Exception("course not found"));
             if (applyCouponRequest.getCouponCode() == null) {
-                return new Response(HttpStatus.OK, "no coupon applied", course.getPrice());
+                return new Response(HttpStatus.BAD_REQUEST, "no coupon applied", course.getPrice());
             }
             Integer courseId = applyCouponRequest.getCourseId();
             String coupon = applyCouponRequest.getCouponCode();
@@ -89,9 +90,15 @@ public class CouponService {
         Integer numberOfCoupons = coupon.getNumberOfCoupons() - 1;
         if (numberOfCoupons < 1) {
             couponRepository.delete(coupon);
+        } else {
+            coupon.setNumberOfCoupons(numberOfCoupons);
+            couponRepository.save(coupon);
         }
-        coupon.setNumberOfCoupons(numberOfCoupons);
-        couponRepository.save(coupon);
+    }
+
+    @Scheduled(cron = "${schedulingProcessTempTransaction}")
+    private void deleteExpiresCoupons() {
+        couponRepository.deleteByExpirationDateBefore(LocalDateTime.now());
     }
 
     /******************************************************************************************** */

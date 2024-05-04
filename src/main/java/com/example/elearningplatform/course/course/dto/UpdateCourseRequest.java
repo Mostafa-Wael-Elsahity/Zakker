@@ -1,5 +1,7 @@
 package com.example.elearningplatform.course.course.dto;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
@@ -19,6 +21,7 @@ public class UpdateCourseRequest {
     private String language;
     @NotBlank(message = "Level cannot be empty")
     private String level;
-    private Integer categoryId;
-    private Integer tagId;
+    private List<Integer> categories;
+    private List<String> tags;
+
 }

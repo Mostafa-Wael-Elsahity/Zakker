@@ -27,6 +27,8 @@ import com.example.elearningplatform.course.course.dto.CreateCourseRequest;
 import com.example.elearningplatform.course.course.dto.UpdateCourseRequest;
 import com.example.elearningplatform.exception.CustomException;
 import com.example.elearningplatform.response.Response;
+import com.example.elearningplatform.security.TokenUtil;
+import com.example.elearningplatform.user.user.User;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
@@ -45,6 +47,15 @@ public class CourseController {
     private CloudinaryService cloudinaryService;
     @Autowired
     private CourseRepository courseRepository;
+    @Autowired
+    private TokenUtil tokenUtil;
+
+    /*******************************************************************************************/
+    @GetMapping("/get-instructor-courses")
+    public Response getInstructorCourses() throws SQLException {
+
+        return new Response(HttpStatus.OK, "Success", courseService.getInstructedCourses());
+    }
 
     /*******************************************************************************************/
     @GetMapping("/public/search/{searchKey}/{pageNumber}")
@@ -72,17 +83,17 @@ public class CourseController {
 
     /*******************************************************************************************/
 
-    @GetMapping("/public/get-course")
+    @GetMapping("/public/get-course/{id}")
 
-    public Response getCourse(@RequestParam("id") Integer id)
+    public Response getCourse(@PathVariable("id") Integer id)
             throws SQLException {
         return new Response(HttpStatus.OK, "Success", courseService.getCourse(id));
     }
 
     /***************************************************************************************** */
-    @GetMapping("/public/get-courses")
-    public Response getAllCourses() {
-        return new Response(HttpStatus.OK, "Success", courseService.getAllCourses());
+    @GetMapping("/public/get-courses/{pageNumber}")
+    public Response getAllCourses(@PathVariable("pageNumber") Integer pageNumber) {
+        return new Response(HttpStatus.OK, "Success", courseService.getAllCourses(pageNumber));
     }
 
     /**
@@ -93,6 +104,11 @@ public class CourseController {
     @PostMapping("/create-course")
     public Response createCourse(@RequestBody @Valid CreateCourseRequest course, BindingResult bindingResult)
             throws IOException, InterruptedException {
+        User user = tokenUtil.getUser();
+        if (user == null || user.getPaypalEmail() == null) {
+            return new Response(HttpStatus.BAD_REQUEST, "Please Enter your paypal email", null);
+
+        }
         if (bindingResult.hasErrors()) {
             return new Response(HttpStatus.BAD_REQUEST, "Validation Error", bindingResult.getAllErrors());
         }
@@ -182,5 +198,10 @@ public class CourseController {
         }
     }
 
+    /******************************************************************************************** */
+    @GetMapping("publish-course/{id}")
+    public Response publishCourse(@PathVariable("id") Integer id) throws SQLException {
+        return courseService.publishCourse(id);
+    }
     /******************************************************************************************** */
 }

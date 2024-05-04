@@ -6,8 +6,10 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.example.elearningplatform.course.category.Category;
+import com.example.elearningplatform.course.category.CategoryRepository;
 import com.example.elearningplatform.course.course.dto.CourseDto;
 import com.example.elearningplatform.course.course.dto.CreateCourseRequest;
 import com.example.elearningplatform.course.course.dto.SearchCourseDto;
@@ -23,6 +27,8 @@ import com.example.elearningplatform.course.course.dto.UpdateCourseRequest;
 import com.example.elearningplatform.course.lesson.dto.LessonDto;
 import com.example.elearningplatform.course.section.SectionRepository;
 import com.example.elearningplatform.course.section.dto.SectionDto;
+import com.example.elearningplatform.course.tag.CourseTag;
+import com.example.elearningplatform.course.tag.CourseTagRepository;
 import com.example.elearningplatform.exception.CustomException;
 import com.example.elearningplatform.response.Response;
 import com.example.elearningplatform.security.TokenUtil;
@@ -40,9 +46,13 @@ import lombok.RequiredArgsConstructor;
 public class CourseService {
         @Autowired 
         private CourseRepository courseRepository;
+        @Autowired
+        private CategoryRepository categoryRepository;
 
         @Autowired
         private TokenUtil tokenUtil;
+        @Autowired
+        private CourseTagRepository courseTagRepository;
         @Autowired
         private SectionRepository sectionRepository;
         @Autowired
@@ -68,16 +78,17 @@ public class CourseService {
         }
 
         /***************************************************************************************** */
-        public List<SearchCourseDto> getAllCourses() {
+        public List<SearchCourseDto> getAllCourses(Integer pageNumber) {
+                List<Course> courses = courseRepository.findAllPublished(PageRequest.of(pageNumber, 8)).getContent();
 
-                List<SearchCourseDto> courses = courseRepository.findAll().stream()
+                List<SearchCourseDto> coursesdto = courses.stream()
                                 .map(course -> new SearchCourseDto(
                                                 course, courseRepository.findCourseInstructors(course.getId()),
                                                 courseRepository.findCourseCategory(course.getId()),
                                                 courseRepository.findCourseTags(course.getId())))
                                 .toList();
                 ;
-                return courses;
+                return coursesdto;
         }
 
         /****************************************************************************************/
@@ -145,7 +156,7 @@ public class CourseService {
         /**************************************************************************************** */
         public Response getCourse(Integer courseId) {
                 try {
-                        Course course = courseRepository.findById(courseId)
+                        Course course = courseRepository.findByCourseId(courseId)
                                         .orElseThrow(() -> new CustomException("Course not found", HttpStatus.NOT_FOUND));
                         CourseDto courseDto = new CourseDto(
                                         course, ckeckCourseSubscribe(courseId),
@@ -232,10 +243,29 @@ public class CourseService {
                         }
                         Course course = new Course(createCourseRequest);
                         course.setOwner(user);
-                        course.setPrice(createCourseRequest.getPrice());
                         course.setGuid(Integer.parseInt(responseMap.get("Id").toString()));
                         course.setApiKey(responseMap.get("ApiKey").toString());
+                        Set<Category> categories = new HashSet<>();
+                        createCourseRequest.getCategories().forEach(categoryId -> {
 
+                                Category category = categoryRepository.findById(categoryId)
+                                                .orElse(null);
+                                if (category != null)
+                                        categories.add(category);
+
+                        });
+                        course.setCategories(categories);
+                        Set<String> tags = new HashSet<>(createCourseRequest.getTags());
+                        Set<CourseTag> courseTags = new HashSet<>();
+
+                        tags.forEach(tag -> {
+                                CourseTag tage = new CourseTag();
+                                tage.setTag(tag);
+                                tage.setCourse(course);
+                                courseTags.add(tage);
+
+                        });
+                        courseTagRepository.saveAll(courseTags);
                         courseRepository.save(course);
 
                         return new Response(HttpStatus.OK, "Course created successfully",
@@ -253,6 +283,12 @@ public class CourseService {
 
         public Response updateCourse(UpdateCourseRequest updateCourseRequest) {
                 try {
+                        User owner = courseRepository.findOwner(updateCourseRequest.getCourseId()).orElseThrow(
+                                        () -> new CustomException("Course not found", HttpStatus.NOT_FOUND));
+                        if (!owner.getId().equals(tokenUtil.getUserId())) {
+                                throw new CustomException("You are not the owner of this course", HttpStatus.NOT_FOUND);
+
+                        }
                         Course course = courseRepository.findById(updateCourseRequest.getCourseId())
                                         .orElseThrow(() -> new CustomException("Course not found",
                                                         HttpStatus.NOT_FOUND));
@@ -262,6 +298,29 @@ public class CourseService {
                         course.setPrerequisite(updateCourseRequest.getPrerequisite());
                         course.setLanguage(updateCourseRequest.getLanguage());
                         course.setLevel(updateCourseRequest.getLevel());
+
+                        Set<Category> categories = new HashSet<>();
+                        updateCourseRequest.getCategories().forEach(categoryId -> {
+
+                                Category category = categoryRepository.findById(categoryId)
+                                                .orElse(null);
+                                if (category != null)
+                                        categories.add(category);
+
+                        });
+                        course.setCategories(categories);
+                        Set<String> tags = new HashSet<>(updateCourseRequest.getTags());
+                        Set<CourseTag> courseTags = new HashSet<>();
+
+                        tags.forEach(tag -> {
+                                CourseTag tage = new CourseTag();
+                                tage.setTag(tag);
+                                tage.setCourse(course);
+                                courseTags.add(tage);
+
+                        });
+                        courseTagRepository.saveAll(courseTags);
+                        courseRepository.save(course);
 
                         courseRepository.save(course);
                         return new Response(HttpStatus.OK, "Course updated successfully",
@@ -283,6 +342,12 @@ public class CourseService {
                         Course course = courseRepository.findById(courseId)
                                         .orElseThrow(() -> new CustomException("Course not found",
                                                         HttpStatus.NOT_FOUND));
+                        User owner = courseRepository.findOwner(courseId).orElseThrow(
+                                        () -> new CustomException("Course not found", HttpStatus.NOT_FOUND));
+                        if (!owner.getId().equals(tokenUtil.getUserId())) {
+                                throw new CustomException("You are not the owner of this course", HttpStatus.NOT_FOUND);
+
+                        }
                         System.out.println(course.getGuid());
                         HttpRequest request = HttpRequest.newBuilder()
                                         .uri(URI.create(
@@ -296,12 +361,11 @@ public class CourseService {
                         HttpResponse<String> response = HttpClient.newHttpClient().send(request,
                                         HttpResponse.BodyHandlers.ofString());
                         System.out.println(response);
-                        if (response.statusCode() >=200 && response.statusCode() < 300)
+                        if (response.statusCode() >= 200 && response.statusCode() < 300)
                                 courseRepository.delete(course);
 
                         else
                                 throw new CustomException(response.body(), HttpStatus.INTERNAL_SERVER_ERROR);
-
 
                         return new Response(HttpStatus.OK, "Course deleted successfully", null);
                 } catch (CustomException e) {
@@ -310,6 +374,41 @@ public class CourseService {
                         return new Response(HttpStatus.NOT_FOUND, e.getMessage(), null);
                 }
         }
-        /***************************************************************************************************************/
 
+        public Response publishCourse(Integer id) {
+                try {
+                        Course course = courseRepository.findById(id)
+                                        .orElseThrow(() -> new CustomException("Course not found",
+                                                        HttpStatus.NOT_FOUND));
+                        User owner = courseRepository.findOwner(id).orElseThrow(
+                                        () -> new CustomException("please set the owner", HttpStatus.NOT_FOUND));
+                        if (owner.getPaypalEmail() == null) {
+                                throw new CustomException("please set the owner paypal email", HttpStatus.NOT_FOUND);
+                        }
+
+                        course.setPublished(true);
+                        courseRepository.save(course);
+                        return new Response(HttpStatus.OK, "Course published successfully", null);
+                } catch (CustomException e) {
+                        return new Response(e.getStatus(), e.getMessage(), null);
+                } catch (Exception e) {
+                        return new Response(HttpStatus.NOT_FOUND, e.getMessage(), null);
+                }
+
+        }
+
+        public List<SearchCourseDto> getInstructedCourses() {
+
+                List<Course> courses = courseRepository.findByOwnerId(tokenUtil.getUserId());
+                List<SearchCourseDto> coursesdto = courses.stream()
+                                .map(course -> new SearchCourseDto(
+                                                course, courseRepository.findCourseInstructors(course.getId()),
+                                                courseRepository.findCourseCategory(course.getId()),
+                                                courseRepository.findCourseTags(course.getId())))
+                                .toList();
+
+                return coursesdto;
+
+        }
 }
+/***************************************************************************************************************/

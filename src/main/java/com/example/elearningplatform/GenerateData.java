@@ -20,8 +20,7 @@ import com.example.elearningplatform.course.review.Review;
 import com.example.elearningplatform.course.review.ReviewRepository;
 import com.example.elearningplatform.course.section.Section;
 import com.example.elearningplatform.course.section.SectionRepository;
-import com.example.elearningplatform.course.tag.Tag;
-import com.example.elearningplatform.course.tag.TagRepository;
+import com.example.elearningplatform.course.tag.CourseTag;
 import com.example.elearningplatform.user.lists.UserList;
 import com.example.elearningplatform.user.lists.UserListRepository;
 import com.example.elearningplatform.user.role.Role;
@@ -48,7 +47,7 @@ public class GenerateData {
     private final CommentRepository commentRepository;
     private final LessonRepository lessonRepository;
     private final CategoryRepository categoryRepository;
-    private final TagRepository tagRepository;
+
     private final PasswordEncoder passwordEncoder;
     private final SectionRepository sectionRepository;
     private final UserListRepository userListRepository;
@@ -68,15 +67,7 @@ public class GenerateData {
         category2.setName("Marketing");
         category2.setDescription("Marketing");
         categoryRepository.save(category2);
-        Tag tag = new Tag();
-        tag.setName("Java");
-        tagRepository.save(tag);
-        Tag tag1 = new Tag();
-        tag1.setName("Python");
-        tagRepository.save(tag1);
-        Tag tag2 = new Tag();
-        tag2.setName("C++");
-        tagRepository.save(tag2);
+
         for (int i = 1; i <= 5; i++) {
             Review review = new Review();
             review.setContent("Review " + i);
@@ -146,84 +137,7 @@ public class GenerateData {
 
     }
 
-    public void setRelationships() {
-        List<User> users = userRepository.findAll();
-        List<Course> courses = courseRepository.findAll();
-        List<Section> sections = sectionRepository.findAll();
-        List<Lesson> lessons = lessonRepository.findAll();
-        // List<Review> reviews = reviewRepository.findAll();
-        List<Comment> comments = commentRepository.findAll();
-        List<Reply> replies = replyRepository.findAll();
-        List<Tag> tags = tagRepository.findAll();
-        List<Category> categories = categoryRepository.findAll();
-        List<UserList> userLists = userListRepository.findAll();
-        // List<Cart> carts = userRepository.findAll();
-        users.forEach(
-                user -> {
-                    user.setEnrolledCourses(courses);
-                });
-        courses.forEach(
-                course -> {
-                    course.setCategories(categories);
-                    course.setTags(tags);
-                    // course.setInstructors(users);
-                    courseRepository.save(course);
-                });
-        sections.forEach(
-                section -> {
-                    section.setCourse(courses.get(0));
-                    sectionRepository.save(section);
-                }
-
-        );
-        // carts.forEach(
-        // cart -> {
-        // cart.setUser(users.get(0));
-        // userRepository.save(cart);
-        // });
-        lessons.forEach(
-                lesson -> {
-                    lesson.setSection(sections.get(0));
-                    lessonRepository.save(lesson);
-                });
-        // reviews.forEach(
-        //         review -> {
-        //             review.setCourse(courses.get(0));
-        //             review.setUser(users.get(0));
-        //             reviewRepository.save(review);
-        //         });
-        comments.forEach(
-                comment -> {
-                    comment.setLesson(lessons.get(0));
-                    comment.setUser(users.get(0));
-                    // users.forEach(
-                    // user -> {
-                    // comment.addLike(user);
-                    // });
-
-                    commentRepository.save(comment);
-                });
-        replies.forEach(
-                reply -> {
-                    reply.setComment(comments.get(0));
-                    reply.setUser(users.get(0));
-                    users.forEach(
-                            user -> {
-
-                            });
-                    replyRepository.save(reply);
-                });
-        userLists.forEach(
-                userList -> {
-                    userList.setUser(users.get(0));
-                    courses.forEach(
-                            course -> {
-
-                            });
-                    userListRepository.save(userList);
-                });
-    }
-
+    
     public void truncateDtabase() {
         dropTable("tag");
         dropTable("user_roles");

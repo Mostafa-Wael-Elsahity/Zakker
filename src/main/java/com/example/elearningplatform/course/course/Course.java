@@ -3,13 +3,15 @@ package com.example.elearningplatform.course.course;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.example.elearningplatform.course.category.Category;
 import com.example.elearningplatform.course.course.dto.CreateCourseRequest;
 import com.example.elearningplatform.course.review.Review;
 import com.example.elearningplatform.course.section.Section;
-import com.example.elearningplatform.course.tag.Tag;
+import com.example.elearningplatform.course.tag.CourseTag;
 import com.example.elearningplatform.user.user.User;
 
 import jakarta.persistence.CascadeType;
@@ -64,7 +66,6 @@ public class Course {
 
         private String imageUrl;
         private String imageId;
-    
 
         private boolean isPublished;
 
@@ -85,6 +86,7 @@ public class Course {
           this.description = createCourseRequest.getDescription();
           this.language = createCourseRequest.getLanguage();
           this.level = createCourseRequest.getLevel();
+          this.price = createCourseRequest.getPrice();
 
           this.totalRatings = 0.0;
           this.numberOfRatings = 0;
@@ -115,10 +117,9 @@ public class Course {
         @ToString.Exclude
         private List<Review> reviews = new ArrayList<>();
 
-        @ManyToMany(fetch = FetchType.LAZY)
+        @OneToMany(fetch = FetchType.LAZY, mappedBy = "course", cascade = CascadeType.REMOVE)
         @ToString.Exclude
-        @JoinTable(name = "course_tag", joinColumns = @JoinColumn(name = "course_id", unique = false), inverseJoinColumns = @JoinColumn(name = "tag_id", unique = false))
-        private List<Tag> tags = new ArrayList<>();
+        private Set<CourseTag> tags = new HashSet<>();
 
         @ManyToMany(fetch = FetchType.LAZY)
         @JoinTable(name = "instructed_courses", joinColumns = @JoinColumn(name = "course_id", unique = false), inverseJoinColumns = @JoinColumn(name = "user_id", unique = false))
@@ -134,7 +135,7 @@ public class Course {
         @ManyToMany(fetch = FetchType.LAZY)
         @ToString.Exclude
         @JoinTable(joinColumns = @JoinColumn(name = "course_id", unique = false), inverseJoinColumns = @JoinColumn(name = "category_id", unique = false))
-        private List<Category> categories = new ArrayList<>();
+        private Set<Category> categories = new HashSet<>();
 
       
 

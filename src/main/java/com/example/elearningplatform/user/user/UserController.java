@@ -118,6 +118,7 @@ public class UserController {
     }
 
     /************************************************************************************************************* */
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/upload-image")
     @ResponseBody
     public ResponseEntity<String> upload(@RequestParam MultipartFile image) throws IOException {
@@ -146,7 +147,7 @@ public class UserController {
     }
 
     /******************************************************************************************** */
-
+    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/delete-image")
     public ResponseEntity<String> delete() {
         try {
