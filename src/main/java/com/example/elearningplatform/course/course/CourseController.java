@@ -23,12 +23,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.elearningplatform.cloudinary.CloudinaryService;
+import com.example.elearningplatform.course.course.dto.AddInstructorRequest;
 import com.example.elearningplatform.course.course.dto.CreateCourseRequest;
 import com.example.elearningplatform.course.course.dto.UpdateCourseRequest;
 import com.example.elearningplatform.exception.CustomException;
+import com.example.elearningplatform.response.CoursesResponse;
 import com.example.elearningplatform.response.Response;
-import com.example.elearningplatform.security.TokenUtil;
-import com.example.elearningplatform.user.user.User;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
@@ -47,8 +47,7 @@ public class CourseController {
     private CloudinaryService cloudinaryService;
     @Autowired
     private CourseRepository courseRepository;
-    @Autowired
-    private TokenUtil tokenUtil;
+
 
     /*******************************************************************************************/
     @GetMapping("/get-instructor-courses")
@@ -59,32 +58,32 @@ public class CourseController {
 
     /*******************************************************************************************/
     @GetMapping("/public/search/{searchKey}/{pageNumber}")
-    public Response searchCourse(@PathVariable("searchKey") String searchKey,
+    public CoursesResponse searchCourse(@PathVariable("searchKey") String searchKey,
             @PathVariable("pageNumber") Integer pageNumber) throws SQLException {
 
-        return new Response(HttpStatus.OK, "Success", courseService.findBysearchkey(searchKey, pageNumber));
+        return courseService.findBysearchkey(searchKey, pageNumber);
     }
 
 
     /*******************************************************************************************/
-    @GetMapping("/public/get-by-category/{categoryId}/{pageNumber}")
-    public Response searchCourseWithCategory(@PathVariable("categoryId") Integer categoryId,
+    @GetMapping("/public/get-by-category/{categoryName}/{pageNumber}")
+    public CoursesResponse searchCourseWithCategory(@PathVariable("categoryName") String categoryName,
             @PathVariable("pageNumber") Integer pageNumber) throws SQLException {
-        return courseService.getCoursesByCategoryId(categoryId, pageNumber);
+        return courseService.getCoursesByCategoryName(categoryName, pageNumber);
     }
 
     /*******************************************************************************************/
-    @GetMapping("/public/get-by-tag/{tagId}/{pageNumber}")
-    public Response searchCourseWithTag(@PathVariable("tagId") Integer tagId,
+    @GetMapping("/public/get-by-tag/{tagName}/{pageNumber}")
+    public CoursesResponse searchCourseWithTag(@PathVariable("tagName") String tagName,
             @PathVariable("pageNumber") Integer pageNumber)
             throws SQLException {
-        return courseService.getCoursesByTagId(tagId, pageNumber);
+        return courseService.getCoursesByTagName(tagName, pageNumber);
     }
 
     /*******************************************************************************************/
 
     @GetMapping("/public/get-course/{id}")
-
+    @SecurityRequirement(name = "bearerAuth")
     public Response getCourse(@PathVariable("id") Integer id)
             throws SQLException {
         return new Response(HttpStatus.OK, "Success", courseService.getCourse(id));
@@ -92,8 +91,8 @@ public class CourseController {
 
     /***************************************************************************************** */
     @GetMapping("/public/get-courses/{pageNumber}")
-    public Response getAllCourses(@PathVariable("pageNumber") Integer pageNumber) {
-        return new Response(HttpStatus.OK, "Success", courseService.getAllCourses(pageNumber));
+    public CoursesResponse getAllCourses(@PathVariable("pageNumber") Integer pageNumber) {
+        return courseService.getAllCourses(pageNumber);
     }
 
     /**
@@ -104,11 +103,7 @@ public class CourseController {
     @PostMapping("/create-course")
     public Response createCourse(@RequestBody @Valid CreateCourseRequest course, BindingResult bindingResult)
             throws IOException, InterruptedException {
-        User user = tokenUtil.getUser();
-        if (user == null || user.getPaypalEmail() == null) {
-            return new Response(HttpStatus.BAD_REQUEST, "Please Enter your paypal email", null);
 
-        }
         if (bindingResult.hasErrors()) {
             return new Response(HttpStatus.BAD_REQUEST, "Validation Error", bindingResult.getAllErrors());
         }
@@ -203,5 +198,20 @@ public class CourseController {
     public Response publishCourse(@PathVariable("id") Integer id) throws SQLException {
         return courseService.publishCourse(id);
     }
+
     /******************************************************************************************** */
+    @SecurityRequirement(name = "bearerAuth")
+    @PostMapping("/add-instructor")
+    public Response addInstructor(@RequestBody AddInstructorRequest request) {
+
+        return courseService.addInstructor(request);
+    }
+
+    /******************************************************************************************** */
+    @SecurityRequirement(name = "bearerAuth")
+    @PostMapping("/delete-instructor")
+    public Response deleteInstructor(@RequestBody AddInstructorRequest request) {
+
+        return courseService.deleteInstructor(request);
+    }
 }

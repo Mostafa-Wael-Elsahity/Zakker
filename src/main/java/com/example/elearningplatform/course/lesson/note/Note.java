@@ -9,7 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import lombok.Data;
 import lombok.ToString;
 
@@ -27,7 +26,7 @@ public class Note {
     @JoinColumn(name = "user_id")
     User user;
 
-    @OneToOne(fetch = jakarta.persistence.FetchType.LAZY)
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @ToString.Exclude
     @JoinColumn(name = "lesson_id")
     private Lesson lesson;

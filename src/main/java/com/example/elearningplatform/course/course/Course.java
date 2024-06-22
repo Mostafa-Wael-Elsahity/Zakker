@@ -58,7 +58,7 @@ public class Course {
 
         private String level;
         
-        private Boolean isPreviewd;
+        // private Boolean isPreviewd;
 
         private Double price;
 
@@ -122,7 +122,7 @@ public class Course {
         private Set<CourseTag> tags = new HashSet<>();
 
         @ManyToMany(fetch = FetchType.LAZY)
-        @JoinTable(name = "instructed_courses", joinColumns = @JoinColumn(name = "course_id", unique = false), inverseJoinColumns = @JoinColumn(name = "user_id", unique = false))
+        @JoinTable(name = "course_instructors", joinColumns = @JoinColumn(name = "course_id", unique = false), inverseJoinColumns = @JoinColumn(name = "user_id", unique = false))
         @ToString.Exclude
         private List<User> instructors = new ArrayList<>();
 

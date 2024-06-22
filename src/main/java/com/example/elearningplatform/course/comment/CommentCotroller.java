@@ -1,6 +1,5 @@
 package com.example.elearningplatform.course.comment;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +31,7 @@ public class CommentCotroller {
     public Response getComments(@PathVariable("lessonId") Integer lessonId,
             @PathVariable("pageNumber") Integer pageNumber) throws Exception {
 
-        return new Response(HttpStatus.OK, "Success", commentService.getCommentsByLessonId(lessonId, pageNumber));
+        return commentService.getCommentsByLessonId(lessonId, pageNumber);
 
     }
 

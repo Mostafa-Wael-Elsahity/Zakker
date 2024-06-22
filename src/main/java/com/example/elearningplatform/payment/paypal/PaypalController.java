@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +29,7 @@ import com.paypal.api.payments.Links;
 import com.paypal.api.payments.Payment;
 import com.paypal.base.rest.PayPalRESTException;
 
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -67,18 +67,18 @@ public class PaypalController {
 	 * CREATE PAYMENT ****************************************
 	 */
 
-	// @GetMapping("/paypal")
-	// public ModelAndView home() {
-	// 	ModelAndView modelAndView = new ModelAndView();
-	// 	modelAndView.setViewName("paypal");
-	// 	modelAndView.addObject("applyCouponRequest", new ApplyCouponRequest());
-	// 	return modelAndView;
-	// }
+	@GetMapping("/paypal")
+	public ModelAndView home() {
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.setViewName("paypal");
+		modelAndView.addObject("applyCouponRequest", new ApplyCouponRequest());
+		return modelAndView;
+	}
 
 	@PostMapping("/payment/create")
-	public RedirectView createPayment(@ModelAttribute ApplyCouponRequest applyCouponRequest) {
+	public RedirectView createPayment(@RequestBody ApplyCouponRequest applyCouponRequest) {
 		try {
-			User user = tokenUtil.getUser();
+			User user = userRepository.findById(tokenUtil.getUserId()).orElse(null);
 			if(user==null || user.getPaypalEmail()==null ) {
 				return new RedirectView("/payment/error");
 			}

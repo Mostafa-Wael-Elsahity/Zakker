@@ -48,8 +48,6 @@ public class CommentService {
         try {
             Lesson lesson = lessonRepository.findById(createComment.getLessonId())
                     .orElseThrow(() -> new CustomException("Lesson not found", HttpStatus.NOT_FOUND));
-            lesson.incrementNumberOfComments();
-            lessonRepository.save(lesson);
 
             User user = userRepository.findById(tokenUtil.getUserId())
                     .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
@@ -78,10 +76,6 @@ public class CommentService {
                 throw new CustomException("Unauthorized", HttpStatus.UNAUTHORIZED);
             }
 
-            Lesson lesson = commentRepository.findLesson(commentId)
-                    .orElseThrow(() -> new CustomException("Lesson not found", HttpStatus.NOT_FOUND));
-            lesson.decrementNumberOfComments();
-            lessonRepository.save(lesson);
             commentRepository.delete(comment);
 
             return new Response(HttpStatus.OK, "Comment deleted successfully", null);
@@ -119,7 +113,9 @@ public class CommentService {
                     .orElseThrow(() -> new CustomException("Comment not found", HttpStatus.NOT_FOUND));
             Lesson lesson = commentRepository.findLesson(commentId)
                     .orElseThrow(() -> new CustomException("Lesson not found", HttpStatus.NOT_FOUND));
-            checkCommentAuth(lesson.getId());
+            if (checkCommentAuth(lesson.getId()).equals(false)) {
+                throw new CustomException("Unauthorized", HttpStatus.UNAUTHORIZED);
+            }
             commentRepository.likeComment(tokenUtil.getUserId(), commentId);
 
             comment.incrementNumberOfLikes();
@@ -137,10 +133,11 @@ public class CommentService {
      * @throws Exception ************************************************************************************
      */
 
-    public List<CommentDto> getCommentsByLessonId(Integer lessonId, Integer pageNumber) throws Exception {
-
-        checkCommentAuth(lessonId);
-
+    public Response getCommentsByLessonId(Integer lessonId, Integer pageNumber) throws Exception {
+        try {
+            if (checkCommentAuth(lessonId).equals(false)) {
+                throw new CustomException("Unauthorized", HttpStatus.UNAUTHORIZED);
+            }
             List<Comment> commentes = commentRepository.findByLessonId(lessonId, PageRequest.of(pageNumber, 5));
             List<Comment> likedComments = commentRepository.findLikedCommentsByUserIdAndLesson(tokenUtil.getUserId(),
                     lessonId);
@@ -149,10 +146,14 @@ public class CommentService {
                     comment,
                     likedComments.contains(comment),
                     comment.getUser().getId().equals(tokenUtil.getUserId()))).toList();
-            return commentesDto;
-
+            return new Response(HttpStatus.OK, "Comments fetched successfully", commentesDto);
+        } catch (CustomException e) {
+            return new Response(e.getStatus(), e.getMessage(), null);
+        } catch (Exception e) {
+            return new Response(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", e.getMessage());
 
     }
+}
 
     public Response removeLikeComment(Integer commentId) {
         try {
@@ -161,7 +162,10 @@ public class CommentService {
 
             Lesson lesson = commentRepository.findLesson(commentId)
                     .orElseThrow(() -> new CustomException("Lesson not found", HttpStatus.NOT_FOUND));
-            checkCommentAuth(lesson.getId());
+
+            if (checkCommentAuth(lesson.getId()).equals(false)) {
+                throw new CustomException("Unauthorized", HttpStatus.UNAUTHORIZED);
+            }
             comment.decrementNumberOfLikes();
             commentRepository.save(comment);
             commentRepository.removeLikeFromComment(tokenUtil.getUserId(), commentId);
@@ -173,12 +177,17 @@ public class CommentService {
             return new Response(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", e.getMessage());
         }
     }
-    @Transactional
-    public void checkCommentAuth(Integer lessonId) throws Exception {
+    
+    public Boolean checkCommentAuth(Integer lessonId) {
+        try {
 
         Course course = lessonRepository.findCourseByLessonId(lessonId)
                 .orElseThrow(() -> new CustomException("Course not found", HttpStatus.NOT_FOUND));
-        if (courseService.ckeckCourseSubscribe(course.getId()).equals(false))
-            throw new CustomException("Unauthorized", HttpStatus.UNAUTHORIZED);
+        return courseService.ckeckCourseSubscribe(course.getId());
+
+    } catch (Exception e) {
+        return false;
+
+    }
     }
 }

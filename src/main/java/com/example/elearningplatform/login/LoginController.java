@@ -58,9 +58,10 @@ public class LoginController implements ErrorController {
 
     /*****************************************************************************************************************/
     @GetMapping("/login/google")
-    public RedirectView loginWithGoogle() {
-        RedirectView redirectView = new RedirectView();
-        redirectView.setUrl("http://localhost:8080/oauth2/authorization/google");
+    public RedirectView loginWithGoogle(HttpServletRequest request) {
+        String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+    RedirectView redirectView = new RedirectView();
+    redirectView.setUrl(baseUrl + "/oauth2/authorization/google");
 
         return redirectView;
     }
@@ -68,10 +69,10 @@ public class LoginController implements ErrorController {
     /*****************************************************************************************************************/
     /*****************************************************************************************************************/
     @GetMapping("/login/github")
-    public RedirectView loginWithGithub() {
-
-        RedirectView redirectView = new RedirectView();
-        redirectView.setUrl("http://localhost:8080/oauth2/authorization/github");
+    public RedirectView loginWithGithub(HttpServletRequest request) {
+        String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+    RedirectView redirectView = new RedirectView();
+        redirectView.setUrl(baseUrl + "/oauth2/authorization/github");
         return redirectView;
        
     }
@@ -81,7 +82,7 @@ public class LoginController implements ErrorController {
     @GetMapping("/login/oauth2/success")
     public Response loginOuth2(@AuthenticationPrincipal OAuth2User oAuth2User)
             throws SerialException, IOException, SQLException {
-        System.out.println("mohamed");
+        // System.out.println("mohamed");
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         // System.out.println(authentication);

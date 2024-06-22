@@ -7,6 +7,7 @@ import java.util.List;
 import com.example.elearningplatform.course.category.Category;
 import com.example.elearningplatform.course.course.Course;
 import com.example.elearningplatform.course.tag.CourseTag;
+import com.example.elearningplatform.course.tag.CourseTagDto;
 import com.example.elearningplatform.user.user.User;
 import com.example.elearningplatform.user.user.dto.InstructorDto;
 
@@ -27,7 +28,7 @@ public class SearchCourseDto {
     private Double averageRating;
     private List<Category> categories = new ArrayList<>();
     private List<InstructorDto> instructors = new ArrayList<>();
-    private List<CourseTag> tags = new ArrayList<>();
+    private List<CourseTagDto> tags = new ArrayList<>();
 
     public void addInstructor(InstructorDto instructor) {
         if (instructor == null)
@@ -52,7 +53,7 @@ public class SearchCourseDto {
         this.language = course.getLanguage();
         this.level = course.getLevel();
         this.numberOfRatings = course.getNumberOfRatings();
-        this.imageUrl = "https://via.placeholder.com/300x150";
+        this.imageUrl = course.getImageUrl();
         if (course.getTotalRatings() == 0)
             this.averageRating = 0.0;
         else if (course.getNumberOfRatings() != null && course.getTotalRatings() != null
@@ -60,8 +61,8 @@ public class SearchCourseDto {
             this.averageRating = (course.getTotalRatings() /
                     course.getNumberOfRatings());
         }
-        this.tags = tags;
-        this.instructors = instructors.stream().map(InstructorDto::new).toList();
+        this.tags = tags.stream().map(tag -> new CourseTagDto(tag)).toList();
+        this.instructors = instructors.stream().map(user -> new InstructorDto(user)).toList();
         this.categories = categories;
 
     }

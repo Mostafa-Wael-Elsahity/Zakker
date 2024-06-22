@@ -20,8 +20,6 @@ import com.example.elearningplatform.course.section.dto.SectionDto;
 import com.example.elearningplatform.course.section.dto.UpdateSectionRequest;
 import com.example.elearningplatform.exception.CustomException;
 import com.example.elearningplatform.response.Response;
-import com.example.elearningplatform.security.TokenUtil;
-import com.example.elearningplatform.user.user.User;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -40,8 +38,7 @@ public class SectionService {
     private CourseRepository courseRepository;
     @Autowired
     CourseService courseService;
-    @Autowired
-    private TokenUtil tokenUtil;
+
 
     /************************************************************************************** */
     /************************************************************************************** */
@@ -139,7 +136,7 @@ public class SectionService {
             HttpResponse<String> response = HttpClient.newHttpClient().send(request,
                     HttpResponse.BodyHandlers.ofString());
 
-            System.out.println(response.body());
+            // System.out.println(response.body());
             if (response.statusCode() == 200)
                 sectionRepository.delete(section);
 

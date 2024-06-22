@@ -10,8 +10,6 @@ import org.springframework.data.repository.query.Param;
 
 import com.example.elearningplatform.course.course.Course;
 
-import jakarta.transaction.Transactional;
-
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
     public List<Review> findByCourseId(Integer courseId);
 

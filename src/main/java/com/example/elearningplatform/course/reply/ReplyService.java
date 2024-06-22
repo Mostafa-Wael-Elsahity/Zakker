@@ -46,7 +46,9 @@ public class ReplyService {
         try {
             Lesson lesson = commentRepository.findLesson(createReply.getCommentId()).orElseThrow(
                     () -> new CustomException("Comment not found", HttpStatus.NOT_FOUND));
-            commentService.checkCommentAuth(lesson.getId());
+            if (commentService.checkCommentAuth(lesson.getId()).equals(false)) {
+                throw new CustomException("Unauthorized", HttpStatus.UNAUTHORIZED);
+            }
             User user = userRepository.findById(tokenUtil.getUserId()).orElseThrow(
                     () -> new CustomException("User not found", HttpStatus.NOT_FOUND));
             Comment comment = commentRepository.findById(createReply.getCommentId()).orElseThrow(
@@ -56,8 +58,9 @@ public class ReplyService {
             Reply reply = new Reply(createReply, comment, user);
 
             replyRepository.save(reply);
-            return new Response(HttpStatus.OK, "Reply created successfully",
-                    new ReplyDto(reply, false, true));
+            // return new Response(HttpStatus.OK, "Reply created successfully",
+            // new ReplyDto(reply, false, true));
+            return new Response(HttpStatus.OK, "Reply created successfully", null);
         } catch (CustomException e) {
             return new Response(e.getStatus(), e.getMessage(), null);
         } catch (Exception e) {
@@ -72,8 +75,9 @@ public class ReplyService {
             
             Lesson lesson = commentRepository.findLesson(commentId).orElseThrow(
                     () -> new CustomException("Comment not found", HttpStatus.NOT_FOUND));
-            commentService.checkCommentAuth(lesson.getId());
-
+            if (commentService.checkCommentAuth(lesson.getId()).equals(false)) {
+                throw new CustomException("Unauthorized", HttpStatus.UNAUTHORIZED);
+            }
             List<Reply> replyes = replyRepository.findByCommentId(commentId, PageRequest.of(pageNumber, 8));
             List<Reply> likedReplyes = replyRepository.findLikedRepliesByUserIdAndCommentId(tokenUtil.getUserId(),
                     commentId);
@@ -138,7 +142,9 @@ public class ReplyService {
     /*************************************************************************************************** */
     public Response likeReply(Integer replyId) {
         try {
-            checkReplyAuth(replyId);
+            if (checkReplyAuth(replyId).equals(false)) {
+                throw new CustomException("Unauthorized", HttpStatus.UNAUTHORIZED);
+            }
 
             replyRepository.likeReply(tokenUtil.getUserId(), replyId);
             Reply reply = replyRepository.findById(replyId)
@@ -173,10 +179,14 @@ public class ReplyService {
         }
     }
 
-    public void checkReplyAuth(Integer replyId) {
+    public Boolean checkReplyAuth(Integer replyId) {
+        try {
         Course course = replyRepository.findCourseByReplyId(replyId).orElseThrow();
-        if (courseService.ckeckCourseSubscribe(course.getId()).equals(false))
-            throw new CustomException("Unauthorized", HttpStatus.UNAUTHORIZED);
+        return courseService.ckeckCourseSubscribe(course.getId());
+
+    } catch (Exception e) {
+        return false;
+    }
     }
 }
 
