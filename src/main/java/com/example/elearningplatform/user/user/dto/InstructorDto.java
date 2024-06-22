@@ -17,7 +17,7 @@ public class InstructorDto {
         this.id = user.getId();
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
-        this.imageUrl = "https://via.placeholder.com/300x150";
+        this.imageUrl = user.getImageUrl();
     }
     
 }

@@ -30,7 +30,7 @@ public class UserDto {
         this.about = user.getAbout();
         this.numberOfEnrollments = 0;
         this.numberOfCourses = 0;
-        this.imageUrl = "https://via.placeholder.com/300x150";
+        this.imageUrl = user.getImageUrl();
         // this.email = user.getEmail();
     
         

@@ -107,7 +107,7 @@ public class SignUpService {
                     "<p> Thank you <br> Users Registration Portal Service";
             emailService.sendEmail(email, content, subject, senderName);
 
-            return new Response(HttpStatus.OK, "Email is not verfied ,please check your email to verfy it!", null);
+            return new Response(HttpStatus.NOT_FOUND, "Email is not verfied ,please check your email to verfy it!", null);
         } catch (Exception e) {
 
             return new Response(HttpStatus.BAD_REQUEST, "Error while sending email", e.getMessage());

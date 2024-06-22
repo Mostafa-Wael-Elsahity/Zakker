@@ -5,16 +5,16 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.List;
-import java.util.Map;
 
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.elearningplatform.course.comment.CommentService;
-import com.example.elearningplatform.course.comment.dto.CommentDto;
 import com.example.elearningplatform.course.course.Course;
 import com.example.elearningplatform.course.course.CourseRepository;
 import com.example.elearningplatform.course.course.CourseService;
@@ -23,23 +23,22 @@ import com.example.elearningplatform.course.lesson.dto.LessonDto;
 import com.example.elearningplatform.course.lesson.dto.LessonVideoDto;
 import com.example.elearningplatform.course.lesson.dto.UpdateLessonRequest;
 import com.example.elearningplatform.course.lesson.dto.UploadVideoRequest;
-import com.example.elearningplatform.course.lesson.note.Note;
 import com.example.elearningplatform.course.lesson.note.NoteRepository;
-import com.example.elearningplatform.course.lesson.note.dto.NoteDto;
 import com.example.elearningplatform.course.section.Section;
 import com.example.elearningplatform.course.section.SectionRepository;
 import com.example.elearningplatform.exception.CustomException;
 import com.example.elearningplatform.response.Response;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.transaction.Transactional;
 import lombok.Data;
+
 
 @Service
 @Data
 @Transactional
 public class LessonService {
+        Logger log = LoggerFactory.getLogger(LessonService.class);
+
     @Autowired
     private LessonRepository lessonRepository;
     @Autowired
@@ -54,17 +53,22 @@ public class LessonService {
     private NoteRepository noteRepository;
 
     /*****************************************************************************************************/
-    public Response getLesson(Integer lessonId, Integer pageNumber) {
-        try {
-            commentService.checkCommentAuth(lessonId);
-            Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new CustomException("Lesson not found", HttpStatus.NOT_FOUND));
-            List<CommentDto> comments = commentService.getCommentsByLessonId(lessonId, pageNumber);
-            Note note = noteRepository.findByLessonId(lessonId)
-                            .orElse(null);
+    public Response getLesson(Integer lessonId) {
+            try {
+                    Lesson lesson = lessonRepository.findById(lessonId)
+                                    .orElseThrow(() -> new CustomException("Lesson not found", HttpStatus.NOT_FOUND));
+                    Course course = lessonRepository.findCourseByLessonId(lessonId)
+                                    .orElseThrow(() -> new CustomException("Course not found", HttpStatus.NOT_FOUND));
+                    if (lesson.getFree().equals(false))
+                    {
+                       
+                            if(courseService.ckeckCourseSubscribe(course.getId()).equals(false))
+                                    throw new CustomException("Unauthorized", HttpStatus.UNAUTHORIZED);
+                    }
+               
             LessonVideoDto lessonVideo = new LessonVideoDto();
             lessonVideo.setVideoUrl(lesson.getVideoUrl());
-            lessonVideo.setNotes(new NoteDto(note));
-            lessonVideo.setComments(comments);
+       
 
             return new Response(HttpStatus.OK, "Success", lessonVideo);
         } 
@@ -88,41 +92,22 @@ public class LessonService {
                     Section section = sectionRepository.findById(createLessonRequest.getSectionId())
                                     .orElseThrow(() -> new CustomException("Section not found", HttpStatus.NOT_FOUND));
 
-                    String ApiKey = course.getApiKey();
-                    HttpRequest request = HttpRequest.newBuilder()
-                                    .uri(URI.create(
-                                                    String.format(
-                                                                    "https://video.bunnycdn.com/library/%s/videos",
-                                                                    course.getGuid())))
-                                    .header("accept", "application/json")
-                                    .header("content-type", "application/json")
-                                    .header("AccessKey", ApiKey)
-                                    .method("POST",
-                                                    HttpRequest.BodyPublishers
-                                                                    .ofString("{\"title\":\""
-                                                                                    + createLessonRequest.getTitle()
-                                                                                    + "\",\"collectionId\":\""
-                                                                                    + section.getGuid() + "\"}"))
-                                    .build();
-                    HttpResponse<String> response = HttpClient.newHttpClient().send(request,
-                                    HttpResponse.BodyHandlers.ofString());
-                    System.out.println(response.body());
-
-                    ObjectMapper mapper = new ObjectMapper();
-                    Map<String, Object> responseMap = mapper.readValue(response.body(),
-                                    new TypeReference<Map<String, Object>>() {
-                                    });
-                    if (responseMap.get("error") != null) {
-                            throw new CustomException(responseMap.get("error").toString(), HttpStatus.BAD_REQUEST);
+                    HttpResponse<String> response = createLessonRequest(course.getGuid(), course.getApiKey(),
+                                    section.getGuid(), createLessonRequest.getTitle());
+                    JSONObject responseBodyJson = new JSONObject(response.body());
+                    String guid = responseBodyJson.getString("guid");
+                    if (response.statusCode() < 200 && response.statusCode() >= 300) {
+                            throw new CustomException(response.body(),
+                                            HttpStatus.BAD_REQUEST);
                     }
                     Lesson lesson = new Lesson(createLessonRequest);
-                    lesson.setGuid(responseMap.get("guid").toString());
+                    lesson.setGuid(guid);
                     lesson.setSection(section);
                     lesson.setVideoUrl(
                                     String.format(
-                                                    "https://iframe.mediadelivery.net/play/%s/%s",
+                                                    "https://iframe.mediadelivery.net/embed/%s/%s",
                                                     course.getGuid(),
-                                                    responseMap.get("guid").toString()));
+                                                    guid));
                     lessonRepository.save(lesson);
 
                     return new Response(HttpStatus.CREATED, "Video created successfully", new LessonDto(lesson));
@@ -134,29 +119,29 @@ public class LessonService {
     }
 
     /**********************************************************************************************************/
-
-    public Response uploadLessonVideo(UploadVideoRequest uploadVideoRequest)
+    public HttpResponse<String> createLessonRequest(Integer courseGuid, String ApiKey, String sectionGuid, String title)
                     throws IOException, InterruptedException {
-            try {
-                    Course course = lessonRepository.findCourseByLessonId(uploadVideoRequest.getLessonId())
-                                    .orElseThrow(() -> new CustomException("Course not found", HttpStatus.NOT_FOUND));
 
-                    Lesson lesson = lessonRepository.findById(
-                                    uploadVideoRequest.getLessonId())
-                                    .orElseThrow(() -> new CustomException("Lesson not found", HttpStatus.NOT_FOUND));
+            HttpRequest request = HttpRequest.newBuilder()
+                            .uri(URI.create(
+                                            String.format(
+                                                            "https://video.bunnycdn.com/library/%s/videos",
+                                                            courseGuid)))
+                            .header("accept", "application/json")
+                            .header("content-type", "application/json")
+                            .header("AccessKey", ApiKey)
+                            .method("POST",
+                                            HttpRequest.BodyPublishers
+                                                            .ofString("{\"title\":\""
+                                                                            + title
+                                                                            + "\",\"collectionId\":\""
+                                                                            + sectionGuid + "\"}"))
+                            .build();
+            HttpResponse<String> response = HttpClient.newHttpClient().send(request,
+                            HttpResponse.BodyHandlers.ofString());
 
-                    HttpResponse<String> response = uploadVideo(course.getGuid(), lesson.getGuid(),
-                                    uploadVideoRequest.getVideo(), "PUT", course.getApiKey());
 
-                    if (response.statusCode() < 200 || response.statusCode() >= 300)
-                            throw new CustomException(response.body(), HttpStatus.INTERNAL_SERVER_ERROR);
-
-                    return new Response(HttpStatus.CREATED, "Video Uploaded successfully", response.body());
-            } catch (CustomException e) {
-                    return new Response(e.getStatus(), e.getMessage(), null);
-            } catch (Exception e) {
-                    return new Response(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", e.getMessage());
-            }
+            return response;
 
     }
 
@@ -178,57 +163,110 @@ public class LessonService {
     }
 
     /**********************************************************************************************************/
+
+    public Response uploadVideo(UploadVideoRequest uploadVideoRequest)
+                    throws IOException, InterruptedException {
+            try {
+
+                    Course course = lessonRepository.findCourseByLessonId(uploadVideoRequest.getLessonId())
+                                    .orElseThrow(() -> new CustomException("Course not found", HttpStatus.NOT_FOUND));
+
+                    Lesson lesson = lessonRepository.findById(
+                                    uploadVideoRequest.getLessonId())
+                                    .orElseThrow(() -> new CustomException("Lesson not found", HttpStatus.NOT_FOUND));
+
+                    HttpResponse<String> response = uploadVideoRequest(lesson.getGuid(), course.getGuid(),
+                                    course.getApiKey(), uploadVideoRequest.getVideo());
+
+                    if (response.statusCode() < 200 && response.statusCode() >= 300) {
+                            throw new CustomException(response.body(), HttpStatus.BAD_REQUEST);
+                    }
+
+                    return new Response(HttpStatus.CREATED, "Video Uploaded successfully", response.body());
+            } catch (CustomException e) {
+                    return new Response(e.getStatus(), e.getMessage(), null);
+            } catch (Exception e) {
+                    return new Response(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", e.getMessage());
+            }
+
+    }
+
+    /**
+     * @throws IOException
+     * @throws InterruptedException
+     ********************************************************************************************************/
+    public HttpResponse<String> uploadVideoRequest(String lessonGuid, Integer courseGuid, String ApiKey,
+                    MultipartFile video) throws IOException, InterruptedException {
+
+            byte[] videoBytes = video.getBytes();
+
+            HttpRequest request = HttpRequest.newBuilder()
+                            .uri(URI.create(String.format(
+                                            "https://video.bunnycdn.com/library/%s/videos/%s", courseGuid,
+                                            lessonGuid)))
+                            .header("accept", "application/json")
+                            .header("AccessKey", ApiKey)
+                            .method("PUT", HttpRequest.BodyPublishers.ofByteArray(videoBytes))
+                            .build();
+            HttpResponse<String> response = HttpClient.newHttpClient().send(request,
+                            HttpResponse.BodyHandlers.ofString());
+
+
+            return response;
+    }
+
+    /**********************************************************************************************************/
     public Response updateVideo(UploadVideoRequest uploadVideoRequest) {
             try {
                     Course course = lessonRepository.findCourseByLessonId(uploadVideoRequest.getLessonId())
                                     .orElseThrow(() -> new CustomException("Course not found", HttpStatus.NOT_FOUND));
                     Lesson lesson = lessonRepository.findById(uploadVideoRequest.getLessonId())
                                     .orElseThrow(() -> new CustomException("Lesson not found", HttpStatus.NOT_FOUND));
+                    Section section = lessonRepository.findSection(uploadVideoRequest.getLessonId())
+                                    .orElseThrow(() -> new CustomException("Section not found", HttpStatus.NOT_FOUND));
 
-                    HttpResponse<String> response = uploadVideo(course.getGuid(), lesson.getGuid(),
-                                    uploadVideoRequest.getVideo(), "POST", course.getApiKey());
-                    // if (response.statusCode() >= 200 && response.statusCode() < 300) {
-                    // String durationString = getOrDeleteVideo(
-                    // course.getGuid(), lesson.getGuid(),
-                    // course.getApiKey(), "GET").get("duration").toString();
-                    // BigDecimal duration = new BigDecimal(durationString);
-                    // lesson.setDuration(duration);
-                    // lessonRepository.save(lesson);
-                    // } else {
-                    // throw new CustomException(response.body(), HttpStatus.INTERNAL_SERVER_ERROR);
-                    // }
-                    if (response.statusCode() < 200 || response.statusCode() >= 300)
-                            throw new CustomException(response.body(), HttpStatus.INTERNAL_SERVER_ERROR);
-                    return new Response(HttpStatus.OK, "Video updated successfully", response.body());
+                    HttpResponse<String> response1 = createLessonRequest(course.getGuid(), course.getApiKey(),
+                                    section.getGuid(), lesson.getTitle());
+
+                    JSONObject responseBodyJson = new JSONObject(response1.body());
+                    String guid = responseBodyJson.getString("guid");
+
+                    if (response1.statusCode() < 200 && response1.statusCode() >= 300) {
+
+                            throw new CustomException("Error creating video", HttpStatus.BAD_REQUEST);
+                    }
+
+                    HttpResponse<String> response2 = uploadVideoRequest(guid,
+                                    course.getGuid(),
+                                    course.getApiKey(), uploadVideoRequest.getVideo());
+
+                    if (response2.statusCode() < 200 && response2.statusCode() >= 300) {
+
+                            throw new CustomException("Error uploading video", HttpStatus.BAD_REQUEST);
+
+                    }
+
+                    HttpResponse<String> response3 = deleteVideo(course.getGuid(), lesson.getGuid(),
+                                    course.getApiKey());
+
+                    lesson.setGuid(guid);
+                    lesson.setVideoUrl(
+                                    String.format(
+                                                    "https://iframe.mediadelivery.net/embed/%s/%s",
+                                                    course.getGuid(),
+                                                    guid));
+                    lessonRepository.save(lesson);
+
+                    return new Response(HttpStatus.OK, "Video updated successfully", response3.body());
             }
 
             catch (CustomException e) {
                     return new Response(e.getStatus(), e.getMessage(), null);
             } catch (Exception e) {
-                    return new Response(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", e.getMessage());
+                    return new Response(HttpStatus.BAD_REQUEST, e.getMessage(), null);
 
             }
 
-    }
-
-    /**********************************************************************************************************/
-
-    public HttpResponse<String> uploadVideo(Integer libraryId, String videoId, MultipartFile video, String method,
-                    String apiKey) throws IOException, InterruptedException {
-
-            byte[] videoBytes = video.getBytes();
-            String ApiKey = apiKey;
-            HttpRequest request = HttpRequest.newBuilder()
-                            .uri(URI.create(String.format(
-                                            "https://video.bunnycdn.com/library/%s/videos/%s", libraryId, videoId)))
-                            .header("accept", "application/json")
-                            .header("AccessKey", ApiKey)
-                            .method(method, HttpRequest.BodyPublishers.ofByteArray(videoBytes))
-                            .build();
-            HttpResponse<String> response = HttpClient.newHttpClient().send(request,
-                            HttpResponse.BodyHandlers.ofString());
-
-            return response;
     }
 
     /******************************************************************************************************************/
@@ -240,16 +278,11 @@ public class LessonService {
                     Lesson lesson = lessonRepository.findById(lessonId)
                                     .orElseThrow(() -> new CustomException("Lesson not found", HttpStatus.NOT_FOUND));
 
-                    Map<String, Object> responseMap = getOrDeleteVideo(course.getGuid(), lesson.getGuid(),
-                                    course.getApiKey(),
-                                    "DELETE");
-                    if (responseMap.get("success").toString().equals("true")) {
-                            lessonRepository.delete(lesson);
-                            return new Response(HttpStatus.OK, "Lesson deleted successfully", null);
-                    } else {
-                            throw new CustomException(responseMap.get("message").toString(),
-                                            HttpStatus.INTERNAL_SERVER_ERROR);
-                    }
+                    HttpResponse<String> response = deleteVideo(course.getGuid(), lesson.getGuid(),
+                                    course.getApiKey());
+
+                    lessonRepository.delete(lesson);
+                    return new Response(HttpStatus.OK, "Lesson deleted successfully", response.body());
 
             } catch (CustomException e) {
                     return new Response(e.getStatus(), e.getMessage(), null);
@@ -261,12 +294,8 @@ public class LessonService {
 
     /***************************************************************************************************/
 
-    public Map<String, Object> getOrDeleteVideo(Integer libraryId, String videoId, String apiKey, String method)
+    public HttpResponse<String> deleteVideo(Integer libraryId, String videoId, String apiKey)
                     throws IOException, InterruptedException {
-            System.out.println("libraryId = " + libraryId);
-            System.out.println("videoId = " + videoId);
-            System.out.println("apiKey = " + apiKey);
-            System.out.println("method = " + method);
 
             HttpRequest request = HttpRequest.newBuilder()
                             .uri(URI.create(
@@ -276,17 +305,14 @@ public class LessonService {
                                                             videoId)))
                             .header("accept", "application/json")
                             .header("AccessKey", apiKey)
-                            .method(method, HttpRequest.BodyPublishers.noBody())
+                            .method("DELETE", HttpRequest.BodyPublishers.noBody())
                             .build();
 
             HttpResponse<String> response = HttpClient.newHttpClient().send(request,
                             HttpResponse.BodyHandlers.ofString());
-            System.out.println(response.body());
-            ObjectMapper mapper = new ObjectMapper();
-            Map<String, Object> responseMap = mapper.readValue(response.body(),
-                            new TypeReference<Map<String, Object>>() {
-                            });
-            return responseMap;
+
+         
+            return response;
 
     }
 

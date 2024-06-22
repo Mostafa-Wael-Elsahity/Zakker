@@ -1,5 +1,6 @@
 package com.example.elearningplatform.course.lesson.note;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,8 +19,14 @@ public interface NoteRepository extends JpaRepository<Note, Integer> {
                         """)
         Optional<Lesson> findLesson(@Param("id") Integer id);
 
-        Optional<Note> findByLessonId(Integer id);
+        /********************************************************************************************/
+        @Query("""
+                SELECT n FROM Note n
+                WHERE n.user.id= :userId And n.lesson.id = :lessonId
+                """)
+        List<Note> findByLessonIdAndUserId(Integer lessonId, Integer userId);
 
+        /********************************************************************************************/
         @Modifying
         @Query("""
                         DELETE FROM Note n
@@ -27,3 +34,4 @@ public interface NoteRepository extends JpaRepository<Note, Integer> {
                         """)
         void deleteNoteByLessonIdAndUserId(@Param("lessonId") Integer lessonId, @Param("userId") Integer userId);
 }
+        /********************************************************************************************/

@@ -10,6 +10,7 @@ public class NoteDto {
     private String content;
 
     public NoteDto(Note note) {
+        if(note == null) return;
         this.id = note.getId();
         this.content = note.getContent();
     }

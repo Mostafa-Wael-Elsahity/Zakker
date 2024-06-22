@@ -34,11 +34,8 @@ public class Section {
     private String guid;
 
     private String title;
-    private Integer numberOfLessons;
 
     private String description;
-
-    private BigDecimal duration;
   
     @OneToMany(fetch = jakarta.persistence.FetchType.LAZY, mappedBy = "section", cascade = CascadeType.REMOVE)
     @ToString.Exclude
@@ -52,8 +49,6 @@ public class Section {
     public Section(CreateSectionRequest createSectionRequest) {
         this.title = createSectionRequest.getTitle();
         this.description = createSectionRequest.getDescription();
-        this.numberOfLessons = 0;
-
     }
 
 

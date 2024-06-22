@@ -18,7 +18,6 @@ import com.example.elearningplatform.response.Response;
 import com.example.elearningplatform.security.TokenUtil;
 import com.paypal.api.payments.Amount;
 import com.paypal.api.payments.Payer;
-import com.paypal.api.payments.PayerInfo;
 import com.paypal.api.payments.Payment;
 import com.paypal.api.payments.PaymentExecution;
 import com.paypal.api.payments.RedirectUrls;
@@ -53,10 +52,10 @@ public class PaypalService {
 
             String successUrl = "http://" + request.getServerName() + ":" + request.getServerPort()
                         + request.getContextPath()
-                        + "/paypal/payment/success";
+                        + "/payment/success";
             String cancelUrl = "http://" + request.getServerName() + ":" + request.getServerPort()
                         + request.getContextPath()
-                        + "/paypal/payment/cancel";
+                        + "/payment/cancel";
 
             Response response = couponService.applyCoupon(applyCouponRequest);
             if (response.getStatus() != HttpStatus.OK) {
@@ -97,7 +96,7 @@ public class PaypalService {
 
             TempTransactionUser tempTransactionUser = new TempTransactionUser();
             tempTransactionUser.setCourseId(applyCouponRequest.getCourseId());
-            tempTransactionUser.setUserId(1703);
+            tempTransactionUser.setUserId(tokenUtil.getUserId());
             // tempTransactionUser.setUserId(tokenUtil.getUserId());
             tempTransactionUser.setCouponId(coupon.getId());
             tempTransactionUser.setPrice(((int) (price * 100)));
@@ -107,11 +106,11 @@ public class PaypalService {
             tempTransactionUser.setCurrency("USD");
             tempTransactionUser.setPaymentMethod("paypal");
             tempTransactionUserRepository.save(tempTransactionUser);
-            System.out.println("Created Payment ID: " + payment.toString());
+            // System.out.println("Created Payment ID: " + payment.toString());
             return payment;
       }
 /********************************************** PayPal Payment Execution ************************************************/
- 
+
       public Payment executePayment(
                   String paymentId,
                   String payerId) throws PayPalRESTException {
@@ -121,8 +120,8 @@ public class PaypalService {
 
             PaymentExecution paymentExecution = new PaymentExecution();
             paymentExecution.setPayerId(payerId);
-            System.out.println(payment.toString());
-            System.out.println(paymentExecution.toString());
+            // System.out.println(payment.toString());
+            // System.out.println(paymentExecution.toString());
 
             return payment.execute(apiContext, paymentExecution);
       }

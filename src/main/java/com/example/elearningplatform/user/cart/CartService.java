@@ -32,7 +32,7 @@ public class CartService {
             }
 
             cartRepository.removeFromCart(tokenUtil.getUserId(), courseId);
-            return new Response(HttpStatus.OK, "Success", null);
+            return new Response(HttpStatus.OK, "course deleted from cart", null);
         } catch (Exception e) {
             return new Response(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", e.getMessage());
         }

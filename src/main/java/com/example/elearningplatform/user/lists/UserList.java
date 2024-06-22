@@ -26,8 +26,11 @@ public class UserList {
     private Integer id;
     private String name;
     private String description;
+
     @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     @JoinColumn(name = "user_id")
+    
     private User user;
     @ManyToMany(fetch = FetchType.LAZY)
     @ToString.Exclude

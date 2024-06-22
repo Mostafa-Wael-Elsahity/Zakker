@@ -36,8 +36,8 @@ public interface UserListRepository extends JpaRepository<UserList, Integer>{
     /*********************************************************************************************** */
     @Modifying
     @Query(value = """
-                INSERT INTO lists_courses (user_id, course_id)
-                VALUES (:userId, :courseId)
+                INSERT INTO lists_courses (list_id, course_id)
+                VALUES (:listId, :courseId)
             """, nativeQuery = true)
-    void addToUserList(@Param("userId") Integer userId, @Param("courseId") Integer courseId);
+    void addToUserList(@Param("listId") Integer listId, @Param("courseId") Integer courseId);
 }

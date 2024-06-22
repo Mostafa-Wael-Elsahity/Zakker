@@ -22,7 +22,7 @@ public interface CourseRepository extends JpaRepository<Course, Integer> {
 
     @Query("""
             SELECT c FROM Course c
-            JOIN  c.instructors i WHERE i.id = :id And c.isPublished = true
+             FULL JOIN  c.instructors i WHERE i.id = :id And c.isPublished = true
                 """)
     Page<Course> findByInstructorId(@Param("id") Integer id, Pageable pageable);
 
@@ -68,31 +68,43 @@ public interface CourseRepository extends JpaRepository<Course, Integer> {
     /******************************************************************************************* */
     @Query("""
             SELECT c FROM Course c
-            JOIN FETCH c.instructors i
+            LEFT JOIN c.instructors i
             WHERE
             (
             lower(c.title) LIKE lower(concat('%', :searchKy, '%'))
-            OR lower(i.firstName) LIKE lower(concat('%', :searchKy, '%')) 
+            OR lower(i.firstName) LIKE lower(concat('%', :searchKy, '%'))
             OR lower(i.lastName) LIKE lower(concat('%', :searchKy, '%'))
             )
-            And c.isPublished = true
+            AND c.isPublished = true
             """)
     Page<Course> findBySearchKey(@Param("searchKy") String searchKy, Pageable pageable);
 
     /******************************************************************************************* */
-
+   
     @Query("""
                             SELECT c FROM Course c
-                        JOIN FETCH c.categories cat WHERE cat.id = :categoryId and c.isPublished = true
+                        LEFT JOIN c.categories cat WHERE cat.id = :categoryId and c.isPublished = true
                 """)
     Page<Course> findByCategoryId(Integer categoryId, Pageable pageable);
+     
+    @Query("""
+                            SELECT c FROM Course c
+                          LEFT JOIN c.categories cat WHERE lower(cat.name) LIKE lower(concat('%', :categoryName, '%')) and c.isPublished = true
+                """)
+    Page<Course> findByCategoryName(String categoryName, Pageable pageable);
 
+    /******************************************************************************************* */
+    // @Query("""
+    //                 SELECT c FROM Course c
+    //         JOIN FETCH c.tags t WHERE t.id = :tagId and c.isPublished = true
+    //                         """)
+    // Page<Course> findByTagId(Integer tagId, Pageable pageable);
     /******************************************************************************************* */
     @Query("""
                     SELECT c FROM Course c
-            JOIN FETCH c.tags t WHERE t.id = :tagId and c.isPublished = true
+             LEFT JOIN c.tags t WHERE lower(t.Tag) LIKE lower(concat('%', :tagName, '%')) and c.isPublished = true
                             """)
-    Page<Course> findByTagId(Integer tagId, Pageable pageable);
+    Page<Course> findByTagName(String tagName, Pageable pageable);
 
     /******************************************************************************************* */
     @Query("""
@@ -153,4 +165,18 @@ public interface CourseRepository extends JpaRepository<Course, Integer> {
             """, nativeQuery = true)
     void unEnrollCourse(@Param("userId") Integer userId, @Param("courseId") Integer courseId);
     /************************************************************************* */
+    @Modifying
+    @Query(value = """
+                        INSERT INTO course_instructors (user_id, course_id)
+                        VALUES (:userId, :courseId)
+                    """, nativeQuery = true)
+    void addInstructor(@Param("userId") Integer userId, @Param("courseId") Integer courseId);
+
+    /************************************************************************ */
+    @Modifying
+    @Query(value = """
+                    DELETE FROM course_instructors
+                    WHERE user_id = :userId AND course_id = :courseId
+                        """, nativeQuery = true)
+    void deleteInstructor(@Param("userId") Integer userId, @Param("courseId") Integer courseId);
 }

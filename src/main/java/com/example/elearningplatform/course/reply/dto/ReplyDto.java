@@ -22,9 +22,12 @@ public class ReplyDto {
 
         if (reply == null)
             return;
+        this.numberOfLikes = reply.getNumberOfLikes();
+        this.user = new InstructorDto(reply.getUser());
         this.content = reply.getContent();
         this.isCreatedByUser = isCreatedByUser;
         this.isLikedByUser = isLikedByUser;
+
         this.id = reply.getId();
       
     }

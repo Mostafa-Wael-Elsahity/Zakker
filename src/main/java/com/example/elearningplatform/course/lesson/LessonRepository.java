@@ -10,16 +10,20 @@ import org.springframework.data.repository.query.Param;
 
 import com.example.elearningplatform.course.comment.Comment;
 import com.example.elearningplatform.course.course.Course;
-import com.example.elearningplatform.course.lesson.note.Note;
+import com.example.elearningplatform.course.section.Section;
 
 public interface LessonRepository extends JpaRepository<Lesson, Integer> {
     List<Lesson> findBySectionId(Integer sectionId);
 
-    /**************************************************************************************** */
-    @Query("""
-            SELECT l.note FROM Lesson l WHERE l.id = :lessonId
-            """)
-    Optional<Note> findLessonNote(@Param("lessonId") Integer lessonId);
+    // /****************************************************************************************
+    // */
+    // @Query("""
+    // SELECT l.notes FROM Lesson l
+    // JOIN l.notes n
+    // WHERE n.user.id = :userId And l.id = :lessonId
+    // """)
+    // Optional<Note> findLessonNoteWithUserId(@Param("lessonId") Integer lessonId,
+    // @Param("userId") Integer userId);
 
     /**************************************************************************************** */
     @Query("""
@@ -37,4 +41,10 @@ public interface LessonRepository extends JpaRepository<Lesson, Integer> {
                     SELECT l FROM Lesson l WHERE l.section.course.id = :courseId
                     """)
     List<Lesson> findLessonsByCourseId(@Param("courseId") Integer courseId);
+
+/**************************************************************************************** */
+    @Query("""
+            SELECT l.section FROM Lesson l WHERE l.id = :lessonId
+            """)
+    Optional<Section> findSection(@Param("lessonId") Integer lessonId);
 }

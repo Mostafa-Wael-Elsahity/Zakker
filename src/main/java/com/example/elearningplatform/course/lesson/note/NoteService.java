@@ -1,5 +1,6 @@
 package com.example.elearningplatform.course.lesson.note;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -33,24 +34,26 @@ public class NoteService {
     @Autowired
     private CourseService courseService;
 
-    /************************************************************************************************/
-    public Response getNotes() {
-        try {
+    // /************************************************************************************************/
+    // public Response getNotes() {
+    //     try {
 
-            return new Response(HttpStatus.OK, "Note created successfully", null);
+    //         return new Response(HttpStatus.OK, "Note created successfully", null);
 
-        } catch (Exception e) {
-            return new Response(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", e.getMessage());
-        }
+    //     } catch (Exception e) {
+    //         return new Response(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", e.getMessage());
+    //     }
 
-    }
+    // }
 
     /************************************************************************************************/
     public Response createNote(CreateNoteRequest request) {
         try {
             Lesson lesson = lessonRepository.findById(request.getLessonId())
                     .orElseThrow(() -> new CustomException("Lesson not found", HttpStatus.NOT_FOUND));
-            checkNoteAuth(lesson.getId());
+            if (checkNoteAuth(lesson.getId()).equals(false)) {
+                throw new CustomException("Unauthorized", HttpStatus.UNAUTHORIZED);
+            }
 
             User user = userRepository.findById(tokenUtil.getUserId())
                     .orElseThrow(() -> new CustomException("User not found", HttpStatus.NOT_FOUND));
@@ -62,7 +65,10 @@ public class NoteService {
 
             return new Response(HttpStatus.OK, "Note created successfully", new NoteDto(note));
 
-        } catch (Exception e) {
+        } catch (CustomException e) {
+            return new Response(e.getStatus(), e.getMessage(), null);
+        }
+        catch (Exception e) {
             return new Response(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", e.getMessage());
         }
     }
@@ -108,27 +114,36 @@ public class NoteService {
 
     /************************************************************************************************/
 
-    public Response getNotesByLessonId(Integer lessonId) {
+    public Response getLessonNote(Integer lessonId) {
         try {
-            checkNoteAuth(lessonId);
 
-            Note note = noteRepository.findByLessonId(lessonId).orElseThrow(
-                    () -> new CustomException("Note not found", HttpStatus.NOT_FOUND));
+            if (checkNoteAuth(lessonId).equals(false)) {
+                throw new CustomException("Unauthorized", HttpStatus.UNAUTHORIZED);
+            }
 
-            return new Response(HttpStatus.OK, "Note created successfully", new NoteDto(note));
+            List<NoteDto> notes = noteRepository.findByLessonIdAndUserId(lessonId, tokenUtil.getUserId()).stream()
+            .map(note -> new NoteDto(note)).toList();
+
+            return new Response(HttpStatus.OK, "Note fetched successfully",notes );
         } catch (CustomException e) {
             return new Response(e.getStatus(), e.getMessage(), null);
-        } catch (Exception e) {
+        }
+
+        catch (Exception e) {
             return new Response(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", e.getMessage());
         }
 
     }
 
-    private void checkNoteAuth(Integer lessonId) {
+    private Boolean checkNoteAuth(Integer lessonId) {
+        try {
         Course course = lessonRepository.findCourseByLessonId(lessonId)
                 .orElseThrow(() -> new CustomException("Course not found", HttpStatus.NOT_FOUND));
-        if (courseService.ckeckCourseSubscribe(course.getId()).equals(false))
-            throw new CustomException("Unauthorized", HttpStatus.UNAUTHORIZED);
+        return courseService.ckeckCourseSubscribe(course.getId());
+
+    } catch (Exception e) {
+        return false;
+    }
     }
 
 }

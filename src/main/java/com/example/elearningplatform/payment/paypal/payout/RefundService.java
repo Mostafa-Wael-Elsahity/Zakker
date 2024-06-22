@@ -94,7 +94,6 @@ public class RefundService {
                                                       if (comment.getUser().getId() == tempTransactionUser
                                                                   .getUserId()) {
                                                             commentRepository.delete(comment);
-                                                            lesson.decrementNumberOfComments();
                                                       } else {
                                                             List<Reply> replies = replyRepository
                                                                         .findByComment(comment.getId());
@@ -127,7 +126,6 @@ public class RefundService {
                                                       }
 
                                                 });
-                                    lessonRepository.save(lesson);
                               });
 
                   // User user = userRepository.findById(tempTransactionUser.getUserId())
