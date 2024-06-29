@@ -38,7 +38,7 @@ public class Lesson {
     private String type;
     private Boolean free;
     private Boolean isPreviewed;
-    private BigDecimal duration;
+    private Integer duration;
     private String content;
 
     @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)

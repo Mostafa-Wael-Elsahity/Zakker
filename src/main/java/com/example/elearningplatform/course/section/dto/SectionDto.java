@@ -16,6 +16,7 @@ public class SectionDto {
     private String description;
     private Integer numberOfLessons;
     List<LessonDto> lessons =new ArrayList<>();
+    private Integer duration;
     public void setNumberOfLessons(){
         this.numberOfLessons=lessons.size();
     }

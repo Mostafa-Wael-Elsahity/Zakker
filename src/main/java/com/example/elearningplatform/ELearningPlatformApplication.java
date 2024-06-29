@@ -9,6 +9,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+import com.example.elearningplatform.course.lesson.LessonService;
 import com.example.elearningplatform.user.role.Role;
 import com.example.elearningplatform.user.role.RoleRepository;
 
@@ -22,10 +23,11 @@ public class ELearningPlatformApplication
         implements ApplicationRunner {
     // @Autowired
     // private RoleRepository roleRepository;
-
+@Autowired LessonService lessonService;
     /*********************************************************************************** */
     public static void main(String[] args) {
         SpringApplication.run(ELearningPlatformApplication.class, args);
+
 
     }
 
@@ -35,6 +37,12 @@ public class ELearningPlatformApplication
         System.out.println("running");
         System.out.println("running");
         System.out.println("running");
+
+        // System.out.println(
+        //     lessonService.getlessonDuration(260993,"980bfe2e-16bd-45fe-852c-819265d54e1e",
+        //     "49c530fb-4b05-4c3a-87c0-aa208e77f5e33f0c22cd-e2dc-462d-bcf5-6e40eac5c10d")
+        // );
+
 
 
 

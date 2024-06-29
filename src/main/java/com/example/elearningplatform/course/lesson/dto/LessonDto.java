@@ -18,7 +18,7 @@ public class LessonDto {
     private String title;
     private String description;
     private String type;
-    private BigDecimal duration;
+    private Integer duration;
     private Boolean free;
 
     public LessonDto(Lesson lesson) {

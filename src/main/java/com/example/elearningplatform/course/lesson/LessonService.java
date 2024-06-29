@@ -52,6 +52,10 @@ public class LessonService {
     @Autowired
     private NoteRepository noteRepository;
 
+    /**
+     * @throws InterruptedException
+     * @throws IOException
+
     /*****************************************************************************************************/
     public Response getLesson(Integer lessonId) {
             try {

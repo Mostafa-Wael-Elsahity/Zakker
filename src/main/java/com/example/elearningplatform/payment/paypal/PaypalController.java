@@ -101,7 +101,7 @@ public class PaypalController {
 	}
 
 	/***************************************************************************************** */
-	@PostMapping("/payment/create")
+	@PostMapping("/payment/checkout")
 	public RedirectView checkout(@RequestBody ApplyCouponRequestList applyCouponRequest) {
 		try {
 			User user = userRepository.findById(tokenUtil.getUserId()).orElse(null);

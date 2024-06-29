@@ -26,6 +26,7 @@ public class CourseDto extends SearchCourseDto {
     private String whatYouWillLearn;
     private String prerequisite;
     private Boolean isSubscribed = false;
+    private Integer totalDuration;
 
     private List<SectionDto> sections = new ArrayList<>();
 

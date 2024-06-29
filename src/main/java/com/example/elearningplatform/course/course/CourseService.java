@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,7 @@ import com.example.elearningplatform.course.course.dto.CourseDto;
 import com.example.elearningplatform.course.course.dto.CreateCourseRequest;
 import com.example.elearningplatform.course.course.dto.SearchCourseDto;
 import com.example.elearningplatform.course.course.dto.UpdateCourseRequest;
+import com.example.elearningplatform.course.lesson.LessonRepository;
 import com.example.elearningplatform.course.lesson.dto.LessonDto;
 import com.example.elearningplatform.course.section.SectionRepository;
 import com.example.elearningplatform.course.section.dto.SectionDto;
@@ -58,6 +60,8 @@ public class CourseService {
         private SectionRepository sectionRepository;
         @Autowired
         private UserRepository userRepository;
+        @Autowired
+        private LessonRepository lessonRepository;
         @Value("${APIKey}")
         private String ApiKey;
 
@@ -168,8 +172,35 @@ public class CourseService {
         }
 
         /**************************************************************************************** */
+        /***************************************************************************************************/
+        public Integer getlessonDuration(Integer courseGuid, String lessonGuid, String ApiKey)
+                        throws IOException, InterruptedException {
+
+                HttpRequest request = HttpRequest.newBuilder()
+                                .uri(URI.create(
+                                                String.format(
+                                                                "https://video.bunnycdn.com/library/%s/videos/%s/play",
+                                                                courseGuid, lessonGuid)))
+                                .header("accept", "application/json")
+                                .header("content-type", "application/json")
+                                .header("AccessKey", ApiKey)
+                                .method("GET", HttpRequest.BodyPublishers.noBody())
+                                .build();
+                HttpResponse<String> response = HttpClient.newHttpClient().send(request,
+                                HttpResponse.BodyHandlers.ofString());
+
+                JSONObject obj = new JSONObject(response.body());
+
+                return obj.getJSONObject("video").getInt("length");
+
+        }
+        /**************************************************************************************** */
         public Response getCourse(Integer courseId) {
                 try {
+                        Integer [] courseDuration = new Integer[1];
+                        courseDuration[0]=0;
+                        Integer []sectionDuration=new Integer[1];
+                        sectionDuration[0]=0;
                         // System.out.println("courseId = " + courseId);
                         // System.out.println("tokenUtil.getUserId() = " + tokenUtil.getUserId());
                         Course course = courseRepository.findByCourseId(courseId)
@@ -189,15 +220,43 @@ public class CourseService {
                                                 sectionRepository.findSectionLessons(section.getId())
                                                                 .stream()
                                                                 .map(
-                                                                                lesson -> new LessonDto(lesson)
+                                                                                // check if lesson is published return
+                                                                                // lesson dto else null
+                                                                                lesson -> {
+                                                                                        if (lesson.getDuration()==null) {
+
+                                                                                                try {
+                                                                                                        lesson.setDuration(
+                                                                                                                        getlessonDuration(
+                                                                                                                                        course.getGuid(),
+                                                                                                                                        lesson.getGuid(),
+                                                                                                                                        ApiKey));
+                                                                                                        lessonRepository.save(
+                                                                                                                        lesson);
+                                                                                                } catch (IOException e) {
+
+                                                                                                        e.printStackTrace();
+                                                                                                } catch (InterruptedException e) {
+
+                                                                                                        e.printStackTrace();
+                                                                                                }
+
+                                                                                        }
+                                                                                        sectionDuration[0] += lesson.getDuration();
+                                                                                        
+                                                                                        return new LessonDto(lesson);
+                                                                                }
 
                                                                 )
                                                                 .toList());
                                 section.setNumberOfLessons();
+                                courseDuration[0] += sectionDuration[0];
+                                section.setDuration(sectionDuration[0]);
                                 
                                 
                         });
                         courseDto.setSections(sections);
+                        courseDto.setTotalDuration(courseDuration[0]);
 
                         return new Response(HttpStatus.OK, "Course fetched successfully", courseDto);
 
