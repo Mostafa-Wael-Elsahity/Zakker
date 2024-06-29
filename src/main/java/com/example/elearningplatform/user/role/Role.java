@@ -15,6 +15,7 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     Integer id;
+    
     String role;
 
     public Role(String role) {

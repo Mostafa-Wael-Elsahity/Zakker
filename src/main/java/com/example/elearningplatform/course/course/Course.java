@@ -42,7 +42,7 @@ public class Course {
         @Id
         @GeneratedValue(strategy = GenerationType.SEQUENCE)
         private Integer id;
-
+// private Boolean isDeleted;
         private Integer guid;
 
         private String title;
@@ -117,9 +117,10 @@ public class Course {
         @ToString.Exclude
         private List<Review> reviews = new ArrayList<>();
 
-        @OneToMany(fetch = FetchType.LAZY, mappedBy = "course", cascade = CascadeType.REMOVE)
+        @OneToMany(fetch = FetchType.LAZY, mappedBy = "course", cascade = CascadeType.REMOVE, orphanRemoval = true)
         @ToString.Exclude
-        private Set<CourseTag> tags = new HashSet<>();
+        private Set<CourseTag> tags ;
+
 
         @ManyToMany(fetch = FetchType.LAZY)
         @JoinTable(name = "course_instructors", joinColumns = @JoinColumn(name = "course_id", unique = false), inverseJoinColumns = @JoinColumn(name = "user_id", unique = false))

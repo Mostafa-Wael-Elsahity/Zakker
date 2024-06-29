@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -175,6 +174,9 @@ public class CourseService {
                         // System.out.println("tokenUtil.getUserId() = " + tokenUtil.getUserId());
                         Course course = courseRepository.findByCourseId(courseId)
                                         .orElseThrow(() -> new CustomException("Course not found", HttpStatus.NOT_FOUND));
+                        if(!ckeckCourseSubscribe(courseId) && !course.isPublished()) {
+                                throw( new CustomException("Course not found", HttpStatus.NOT_FOUND));
+                        }
                         CourseDto courseDto = new CourseDto(
                                         course, ckeckCourseSubscribe(courseId),
                                         courseRepository.findCourseInstructors(courseId),
@@ -191,6 +193,9 @@ public class CourseService {
 
                                                                 )
                                                                 .toList());
+                                section.setNumberOfLessons();
+                                
+                                
                         });
                         courseDto.setSections(sections);
 
@@ -366,7 +371,6 @@ public class CourseService {
         }
 
         /***************************************************************************************************************/
-
         public Response deleteCourse(Integer courseId) {
                 try {
                         Course course = courseRepository.findById(courseId)
@@ -378,8 +382,10 @@ public class CourseService {
                                 throw new CustomException("You are not the owner of this course", HttpStatus.NOT_FOUND);
 
                         }
-                        System.out.println(course.getGuid());
-                        HttpRequest request = HttpRequest.newBuilder()
+                        courseTagRepository.deleteByCourseId(courseId);
+                        courseRepository.delete(course);
+
+                             HttpRequest request = HttpRequest.newBuilder()
                                         .uri(URI.create(
                                                         String.format(
                                                                         "https://api.bunny.net/videolibrary/%s",
@@ -391,11 +397,63 @@ public class CourseService {
                         HttpResponse<String> response = HttpClient.newHttpClient().send(request,
                                         HttpResponse.BodyHandlers.ofString());
                         System.out.println(response);
+                       
+                        courseTagRepository.deleteByCourseId(courseId);
+                        courseRepository.delete(course);
                         if (response.statusCode() >= 200 && response.statusCode() < 300)
+                        {
+                                courseTagRepository.deleteByCourseId(courseId);
                                 courseRepository.delete(course);
+                        }
 
                         else
                                 throw new CustomException(response.body(), HttpStatus.INTERNAL_SERVER_ERROR);
+                        return new Response(HttpStatus.OK, "Course deleted successfully", null);
+                } catch (CustomException e) {
+                        return new Response(e.getStatus(), e.getMessage(), null);
+                } catch (Exception e) {
+                        return new Response(HttpStatus.NOT_FOUND, e.getMessage(), null);
+                }
+        }
+        /***************************************************************************************************************/
+
+        public Response unPublishCourse(Integer courseId) {
+                try {
+                        Course course = courseRepository.findById(courseId)
+                                        .orElseThrow(() -> new CustomException("Course not found",
+                                                        HttpStatus.NOT_FOUND));
+                        // courseRepository.delete(course);
+                        User owner = courseRepository.findOwner(courseId).orElseThrow(
+                                        () -> new CustomException("Course not found", HttpStatus.NOT_FOUND));
+                        if (!owner.getId().equals(tokenUtil.getUserId())) {
+                                throw new CustomException("You are not the owner of this course", HttpStatus.NOT_FOUND);
+
+                        }
+                        System.out.println(course.getGuid());
+                       course.setPublished(false);
+                        // HttpRequest request = HttpRequest.newBuilder()
+                        //                 .uri(URI.create(
+                        //                                 String.format(
+                        //                                                 "https://api.bunny.net/videolibrary/%s",
+                        //                                                 course.getGuid())))
+                        //                 .header("accept", "application/json")
+                        //                 .header("AccessKey", ApiKey)
+                        //                 .method("DELETE", HttpRequest.BodyPublishers.noBody())
+                        //                 .build();
+                        // HttpResponse<String> response = HttpClient.newHttpClient().send(request,
+                        //                 HttpResponse.BodyHandlers.ofString());
+                        // System.out.println(response);
+                       
+                        // courseTagRepository.deleteByCourseId(courseId);
+                        // courseRepository.delete(course);
+                        // if (response.statusCode() >= 200 && response.statusCode() < 300)
+                        // {
+                        //         courseTagRepository.deleteByCourseId(courseId);
+                        //         courseRepository.delete(course);
+                        // }
+
+                        // else
+                        //         throw new CustomException(response.body(), HttpStatus.INTERNAL_SERVER_ERROR);
 
                         return new Response(HttpStatus.OK, "Course deleted successfully", null);
                 } catch (CustomException e) {
@@ -429,23 +487,8 @@ public class CourseService {
 
         }
 
-        /***************************************************************************************************************/
+        // /***************************************************************************************************************/
 
-        public List<SearchCourseDto> getInstructedCourses() {
-
-                List<Course> courses = courseRepository.findByOwnerId(tokenUtil.getUserId());
-                List<SearchCourseDto> coursesdto = courses.stream()
-                                .map(course -> new SearchCourseDto(
-                                                course, courseRepository.findCourseInstructors(course.getId()),
-                                                courseRepository.findCourseCategory(course.getId()),
-                                                courseRepository.findCourseTags(course.getId())))
-                                .toList();
-
-                return coursesdto;
-
-        }
-
-        /***************************************************************************************************************/
 
         public Response addInstructor(AddInstructorRequest request) {
                 try {

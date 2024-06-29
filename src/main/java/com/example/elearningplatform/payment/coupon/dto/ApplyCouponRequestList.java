@@ -1,12 +1,8 @@
 package com.example.elearningplatform.payment.coupon.dto;
-
 import java.util.List;
-
 import lombok.Data;
 
 @Data
-public class ApplyCouponRequest {
-      private String couponCode;
-      private Integer courseId;
+public class ApplyCouponRequestList {
+    private List<ApplyCouponRequest> applyCouponRequestList;
 }
-

@@ -141,6 +141,20 @@ public class UserService {
     }
 
 
+    public List<SearchCourseDto> getInstructorCourses() {
+        return   userRepository.findInstructedCourses(tokenUtil.getUserId()).stream()
+        .map(course -> {
+           
+            return new SearchCourseDto(
+                    course, courseRepository.findCourseInstructors(course.getId()),
+                    courseRepository.findCourseCategory(course.getId()),
+                    courseRepository.findCourseTags(course.getId()));
+        })
+        .toList();
+       
+    }
+
+
     // public Response getOwnedCourse() {
     //     // TODO Auto-generated method stub
     //     throw new UnsupportedOperationException("Unimplemented method 'getOwnedCourse'");

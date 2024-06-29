@@ -19,7 +19,7 @@ public class CourseTag {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @ManyToOne
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @ToString.Exclude
     private Course course;
     private String Tag;

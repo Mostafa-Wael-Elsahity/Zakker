@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.elearningplatform.response.Response;
@@ -37,24 +36,24 @@ public class ResetPasswordController {
     /*************************************************************************************************************/
 
     @PostMapping("/forget-password")
-
-    public Response sendEmail(@RequestParam("email") String email, HttpServletRequest request,
-            BindingResult result)
+    public Response enterEmail(@RequestBody @Valid EnterEmailRequest email, BindingResult result,
+            HttpServletRequest request)
             throws MessagingException, SQLException, IOException {
-        if (result.hasErrors()) {
-            return Validator.validate(result);
-        }
 
-        User user = userRepository.findByEmail(email).orElse(null);
+               if (result.hasErrors()) {
+                   return Validator.validate(result);
+               }
+
+                    User user = userRepository.findByEmail(email.getEmail()).orElse(null);
         // System.out.println(user);
         if (user == null)
             return new Response(HttpStatus.BAD_REQUEST, "User not found", null);
         if (!user.isEnabled()) {
-            return signUpService.sendRegistrationVerificationCode(email, request,
-                    tokenUtil.generateToken(email, 1000, 1000L));
+            return signUpService.sendRegistrationVerificationCode(email.getEmail(), request,
+                    tokenUtil.generateToken(email.getEmail(), 1000, 1000L));
         }
-        return resetPasswordService.sendResetpasswordEmail(email, request,
-                tokenUtil.generateToken(email, 1000, 1000L));
+        return resetPasswordService.sendResetpasswordEmail(email.getEmail(), request,
+                tokenUtil.generateToken(email.getEmail(), 1000, 1000L));
     }
 
     /***************************************************************************************************************/
@@ -71,7 +70,7 @@ public class ResetPasswordController {
 
     /***************************************************************************************************************/
     @GetMapping("/check-token/{token}")
-    public Object savePassword(@PathVariable("token") String token, Model model)
+    public Response savePassword(@PathVariable("token") String token, Model model)
             throws SQLException, IOException {
 
         if (tokenUtil.isTokenExpired(token)) {

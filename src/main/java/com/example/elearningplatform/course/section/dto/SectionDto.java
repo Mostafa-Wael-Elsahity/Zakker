@@ -14,8 +14,12 @@ public class SectionDto {
     private Integer id;
     private String title;
     private String description;
-
+    private Integer numberOfLessons;
     List<LessonDto> lessons =new ArrayList<>();
+    public void setNumberOfLessons(){
+        this.numberOfLessons=lessons.size();
+    }
+
     public SectionDto(Section section) {
         this.id = section.getId();
         this.title = section.getTitle();

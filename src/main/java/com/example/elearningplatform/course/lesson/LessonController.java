@@ -17,6 +17,7 @@ import com.example.elearningplatform.course.lesson.dto.CreateLessonRequest;
 import com.example.elearningplatform.course.lesson.dto.UpdateLessonRequest;
 import com.example.elearningplatform.course.lesson.dto.UploadVideoRequest;
 import com.example.elearningplatform.response.Response;
+import com.example.elearningplatform.validator.Validator;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -40,10 +41,10 @@ public class LessonController {
     /*********************************************************************************************/
     @PostMapping("/create-lesson")
     public Response createLesson(@RequestBody @Valid CreateLessonRequest createLessonRequest,
-            BindingResult bindingResult) throws IOException, InterruptedException {
+            BindingResult result) throws IOException, InterruptedException {
 
-        if (bindingResult.hasErrors()) {
-            return new Response(HttpStatus.BAD_REQUEST, "Validation Error", bindingResult.getAllErrors());
+        if (result.hasErrors()) {
+            return Validator.validate(result);
         }
         return lessonService.createLesson(createLessonRequest);
     }
@@ -59,12 +60,11 @@ public class LessonController {
 
     /***************************************************************************************/
     @PostMapping("/update-lesson")
-    public Response updateLesson(@RequestBody @Valid UpdateLessonRequest updateLessonRequest,BindingResult bindingResult)
+    public Response updateLesson(@RequestBody @Valid UpdateLessonRequest updateLessonRequest,BindingResult result)
             throws IOException, InterruptedException {
-        if (bindingResult.hasErrors()) {
-            return new Response(HttpStatus.BAD_REQUEST, "Validation Error", bindingResult.getAllErrors());
-        }
-
+                if (result.hasErrors()) {
+                    return Validator.validate(result);
+                }
         return lessonService.updateLesson(updateLessonRequest);
     }
     /***************************************************************************************/

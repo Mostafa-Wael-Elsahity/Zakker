@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.elearningplatform.course.section.dto.CreateSectionRequest;
 import com.example.elearningplatform.course.section.dto.UpdateSectionRequest;
 import com.example.elearningplatform.response.Response;
+import com.example.elearningplatform.validator.Validator;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
@@ -26,12 +27,11 @@ public class SectionController {
 
     @PostMapping("/create-section")
     public Response createSection(@RequestBody @Valid CreateSectionRequest createSectionRequest,
-            BindingResult bindingResult)
+            BindingResult result)
             throws IOException, InterruptedException {
-        if (bindingResult.hasErrors()) {
-            return new Response(HttpStatus.BAD_REQUEST, "Validation Error", bindingResult.getAllErrors());
-        }
-
+                if (result.hasErrors()) {
+                    return Validator.validate(result);
+                }
         return sectionService.createSection(createSectionRequest);
     }
 
@@ -40,10 +40,10 @@ public class SectionController {
      */
     @PostMapping("/update-section")
     public Response updateSection(@RequestBody @Valid UpdateSectionRequest updateSectionRequest,
-            BindingResult bindingResult)
+            BindingResult result)
             throws IOException, InterruptedException {
-        if (bindingResult.hasErrors()) {
-            return new Response(HttpStatus.BAD_REQUEST, "Validation Error", bindingResult.getAllErrors());
+        if (result.hasErrors()) {
+            return Validator.validate(result);
         }
 
         return sectionService.updateSection(updateSectionRequest);

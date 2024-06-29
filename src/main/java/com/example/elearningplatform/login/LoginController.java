@@ -76,7 +76,6 @@ public class LoginController implements ErrorController {
         return redirectView;
        
     }
-
     /*****************************************************************************************************************/
 
     @GetMapping("/login/oauth2/success")

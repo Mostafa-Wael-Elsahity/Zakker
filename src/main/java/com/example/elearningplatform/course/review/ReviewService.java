@@ -39,10 +39,16 @@ public class ReviewService {
 
             if (!review.getUser().getId().equals(tokenUtil.getUserId()))
                 throw new CustomException("You are not authorized to update this review", HttpStatus.UNAUTHORIZED);
+            // get the course and delete the old rating and add the new rating
+            Course course = reviewRepository.findCourseByReviewId(review.getId())
+                    .orElseThrow(() -> new CustomException("course not found", HttpStatus.NOT_FOUND));
+            course.removeRating(review.getRating());
+            course.addRating(request.getRating());
+            courseRepository.save(course);
 
             review.setContent(request.getContent());
             review.setRating(request.getRating());
-            review.setCreationDate(java.time.LocalDate.now());
+            review.setModificationDate(java.time.LocalDate.now());
             reviewRepository.save(review);
 
             return new Response(HttpStatus.OK, "Review updated successfully", null);
@@ -89,10 +95,12 @@ public class ReviewService {
             //     throw new CustomException("You must subscribe to the course first", HttpStatus.BAD_REQUEST);
             Review review = reviewRepository.findById(reviewId).
             orElseThrow(() -> new CustomException("Review not found", HttpStatus.NOT_FOUND));
-            
             if (!review.getUser().getId().equals(tokenUtil.getUserId()))
                 throw new CustomException("You are not authorized to delete this review", HttpStatus.UNAUTHORIZED);
-
+            Course course = reviewRepository.findCourseByReviewId(review.getId())
+                    .orElseThrow(() -> new CustomException("course not found", HttpStatus.NOT_FOUND));
+            course.removeRating(review.getRating());
+            courseRepository.save(course);
             reviewRepository.deleteById(reviewId);
             return new Response(HttpStatus.OK, "Review deleted successfully", null);
         } 
@@ -126,7 +134,7 @@ public class ReviewService {
             review.setCourse(courseRepository.findById(request.getCourseId()).get());
             review.setUser(tokenUtil.getUser());
             reviewRepository.save(review);
-            return new Response(HttpStatus.OK, "Review added successfully", new ReviewDto(review));
+            return new Response(HttpStatus.OK, "Review added successfully", null);
         } catch (CustomException e) {
             return new Response(e.getStatus(), e.getMessage(), null);
         } catch (Exception e) {

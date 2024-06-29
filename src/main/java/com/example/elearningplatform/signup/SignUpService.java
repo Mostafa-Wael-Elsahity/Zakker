@@ -118,6 +118,7 @@ public class SignUpService {
     /**************************************************************************************************************/
     public User registerOuth2(OAuth2UserDetails oAuth2UserDetails) throws IOException, SerialException, SQLException {
         User user = new User();
+    
 
         user.setEmail(oAuth2UserDetails.getEmail());
         user.setFirstName(oAuth2UserDetails.getFirstName());

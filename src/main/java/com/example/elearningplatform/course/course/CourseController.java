@@ -29,6 +29,7 @@ import com.example.elearningplatform.course.course.dto.UpdateCourseRequest;
 import com.example.elearningplatform.exception.CustomException;
 import com.example.elearningplatform.response.CoursesResponse;
 import com.example.elearningplatform.response.Response;
+import com.example.elearningplatform.validator.Validator;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.transaction.Transactional;
@@ -48,13 +49,6 @@ public class CourseController {
     @Autowired
     private CourseRepository courseRepository;
 
-
-    /*******************************************************************************************/
-    @GetMapping("/get-instructor-courses")
-    public Response getInstructorCourses() throws SQLException {
-
-        return new Response(HttpStatus.OK, "Success", courseService.getInstructedCourses());
-    }
 
     /*******************************************************************************************/
     @GetMapping("/public/search/{searchKey}/{pageNumber}")
@@ -84,9 +78,10 @@ public class CourseController {
 
     @GetMapping("/public/get-course/{id}")
     @SecurityRequirement(name = "bearerAuth")
+    //ممكن تديها توكن وممك  لا 
     public Response getCourse(@PathVariable("id") Integer id)
             throws SQLException {
-        return new Response(HttpStatus.OK, "Success", courseService.getCourse(id));
+        return courseService.getCourse(id);
     }
 
     /***************************************************************************************** */
@@ -101,11 +96,11 @@ public class CourseController {
      ***************************************************************************************/
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/create-course")
-    public Response createCourse(@RequestBody @Valid CreateCourseRequest course, BindingResult bindingResult)
+    public Response createCourse(@RequestBody @Valid CreateCourseRequest course, BindingResult result)
             throws IOException, InterruptedException {
 
-        if (bindingResult.hasErrors()) {
-            return new Response(HttpStatus.BAD_REQUEST, "Validation Error", bindingResult.getAllErrors());
+      if (result.hasErrors()) {
+            return Validator.validate(result);
         }
         return courseService.createCourse(course);
     }
@@ -113,20 +108,20 @@ public class CourseController {
     /***********************************************************************************************************/
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/update-course")
-    public Response updateCourse(@RequestBody @Valid UpdateCourseRequest course, BindingResult bindingResult)
+    public Response updateCourse(@RequestBody @Valid UpdateCourseRequest course, BindingResult result)
             throws IOException, InterruptedException {
-        if (bindingResult.hasErrors()) {
-            return new Response(HttpStatus.BAD_REQUEST, "Validation Error", bindingResult.getAllErrors());
-        }
+                if (result.hasErrors()) {
+                    return Validator.validate(result);
+                }
         return courseService.updateCourse(course);
     }
 
     /*********************************************************************************************************** */
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/delete-course")
-    public Response deleteCourse(@RequestParam("id") Integer id) throws SQLException {
+    public Response unPublishCourse(@RequestParam("id") Integer id) throws SQLException {
 
-        return courseService.deleteCourse(id);
+        return courseService.unPublishCourse(id);
     }
     /*************************************************************************************************** */
 
@@ -142,6 +137,8 @@ public class CourseController {
     // }
 
     /*************************************************************************************************** */
+    
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/upload-image")
     @ResponseBody
     public ResponseEntity<String> upload(@RequestParam MultipartFile image, @RequestParam("courseId") int courseId)
@@ -172,8 +169,10 @@ public class CourseController {
 
     /******************************************************************************************** */
 
+    
+    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/delete-image")
-    public ResponseEntity<String> delete(@RequestParam("courseId") int courseId) {
+    public ResponseEntity<String> deleteImage(@RequestParam("courseId") int courseId) {
         try {
             Course course = courseRepository.findById(courseId)
                     .orElseThrow(() -> new CustomException("Course not found", HttpStatus.NOT_FOUND));
@@ -194,6 +193,8 @@ public class CourseController {
     }
 
     /******************************************************************************************** */
+    
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("publish-course/{id}")
     public Response publishCourse(@PathVariable("id") Integer id) throws SQLException {
         return courseService.publishCourse(id);

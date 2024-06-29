@@ -119,6 +119,13 @@ public class UserController {
 
     /************************************************************************************************************* */
     @SecurityRequirement(name = "bearerAuth")
+    @PostMapping("/get-instructor-courses")
+    public Response getIstructedCourses() {
+
+        return new Response(HttpStatus.OK, "Success", userService.getInstructorCourses());
+    }
+    /************************************************************************************************************* */
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/upload-image")
     @ResponseBody
     public ResponseEntity<String> upload(@RequestParam MultipartFile image) throws IOException {

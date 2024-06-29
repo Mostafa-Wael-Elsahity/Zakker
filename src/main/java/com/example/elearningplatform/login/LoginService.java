@@ -65,15 +65,17 @@ public class LoginService {
             throws IOException, SerialException, SQLException {
         OAuth2UserDetails oAuth2UserDetails;
         try {
+           
+
             if (registrationId.equals("google")) {
                 oAuth2UserDetails = new OAuth2UserGoogle(principal);
             } else if (registrationId.equals("github")) {
+                
                 oAuth2UserDetails = new OAuth2UserGitHub(principal);
             } else {
                 throw new CustomException("Provider not supported!", HttpStatus.BAD_REQUEST);
             }
             // System.out.println("user name : " + oAuth2UserDetails.getName());
-
             User user = userRepository.findByEmail(oAuth2UserDetails.getEmail()).orElse(null);
             // System.out.println(user);
          
@@ -89,7 +91,7 @@ public class LoginService {
         } catch (CustomException e) {
             return new Response(e.getStatus(), e.getMessage(), null);
         } catch (Exception e) {
-            return new Response(HttpStatus.BAD_REQUEST, "Provider not supported!", null);
+            return new Response(HttpStatus.BAD_REQUEST, "Provider not supported!", e.getMessage());
         }
     }
 

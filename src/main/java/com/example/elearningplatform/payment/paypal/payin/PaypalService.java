@@ -12,6 +12,7 @@ import com.example.elearningplatform.payment.coupon.Coupon;
 import com.example.elearningplatform.payment.coupon.CouponRepository;
 import com.example.elearningplatform.payment.coupon.CouponService;
 import com.example.elearningplatform.payment.coupon.dto.ApplyCouponRequest;
+import com.example.elearningplatform.payment.coupon.dto.ApplyCouponRequestList;
 import com.example.elearningplatform.payment.paypal.transactions.TempTransactionUser;
 import com.example.elearningplatform.payment.paypal.transactions.TempTransactionUserRepository;
 import com.example.elearningplatform.response.Response;
@@ -106,6 +107,95 @@ public class PaypalService {
             tempTransactionUser.setCurrency("USD");
             tempTransactionUser.setPaymentMethod("paypal");
             tempTransactionUserRepository.save(tempTransactionUser);
+            // System.out.println("Created Payment ID: " + payment.toString());
+            return payment;
+      }
+
+      /**************************************************** */
+      public Payment checkout(ApplyCouponRequestList applyCouponRequest) throws PayPalRESTException {
+
+            String successUrl = "http://" + request.getServerName() + ":" + request.getServerPort()
+                        + request.getContextPath()
+                        + "/payment/success";
+            String cancelUrl = "http://" + request.getServerName() + ":" + request.getServerPort()
+                        + request.getContextPath()
+                        + "/payment/cancel";
+
+            List<ApplyCouponRequest> applyCouponRequestList = applyCouponRequest.getApplyCouponRequestList();
+            Double price = 0.0;
+            for (ApplyCouponRequest coupon : applyCouponRequestList) {
+                  Response response = couponService.applyCoupon(coupon);
+                  if (response.getStatus() != HttpStatus.OK) {
+                        throw new PayPalRESTException((String) response.getData());
+                  }
+                  price += (Double) couponService.applyCoupon(coupon).getData();
+            }
+            // Response response = couponService.applyCoupon(applyCouponRequest);
+            // if (response.getStatus() != HttpStatus.OK) {
+            //       throw new PayPalRESTException((String) response.getData());
+            // }
+            // Double price = (Double) couponService.applyCoupon(applyCouponRequest).getData();
+
+            Amount amount = new Amount();
+            amount.setCurrency("USD");
+            amount.setTotal(String.format(Locale.forLanguageTag("en_US"), "%.2f", price));
+
+            Transaction transaction = new Transaction();
+            transaction.setDescription(null);
+            transaction.setAmount(amount);
+
+            List<Transaction> transactions = new ArrayList<>();
+            transactions.add(transaction);
+
+            Payer payer = new Payer();
+            payer.setPaymentMethod("paypal");
+
+            RedirectUrls redirectUrls = new RedirectUrls();
+            redirectUrls.setCancelUrl(cancelUrl);
+            redirectUrls.setReturnUrl(successUrl);
+
+            Payment payment = new Payment();
+            payment.setIntent("sale");
+            payment.setPayer(payer);
+            payment.setTransactions(transactions);
+            payment.setRedirectUrls(redirectUrls);
+
+            payment = payment.create(apiContext);
+
+            for (ApplyCouponRequest applyCouponRequest2 : applyCouponRequestList) {
+                  Coupon coupon = couponRepository
+                              .findByCodeAndCourseId(applyCouponRequest2.getCouponCode(), applyCouponRequest2.getCourseId())
+                              .orElseThrow(() -> new IllegalArgumentException("Coupon not found"));
+
+                  TempTransactionUser tempTransactionUser = new TempTransactionUser();
+                  tempTransactionUser.setCourseId(applyCouponRequest2.getCourseId());
+                  tempTransactionUser.setUserId(tokenUtil.getUserId());
+                  // tempTransactionUser.setUserId(tokenUtil.getUserId());
+                  tempTransactionUser.setCouponId(coupon.getId());
+                  tempTransactionUser.setPrice((int) (price * 100));
+                  tempTransactionUser.setConfirmed(false);
+
+                  tempTransactionUser.setPaymentId(payment.getId());
+                  tempTransactionUser.setCurrency("USD");
+                  tempTransactionUser.setPaymentMethod("paypal");
+                  tempTransactionUserRepository.save(tempTransactionUser);
+            }
+            // Coupon coupon = couponRepository
+            //             .findByCodeAndCourseId(applyCouponRequest.getCouponCode(), applyCouponRequest.getCourseId())
+            //             .orElseThrow(() -> new IllegalArgumentException("Coupon not found"));
+
+            // TempTransactionUser tempTransactionUser = new TempTransactionUser();
+            // tempTransactionUser.setCourseId(applyCouponRequest.getCourseId());
+            // tempTransactionUser.setUserId(tokenUtil.getUserId());
+            // // tempTransactionUser.setUserId(tokenUtil.getUserId());
+            // tempTransactionUser.setCouponId(coupon.getId());
+            // tempTransactionUser.setPrice(((int) (price * 100)));
+            // tempTransactionUser.setConfirmed(false);
+
+            // tempTransactionUser.setPaymentId(payment.getId());
+            // tempTransactionUser.setCurrency("USD");
+            // tempTransactionUser.setPaymentMethod("paypal");
+            // tempTransactionUserRepository.save(tempTransactionUser);
             // System.out.println("Created Payment ID: " + payment.toString());
             return payment;
       }

@@ -3,6 +3,7 @@ package com.example.elearningplatform.payment.paypal;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,7 @@ import com.example.elearningplatform.course.course.CourseService;
 import com.example.elearningplatform.exception.CustomException;
 import com.example.elearningplatform.payment.coupon.CouponService;
 import com.example.elearningplatform.payment.coupon.dto.ApplyCouponRequest;
+import com.example.elearningplatform.payment.coupon.dto.ApplyCouponRequestList;
 import com.example.elearningplatform.payment.paypal.payin.PaypalService;
 import com.example.elearningplatform.payment.paypal.transactions.TempTransactionUser;
 import com.example.elearningplatform.payment.paypal.transactions.TempTransactionUserRepository;
@@ -98,6 +100,30 @@ public class PaypalController {
 		return new RedirectView("/payment/error");
 	}
 
+	/***************************************************************************************** */
+	@PostMapping("/payment/create")
+	public RedirectView checkout(@RequestBody ApplyCouponRequestList applyCouponRequest) {
+		try {
+			User user = userRepository.findById(tokenUtil.getUserId()).orElse(null);
+			if (user == null || user.getPaypalEmail() == null) {
+				return new RedirectView("/payment/error");
+			}
+			// if(courseService.ckeckCourseSubscribe(applyCouponRequest.getCourseId())) {
+			// return new RedirectView("/course/public/get-course/" +
+			// applyCouponRequest.getCourseId());
+			// }
+			Payment payment = paypalService.checkout(applyCouponRequest);
+			for (Links links : payment.getLinks()) {
+				if (links.getRel().equals("approval_url")) {
+					return new RedirectView(links.getHref());
+				}
+			}
+		} catch (PayPalRESTException e) {
+			log.error("Error occurred:: ", e);
+		}
+		return new RedirectView("/payment/error");
+	}
+
 	/*********************************************
 	 * SUCCESS
 	 * *
@@ -112,32 +138,57 @@ public class PaypalController {
 			@RequestParam("PayerID") String payerId) throws Exception {
 		try {
 
-			TempTransactionUser tempTransactionUser = tempTransactionUserRepository
-					.findByPaymentIdAndUserId(paymentId, tokenUtil.getUserId())
-					.orElseThrow(() -> new CustomException("Transaction not found", HttpStatus.NOT_FOUND));
+			List<TempTransactionUser> tempTransactionUserList = tempTransactionUserRepository
+					.findByPaymentIdAndUserId(paymentId, tokenUtil.getUserId());
+					if(tempTransactionUserList.size()==0) {
+						response.sendRedirect("/payment/error");
+						return;
+					}
+			
 
 			Payment payment = paypalService.executePayment(paymentId, payerId);
 			if (payment.getState().equals("approved")) {
+				for (TempTransactionUser tempTransactionUser : tempTransactionUserList) {
+					tempTransactionUser.setPaymentId(paymentId);
+					tempTransactionUser.setConfirmed(true);
 
-				tempTransactionUser.setConfirmed(true);
+					tempTransactionUser.setConfirmDate(LocalDateTime.now());
+					if (tempTransactionUser.getCouponId() != null) {
 
-				tempTransactionUser.setConfirmDate(LocalDateTime.now());
-				if (tempTransactionUser.getCouponId() != null) {
+						couponService.decrementCoupon(tempTransactionUser.getCouponId());
+					}
 
-					couponService.decrementCoupon(tempTransactionUser.getCouponId());
+					Course course = courseRepository.findById(tempTransactionUser.getCourseId())
+							.orElseThrow(() -> new CustomException(
+									"Course not found", HttpStatus.NOT_FOUND));
+
+					courseRepository.enrollCourse(tempTransactionUser.getUserId(), tempTransactionUser.getCourseId());
+					course.incrementNumberOfEnrollments();
+					tempTransactionUserRepository.save(tempTransactionUser);
 				}
+				
+			response.sendRedirect("/user/get-cart");
+									return;
+			// 	tempTransactionUser.setConfirmed(true);
 
-				Course course = courseRepository.findById(tempTransactionUser.getCourseId())
-						.orElseThrow(() -> new CustomException(
-								"Course not found", HttpStatus.NOT_FOUND));
+			// 	tempTransactionUser.setConfirmDate(LocalDateTime.now());
+			// 	if (tempTransactionUser.getCouponId() != null) {
 
-				courseRepository.enrollCourse(tempTransactionUser.getUserId(), tempTransactionUser.getCourseId());
-				course.incrementNumberOfEnrollments();
-				tempTransactionUserRepository.save(tempTransactionUser);
+			// 		couponService.decrementCoupon(tempTransactionUser.getCouponId());
+			// 	}
 
-				response.sendRedirect("/course/public/get-course/" + tempTransactionUser.getCourseId());
-				return;
+			// 	Course course = courseRepository.findById(tempTransactionUser.getCourseId())
+			// 			.orElseThrow(() -> new CustomException(
+			// 					"Course not found", HttpStatus.NOT_FOUND));
+
+			// 	courseRepository.enrollCourse(tempTransactionUser.getUserId(), tempTransactionUser.getCourseId());
+			// 	course.incrementNumberOfEnrollments();
+			// 	tempTransactionUserRepository.save(tempTransactionUser);
+
+			// 	response.sendRedirect("/course/public/get-course/" + tempTransactionUser.getCourseId());
+			// 	return;
 			}
+			
 		} catch (CustomException e) {
 			log.error("Error occurred:: ", e);
 		} catch (PayPalRESTException e) {

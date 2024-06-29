@@ -43,9 +43,9 @@ public class SectionService {
     /************************************************************************************** */
     /************************************************************************************** */
 
-    public List<Section> getSectionsByCourseId(Integer courseID) {
-        return sectionRepository.findByCourseId(courseID);
-    }
+    // public List<Section> getSectionsByCourseId(Integer courseID) {
+    //     return sectionRepository.findByCourseId(courseID);
+    // }
 
     /*******************************************************************************************/
 
