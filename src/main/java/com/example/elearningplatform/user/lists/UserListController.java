@@ -28,6 +28,14 @@ public class UserListController {
     private final UserListService userListService;
 
     /********************************************************************************* */
+    
+    /**
+     * Creates a new user list based on the provided CreateUserList object.
+     *
+     * @param  userlist  the CreateUserList object containing the details of the user list to be created
+     * @param  result    the BindingResult object for validation errors
+     * @return           the Response object indicating the result of the list creation
+     */
     @PostMapping("/create-list")
     public Response createList(@RequestBody @Valid CreateUserList userlist, BindingResult result) {
 
@@ -41,6 +49,12 @@ public class UserListController {
     }
 
     /********************************************************************************* */
+    
+    /**
+     * Retrieves the user lists.
+     *
+     * @return the Response object containing the user lists
+     */
     @GetMapping("/get-user-lists")
     public Response getLists() {
         return userListService.getLists();
@@ -48,6 +62,13 @@ public class UserListController {
 
     /********************************************************************************* */
 
+    /**
+     * A description of the entire Java function.
+     *
+     * @param  courseId   description of parameter
+     * @param  listId     description of parameter
+     * @return           description of return value
+     */
     @PostMapping("/add-to-list")
     public Response addTolist(@RequestParam("courseId") Integer courseId, @RequestParam("listId") Integer listId) {
         return userListService.addTolist(listId, courseId);
@@ -56,6 +77,13 @@ public class UserListController {
 
     /********************************************************************************* */
 
+    /**
+     * Removes a course from a user's list.
+     *
+     * @param  courseId   the ID of the course to be removed
+     * @param  listId     the ID of the list from which the course is to be removed
+     * @return            the response indicating the result of the operation
+     */
     @DeleteMapping("/remove-from-list")
     public Response removeFromlist(@RequestParam("courseId") Integer courseId, @RequestParam("listId") Integer listId) {
 
@@ -64,12 +92,28 @@ public class UserListController {
     }
 
     /********************************************************************************* */
+    
+    /**
+     * Deletes a user list by its ID.
+     *
+     * @param  listId  the ID of the list to be deleted
+     * @return         a Response object indicating the result of the deletion
+     */
     @DeleteMapping("/delete-list")
     public Response deleteList(@RequestParam("listId") Integer listId) {
 
         return userListService.deleteList(listId);
     }
+
     /*****************************************************************************************************/
+    
+    /**
+     * Updates a user list based on the provided UpdateUserList object.
+     *
+     * @param  list     the UpdateUserList object containing the details of the list to be updated
+     * @param  result   the BindingResult object for validation errors
+     * @return          the Response object indicating the result of the list update
+     */
     @PutMapping("/update-list")
     public Response updateList(@RequestBody @Valid UpdateUserList list, BindingResult result) {
         if (result.hasErrors()) {

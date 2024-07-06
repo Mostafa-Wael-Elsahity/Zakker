@@ -51,6 +51,15 @@ public class CourseController {
 
 
     /*******************************************************************************************/
+    
+    /**
+     * Searches for courses based on a search key and returns a paginated response of CoursesResponse.
+     *
+     * @param  searchKey   the search key to filter courses by
+     * @param  pageNumber  the page number of the results to retrieve
+     * @return             a paginated response of CoursesResponse containing the search results
+     * @throws SQLException if an error occurs while querying the database
+     */
     @GetMapping("/public/search/{searchKey}/{pageNumber}")
     public CoursesResponse searchCourse(@PathVariable("searchKey") String searchKey,
             @PathVariable("pageNumber") Integer pageNumber) throws SQLException {
@@ -60,6 +69,16 @@ public class CourseController {
 
 
     /*******************************************************************************************/
+    
+    
+    /**
+     * Retrieves a paginated list of courses based on the specified category name and page number.
+     *
+     * @param  categoryName  the name of the category to filter courses by
+     * @param  pageNumber    the page number of the results to retrieve
+     * @return               a paginated response of CoursesResponse containing the search results
+     * @throws SQLException if an error occurs while querying the database
+     */
     @GetMapping("/public/get-by-category/{categoryName}/{pageNumber}")
     public CoursesResponse searchCourseWithCategory(@PathVariable("categoryName") String categoryName,
             @PathVariable("pageNumber") Integer pageNumber) throws SQLException {
@@ -67,6 +86,16 @@ public class CourseController {
     }
 
     /*******************************************************************************************/
+    
+    
+    /**
+     * Retrieves a paginated list of courses based on the specified tag name and page number.
+     *
+     * @param  tagName  the name of the tag to filter courses by
+     * @param  pageNumber  the page number of the results to retrieve
+     * @return  a CoursesResponse object containing the paginated list of courses
+     * @throws SQLException if an error occurs while querying the database
+     */
     @GetMapping("/public/get-by-tag/{tagName}/{pageNumber}")
     public CoursesResponse searchCourseWithTag(@PathVariable("tagName") String tagName,
             @PathVariable("pageNumber") Integer pageNumber)
@@ -76,24 +105,42 @@ public class CourseController {
 
     /*******************************************************************************************/
 
+    /**
+     * Retrieves a course by its ID.
+     *
+     * @param  id     the ID of the course to retrieve
+     * @return        a Response object containing the course information
+     * @throws SQLException if an error occurs while querying the database
+     */
     @GetMapping("/public/get-course/{id}")
     @SecurityRequirement(name = "bearerAuth")
-    //ممكن تديها توكن وممك  لا 
     public Response getCourse(@PathVariable("id") Integer id)
             throws SQLException {
         return courseService.getCourse(id);
     }
 
     /***************************************************************************************** */
+    
+    
+    /**
+     * Retrieves a paginated list of all courses based on the specified page number.
+     *
+     * @param  pageNumber  the page number of the results to retrieve
+     * @return             a CoursesResponse object containing the paginated list of courses
+     */
     @GetMapping("/public/get-courses/{pageNumber}")
     public CoursesResponse getAllCourses(@PathVariable("pageNumber") Integer pageNumber) {
         return courseService.getAllCourses(pageNumber);
     }
 
+    
     /**
-     * @throws InterruptedException
-     * @throws IOException
-     ***************************************************************************************/
+     * A description of the entire Java function.
+     *
+     * @param  course   the CreateCourseRequest object containing the course details
+     * @param  result   the BindingResult object for validation
+     * @return          the Response object indicating the result of the course creation
+     */
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/create-course")
     public Response createCourse(@RequestBody @Valid CreateCourseRequest course, BindingResult result)
@@ -106,6 +153,14 @@ public class CourseController {
     }
 
     /***********************************************************************************************************/
+    
+    /**
+     * A description of the entire Java function.
+     *
+     * @param  course   the UpdateCourseRequest object containing the course details
+     * @param  result   the BindingResult object for validation
+     * @return          the Response object indicating the result of the course update
+     */
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/update-course")
     public Response updateCourse(@RequestBody @Valid UpdateCourseRequest course, BindingResult result)
@@ -117,6 +172,13 @@ public class CourseController {
     }
 
     /*********************************************************************************************************** */
+    
+    /**
+     * A description of the entire Java function.
+     *
+     * @param  id   description of parameter
+     * @return      description of return value
+     */
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/delete-course")
     public Response unPublishCourse(@RequestParam("id") Integer id) throws SQLException {
@@ -125,19 +187,15 @@ public class CourseController {
     }
     /*************************************************************************************************** */
 
-    // @GetMapping("/display-image/{id}")
-    // public Response displayImage(@PathVariable("id") Integer id) throws
-    // SQLException {
-    // Course course = courseRepository.findById(id).orElse(null);
-    // if (course == null) {
-    // return new Response(HttpStatus.NOT_FOUND, "Course not found", null);
-    // }
-    // return new Response(HttpStatus.OK, "Success", course.getImage());
 
-    // }
-
-    /*************************************************************************************************** */
-    
+    /**
+     * Uploads an image file for a course.
+     *
+     * @param  image      the image file to upload
+     * @param  courseId   the ID of the course to associate the image with
+     * @return            a ResponseEntity with a success message or an error message
+     * @throws IOException if there is an error reading the image file
+     */
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/upload-image")
     @ResponseBody
@@ -170,6 +228,13 @@ public class CourseController {
     /******************************************************************************************** */
 
     
+    /**
+     * Deletes the image associated with a course.
+     *
+     * @param  courseId   the ID of the course whose image will be deleted
+     * @return            a ResponseEntity with a success message or an error message
+     * @throws CustomException if the course is not found or there is an error deleting the image from Cloudinary
+     */
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/delete-image")
     public ResponseEntity<String> deleteImage(@RequestParam("courseId") int courseId) {
@@ -194,6 +259,12 @@ public class CourseController {
 
     /******************************************************************************************** */
     
+    /**
+     * A description of the entire Java function.
+     *
+     * @param  id   description of parameter
+     * @return      description of return value
+     */
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("publish-course/{id}")
     public Response publishCourse(@PathVariable("id") Integer id) throws SQLException {
@@ -201,6 +272,13 @@ public class CourseController {
     }
 
     /******************************************************************************************** */
+    
+    /**
+     * Adds an instructor to a course.
+     *
+     * @param  request  the request object containing the instructor details
+     * @return          the response object indicating the result of the operation
+     */
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/add-instructor")
     public Response addInstructor(@RequestBody AddInstructorRequest request) {
@@ -209,6 +287,13 @@ public class CourseController {
     }
 
     /******************************************************************************************** */
+    
+    /**
+     * Deletes an instructor from a course.
+     *
+     * @param  request  the request object containing the instructor details
+     * @return          the response object indicating the result of the operation
+     */
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/delete-instructor")
     public Response deleteInstructor(@RequestBody AddInstructorRequest request) {

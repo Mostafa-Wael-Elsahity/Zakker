@@ -32,11 +32,6 @@ public class RefundController {
       @PostMapping("/refund")
       public Response createRefund(@RequestBody RefundRequest refundRequest)
                   throws JsonMappingException, JsonProcessingException {
-            // String response = payoutService.createPayout(
-            //             "123457789010002010", "Email subject",
-            //             "Email message", "EMAIL", "100.00",
-            //             "USD", "Note", "item_mohamedredazs00olimaahw",
-            //             "sb-c1zgn29967664@business.example.com", "PAYPAL");
             return refundService.createRefund(refundRequest);
       }
 }

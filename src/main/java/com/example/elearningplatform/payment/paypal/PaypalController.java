@@ -65,10 +65,13 @@ public class PaypalController {
 
 	private final String prefixHttp = "http://";
 
-	/************************************
-	 * CREATE PAYMENT ****************************************
-	 */
+	
 
+	/**
+	 * Renders the home page for PayPal.
+	 *
+	 * @return ModelAndView object for the PayPal home page
+	 */
 	@GetMapping("/paypal")
 	public ModelAndView home() {
 		ModelAndView modelAndView = new ModelAndView();
@@ -81,7 +84,7 @@ public class PaypalController {
 	public RedirectView createPayment(@RequestBody ApplyCouponRequest applyCouponRequest) {
 		try {
 			User user = userRepository.findById(tokenUtil.getUserId()).orElse(null);
-			if(user==null || user.getPaypalEmail()==null ) {
+			if (user == null || user.getPaypalEmail() == null) {
 				return new RedirectView("/payment/error");
 			}
 			// if(courseService.ckeckCourseSubscribe(applyCouponRequest.getCourseId())) {
@@ -140,11 +143,10 @@ public class PaypalController {
 
 			List<TempTransactionUser> tempTransactionUserList = tempTransactionUserRepository
 					.findByPaymentIdAndUserId(paymentId, tokenUtil.getUserId());
-					if(tempTransactionUserList.size()==0) {
-						response.sendRedirect("/payment/error");
-						return;
-					}
-			
+			if (tempTransactionUserList.size() == 0) {
+				response.sendRedirect("/payment/error");
+				return;
+			}
 
 			Payment payment = paypalService.executePayment(paymentId, payerId);
 			if (payment.getState().equals("approved")) {
@@ -162,33 +164,16 @@ public class PaypalController {
 							.orElseThrow(() -> new CustomException(
 									"Course not found", HttpStatus.NOT_FOUND));
 
-					courseRepository.enrollCourse(tempTransactionUser.getUserId(), tempTransactionUser.getCourseId());
+					courseRepository.enrollCourse(tempTransactionUser.getUserId(),
+							tempTransactionUser.getCourseId());
 					course.incrementNumberOfEnrollments();
 					tempTransactionUserRepository.save(tempTransactionUser);
 				}
-				
-			response.sendRedirect("/user/get-cart");
-									return;
-			// 	tempTransactionUser.setConfirmed(true);
 
-			// 	tempTransactionUser.setConfirmDate(LocalDateTime.now());
-			// 	if (tempTransactionUser.getCouponId() != null) {
-
-			// 		couponService.decrementCoupon(tempTransactionUser.getCouponId());
-			// 	}
-
-			// 	Course course = courseRepository.findById(tempTransactionUser.getCourseId())
-			// 			.orElseThrow(() -> new CustomException(
-			// 					"Course not found", HttpStatus.NOT_FOUND));
-
-			// 	courseRepository.enrollCourse(tempTransactionUser.getUserId(), tempTransactionUser.getCourseId());
-			// 	course.incrementNumberOfEnrollments();
-			// 	tempTransactionUserRepository.save(tempTransactionUser);
-
-			// 	response.sendRedirect("/course/public/get-course/" + tempTransactionUser.getCourseId());
-			// 	return;
+				response.sendRedirect("/user/get-cart");
+				return;
 			}
-			
+
 		} catch (CustomException e) {
 			log.error("Error occurred:: ", e);
 		} catch (PayPalRESTException e) {
@@ -198,8 +183,11 @@ public class PaypalController {
 
 	}
 
-	/******************************
-	 * CANCEL PAYMENT ****************************************
+	/**
+	 * Handles the cancellation of a payment.
+	 *
+	 * @return a Response object indicating that the payment was cancelled
+	 * @throws IOException if an I/O error occurs
 	 */
 	@GetMapping("/payment/cancel")
 	public Response paymentCancel() throws IOException {
@@ -207,10 +195,12 @@ public class PaypalController {
 
 	}
 
-	/***************************************
-	 * ERROR ***********************************************************************
+	/**
+	 * Returns a Response object with a 400 status code, a message indicating a
+	 * payment error, and a null body.
+	 *
+	 * @return a Response object indicating a payment error
 	 */
-
 	@GetMapping("/payment/error")
 	public Response paymentError() {
 		return new Response(HttpStatus.BAD_REQUEST, "Payment error", null);

@@ -26,6 +26,13 @@ public class ReviewController {
     private ReviewService reviewService;
 
     /************************************************************************************************ */
+    
+    /**
+     * A description of the entire Java function.
+     *
+     * @param  courseId   description of parameter
+     * @return           description of return value
+     */
     @GetMapping("/get-reviews")
     public ReviewResponse getReview(@RequestParam("courseId") Integer courseId) {
         return reviewService.getReviewsByCourseId(courseId);
@@ -33,6 +40,14 @@ public class ReviewController {
     }
 
     /************************************************************************************************ */
+    
+    /**
+     * A description of the entire Java function.
+     *
+     * @param  request	description of parameter
+     * @param  result	description of parameter
+     * @return         	description of return value
+     */
     @PostMapping("/add-review")
     public Response addReview( @RequestBody @Valid CreateReviewRequest request, BindingResult result) {
         if (result.hasErrors()) {
@@ -43,6 +58,13 @@ public class ReviewController {
     }
 
     /************************************************************************************************ */
+    
+    /**
+     * A description of the entire Java function.
+     *
+     * @param  reviewId	description of parameter
+     * @return         	description of return value
+     */
     @GetMapping("/delete-review")
     public Response deleteReview(@RequestParam("reviewId") Integer reviewId) {
 
@@ -50,6 +72,14 @@ public class ReviewController {
     }
 
     /************************************************************************************************ */
+    
+    /**
+     * Updates a review based on the provided request.
+     *
+     * @param  request   the UpdateReviewRequest object containing the review details
+     * @param  result    the BindingResult object for validation
+     * @return           the Response object indicating the result of the review update
+     */
     @PostMapping("/update-review")
     public Response updateReview( @RequestBody @Valid UpdateReviewRequest request, BindingResult result) {
         if (result.hasErrors()) {

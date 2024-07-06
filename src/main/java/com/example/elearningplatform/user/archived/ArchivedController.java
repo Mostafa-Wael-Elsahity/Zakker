@@ -21,12 +21,24 @@ public class ArchivedController {
 
     /*****************************************************************************************************/
 
+    /**
+     * Retrieves the archived items by calling the `getArchived` method from the `ArchivedService` class.
+     *
+     * @return  a `Response` object containing the archived items
+     */
     @GetMapping("/get-archived")
     public Response getarchived() {
         return archivedService.getArchived();
     }
 
     /****************************************************************************************************/
+    
+    /**
+     * Deletes a course from the archived list.
+     *
+     * @param  courseId  the ID of the course to be deleted from the archived list
+     * @return           a Response object indicating the result of the deletion
+     */
     @DeleteMapping("/delete-from-archived")
     public Response deleteFromArchived(@RequestParam("courseId") Integer courseId) {
 
@@ -34,12 +46,18 @@ public class ArchivedController {
     }
 
     /****************************************************************************************************/
+    
+    /**
+     * Adds a course to the archived list.
+     *
+     * @param  courseId  the ID of the course to be added to the archived list
+     * @return           a Response object indicating the result of the addition
+     */
     @PostMapping("/add-to-archived")
     public Response addToArchived(@RequestParam("courseId") Integer courseId)  {
 
         return archivedService.addToArchived(courseId);
     }
 
-    /****************************************************************************************************/
 
 }

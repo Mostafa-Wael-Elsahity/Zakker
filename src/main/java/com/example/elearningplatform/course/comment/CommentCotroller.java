@@ -27,6 +27,13 @@ public class CommentCotroller {
     private final CommentService commentService;
 
 
+    /**
+     * Retrieves comments based on the lesson ID and page number.
+     *
+     * @param  lessonId    the ID of the lesson
+     * @param  pageNumber   the page number for pagination
+     * @return             the Response object containing the comments
+     */
     @GetMapping("/get-comments/{lessonId}/{pageNumber}")
     public Response getComments(@PathVariable("lessonId") Integer lessonId,
             @PathVariable("pageNumber") Integer pageNumber) throws Exception {
@@ -39,6 +46,13 @@ public class CommentCotroller {
 
     /*************************************************************************************** */
 
+    /**
+     * Creates a new comment based on the provided CreateCommentRequest.
+     *
+     * @param  comment   the CreateCommentRequest object containing the comment details
+     * @param  result    the BindingResult object for validation
+     * @return           the Response object indicating the result of the comment creation
+     */
     @PostMapping("/create-comment")
     public Response createComment(@RequestBody @Valid CreateCommentRequest comment, BindingResult result) {
 
@@ -48,8 +62,15 @@ public class CommentCotroller {
         return commentService.createComment(comment);
     }
 
+    
     /**
-     * @throws Exception ************************************************************************************* */
+     * Updates a comment based on the provided UpdateCommentRequest.
+     *
+     * @param  request   the UpdateCommentRequest object containing the comment details
+     * @param  result    the BindingResult object for validation
+     * @return           the Response object indicating the result of the comment update
+     * @throws Exception if an error occurs during the update process
+     */
     @PostMapping("/update-comment")
     public Response updateComment(@RequestBody @Valid UpdateCommentRequest request, BindingResult result) throws Exception {
         if (result.hasErrors()) {
@@ -60,6 +81,12 @@ public class CommentCotroller {
 
     /*************************************************************************************** */
 
+    /**
+     * Deletes a comment by its ID.
+     *
+     * @param  commentId  the ID of the comment to be deleted
+     * @return             a Response object indicating the result of the deletion
+     */
     @DeleteMapping("/delete-comment/{commentId}")
     public Response deleteComment(@RequestParam("commentId") Integer commentId) {
 
@@ -67,6 +94,14 @@ public class CommentCotroller {
     }
 
     /*************************************************************************************** */
+    
+    
+    /**
+     * A description of the entire Java function.
+     *
+     * @param  commentId   description of parameter
+     * @return             description of return value
+     */
     @PostMapping("/like-comment/{commentId}")
     public Response likeComment(@RequestParam("commentId") Integer commentId) {
 
@@ -74,9 +109,14 @@ public class CommentCotroller {
     }
     /*************************************************************************************** */
 
+    /**
+     * A description of the entire Java function.
+     *
+     * @param  commentId  the ID of the comment to remove the like from
+     * @return             the Response object indicating the result of removing the like from the comment
+     */
     @DeleteMapping("/remove-like-comment/{commentId}")
     public Response removeLikeComment(@RequestParam("commentId") Integer commentId) {
-
         return commentService.removeLikeComment(commentId);
     }
 }

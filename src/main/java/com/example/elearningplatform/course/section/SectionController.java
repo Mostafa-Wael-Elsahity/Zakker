@@ -25,6 +25,15 @@ public class SectionController {
     @Autowired
     private SectionService sectionService;
 
+    /**
+     * Creates a new section in the system.
+     *
+     * @param  createSectionRequest  the request object containing the section details
+     * @param  result                the result of the validation process
+     * @return                       a response object indicating the success or failure of the creation process
+     * @throws IOException           if an I/O error occurs
+     * @throws InterruptedException if the thread is interrupted while waiting for the section creation process
+     */
     @PostMapping("/create-section")
     public Response createSection(@RequestBody @Valid CreateSectionRequest createSectionRequest,
             BindingResult result)
@@ -35,8 +44,16 @@ public class SectionController {
         return sectionService.createSection(createSectionRequest);
     }
 
+    /**********************************************************************************/
+    
     /**
-     * ******************************************************************************
+     * A description of the entire Java function.
+     *
+     * @param  updateSectionRequest  the request object containing the section details
+     * @param  result                the result of the validation process
+     * @return                       a response object indicating the success or failure of the update process
+     * @throws IOException           if an I/O error occurs
+     * @throws InterruptedException   if the thread is interrupted while waiting for the section update process
      */
     @PostMapping("/update-section")
     public Response updateSection(@RequestBody @Valid UpdateSectionRequest updateSectionRequest,
@@ -49,17 +66,20 @@ public class SectionController {
         return sectionService.updateSection(updateSectionRequest);
     }
 
+    /**********************************************************************************/
+
     /**
-     * ******************************************************************************
+     * Deletes a section from the system.
+     *
+     * @param  sectionId  the ID of the section to be deleted
+     * @return            a response object indicating the success or failure of the deletion process
+     * @throws IOException           if an I/O error occurs
+     * @throws InterruptedException if the thread is interrupted while waiting for the section deletion process
      */
     @DeleteMapping("/delete-section")
     public Response deleteSection(@RequestParam("sectionId") Integer sectionId)
             throws IOException, InterruptedException {
-
         return sectionService.deleteSection(sectionId);
     }
 
-    /**
-     * ******************************************************************************
-     */
 }

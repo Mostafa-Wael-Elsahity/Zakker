@@ -20,6 +20,12 @@ public class WishListController {
     private WishListService userService;
 
     /*****************************************************************************************************/
+    
+    /**
+     * Retrieves the user's wishlist.
+     *
+     * @return the response containing the user's wishlist
+     */
     @GetMapping("/get-wishlist")
     public Response getWishlist() {
         return userService.getWishlist();
@@ -27,6 +33,12 @@ public class WishListController {
 
     /****************************************************************************************************/
 
+    /**
+     * A description of the entire Java function.
+     *
+     * @param  courseId   description of parameter
+     * @return            description of return value
+     */
     @PostMapping("/add-to-wishlist")
     public Response addCourseToWishlist(@RequestParam("courseId") Integer courseId)  {
 
@@ -34,6 +46,13 @@ public class WishListController {
     }
 
     /****************************************************************************************************/
+    
+    /**
+     * A description of the entire Java function.
+     *
+     * @param  courseId   description of parameter
+     * @return            description of return value
+     */
     @DeleteMapping("/delete-from-wishlist")
     public Response deleteFromWishlist(@RequestParam("courseId") Integer courseId)  {
 

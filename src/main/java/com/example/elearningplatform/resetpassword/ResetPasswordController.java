@@ -35,6 +35,19 @@ public class ResetPasswordController {
 
     /*************************************************************************************************************/
 
+    /**
+     * Handles the request to enter the email for password reset. Validates the request body, checks if the user exists,
+     * and sends the appropriate response based on the user's status. If the user is disabled, sends a verification
+     * code for registration. Otherwise, sends a password reset email.
+     *
+     * @param  email          the email address entered by the user
+     * @param  result         the binding result of the request body validation
+     * @param  request        the HTTP servlet request
+     * @return                the response indicating the success or failure of the password reset process
+     * @throws MessagingException   if there is an error sending the email
+     * @throws SQLException        if there is an error accessing the database
+     * @throws IOException          if there is an error generating the token
+     */
     @PostMapping("/forget-password")
     public Response enterEmail(@RequestBody @Valid EnterEmailRequest email, BindingResult result,
             HttpServletRequest request)
@@ -58,6 +71,17 @@ public class ResetPasswordController {
 
     /***************************************************************************************************************/
 
+    /**
+     * Handles the request to change the password. Validates the request body, and saves the new password.
+     *
+     * @param  data          the ChangePasswordRequest object containing email and new password
+     * @param  result        the binding result of the request body validation
+     * @param  request       the HTTP servlet request
+     * @return               the response indicating the success or failure of the password change process
+     * @throws SQLException        if there is an error accessing the database
+     * @throws IOException         if there is an error during I/O operations
+     * @throws MessagingException  if there is an error sending an email
+     */
     @PostMapping("/change-password")
     public Response changePassword(@RequestBody @Valid ChangePasswordRequest data, BindingResult result,
             HttpServletRequest request)
@@ -69,6 +93,15 @@ public class ResetPasswordController {
     }
 
     /***************************************************************************************************************/
+    
+    /**
+     * Handles the request to save the password based on the provided token. Checks if the token is expired
+     * and returns an appropriate response.
+     *
+     * @param  token   the token extracted from the request URL
+     * @param  model   the model object
+     * @return         the response containing the result of the password save operation
+     */
     @GetMapping("/check-token/{token}")
     public Response savePassword(@PathVariable("token") String token, Model model)
             throws SQLException, IOException {

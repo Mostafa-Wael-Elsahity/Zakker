@@ -43,5 +43,40 @@
     "name": "schedulingProcessTempTransaction",
     "type": "java.lang.String",
     "description": "A description for 'schedulingProcessTempTransaction'"
+  },
+  {
+    "name": "APIKey",
+    "type": "java.lang.String",
+    "description": "A description for 'APIKey'"
+  },
+  {
+    "name": "storageAcceskey",
+    "type": "java.lang.String",
+    "description": "A description for 'storageAcceskey'"
+  },
+  {
+    "name": "storageZone",
+    "type": "java.lang.String",
+    "description": "A description for 'storageZone'"
+  },
+  {
+    "name": "bunnycdn.storageZoneapiKey",
+    "type": "java.lang.String",
+    "description": "A description for 'bunnycdn.storageZoneapiKey'"
+  },
+  {
+    "name": "bunnycdn.storageZone",
+    "type": "java.lang.String",
+    "description": "A description for 'bunnycdn.storageZone'"
+  },
+  {
+    "name": "schedulingProcessTempTransaction",
+    "type": "java.lang.String",
+    "description": "A description for 'schedulingProcessTempTransaction'"
+  },
+  {
+    "name": "schedulingProcessTempTransaction",
+    "type": "java.lang.String",
+    "description": "A description for 'schedulingProcessTempTransaction'"
   }
 ]}

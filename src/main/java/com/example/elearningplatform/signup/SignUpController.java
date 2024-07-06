@@ -31,15 +31,24 @@ public class SignUpController {
     private final UserRepository userRepository;
     private final TokenUtil tokenUtil;
 
-    /******************************************************************************************************************/
 
     /******************************************************************************************************************/
 
+    /**
+     * Handles the sign-up request by validating the request, checking if the email already exists,
+     * registering the user, generating a registration verification code, and sending the code via email.
+     *
+     * @param signUpRequest the sign-up request containing user information
+     * @param result        the binding result containing validation errors
+     * @param request       the HTTP servlet request
+     * @return              the response indicating the status of the sign-up process
+     * @throws MessagingException    if there is an error while sending the verification code via email
+     * @throws IOException           if there is an error while processing the request
+     * @throws SQLException          if there is an error while accessing the database
+     */
     @PostMapping(value = "/signup")
-
     public Response signUp(@Valid @RequestBody SignUpRequest signUpRequest, BindingResult result,
             HttpServletRequest request) throws MessagingException, IOException, SQLException {
-        // return new Response(HttpStatus.OK, "ok", signUpRequest.getEmail());
         if (result.hasErrors()) {
             return Validator.validate(result);
         }
@@ -71,11 +80,17 @@ public class SignUpController {
 
     /******************************************************************************************************************/
 
+    /**
+     * Verifies the email using the provided token.
+     *
+     * @param  verficationToken   the token used to verify the email
+     * @return                     the response indicating the result of the verification
+     * @throws SQLException       if there is an error accessing the database
+     * @throws IOException        if there is an error reading or writing to the database
+     */
     @GetMapping("/verifyEmail/{token}")
 
     public Response verifyEmail(@PathVariable("token") String verficationToken) throws SQLException, IOException {
-        // System.out.println(verficationToken);
-
         return signUpService.verifyEmail(verficationToken);
     }
 

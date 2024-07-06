@@ -49,6 +49,13 @@ public class UserController {
 
     /***************************************************************************************************/
 
+    /**
+     * Retrieves a user by their ID.
+     *
+     * @param  id  the ID of the user to retrieve
+     * @return     the Response object containing the user details
+     * @throws SQLException if an error occurs while retrieving the user from the database
+     */
     @GetMapping("/get-user/{id}")
     public Response getUser(@PathVariable("id") Integer id) throws SQLException {
         return userService.getUser(id);
@@ -57,6 +64,11 @@ public class UserController {
 
     /***********************************************************************************************/
 
+    /**
+     * Retrieves all users.
+     *
+     * @return          the Response object containing the list of all users
+     */
     @GetMapping("/get-all-users")
 
     public Response getUsers() {
@@ -67,7 +79,13 @@ public class UserController {
     }
 
     /**********************************************************************************************/
-@SecurityRequirement(name = "bearerAuth")
+
+    /**
+     * Retrieves the profile of the authenticated user.
+     *
+     * @return          the Response object containing the user's profile details
+     */
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/profile")
     public Response getProfile() {
 
@@ -75,6 +93,12 @@ public class UserController {
     }
 
     /************************************************************************************************/
+    
+    /**
+     * Retrieves the enrolled courses for the authenticated user.
+     *
+     * @return          the Response object containing the list of enrolled courses
+     */
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/my-learning")
     public Response myLearning() {
@@ -83,6 +107,13 @@ public class UserController {
     }
 
     /***************************************************************************************************/
+    
+    /**
+     * Deletes the authenticated user.
+     *
+     * @return          the Response object indicating the result of the deletion
+     * @throws SQLException if an error occurs during the deletion process
+     */
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/delete-user")
     public Response deleteUser() throws SQLException {
@@ -91,6 +122,14 @@ public class UserController {
     }
     
     /***************************************************************************************************/
+    
+    /**
+     * Deletes a user by their ID.
+     *
+     * @param  id    the ID of the user to be deleted
+     * @return       the Response object indicating the result of the deletion
+     * @throws SQLException if an error occurs during the deletion process
+     */
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/delete-user-by-id")
     public Response deleteUserById(@RequestParam ("id") Integer id) throws SQLException {
@@ -110,6 +149,13 @@ public class UserController {
 
 
     /***************************************************************************************************/
+    
+    /**
+     * Updates the user profile with the provided request.
+     *
+     * @param  updateProfileRequest  the request containing the updated profile information
+     * @return                      the response indicating the result of the update operation
+     */
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/update-profile")
     public Response updateprofile(@RequestBody UpdateProfileRequest updateProfileRequest) {
@@ -118,13 +164,28 @@ public class UserController {
     }
 
     /************************************************************************************************************* */
+    
+    /**
+     * A description of the entire Java function.
+     *
+     * @param  paramName    description of parameter
+     * @return             description of return value
+     */
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/get-instructor-courses")
     public Response getIstructedCourses() {
 
         return new Response(HttpStatus.OK, "Success", userService.getInstructorCourses());
     }
+
     /************************************************************************************************************* */
+    
+    /**
+     * Uploads an image file.
+     *
+     * @param  image    the image file to upload
+     * @return          a ResponseEntity with a success message or an error message
+     */
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping("/upload-image")
     @ResponseBody
@@ -153,15 +214,14 @@ public class UserController {
         }
     }
 
-    /******************************************************************************************** */
-    // @SecurityRequirement(name = "bearerAuth")
-    // @GetMapping("/get-owned-course")
-    // @ResponseBody
-    // public Response getOwnedCourse() throws IOException {
-    //     return userService.getOwnedCourse();
-    // }
+
     /******************************************************************************************** */
 
+    /**
+     * Deletes the image associated with a user.
+     *
+     * @return          a ResponseEntity with a success message or an error message
+     */
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/delete-image")
     public ResponseEntity<String> delete() {

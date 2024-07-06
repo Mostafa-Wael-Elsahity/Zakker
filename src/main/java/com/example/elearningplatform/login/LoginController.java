@@ -3,11 +3,9 @@ package com.example.elearningplatform.login;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import javax.sql.rowset.serial.SerialException;
-
+import java.util.Map;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -36,13 +34,20 @@ public class LoginController implements ErrorController {
     private final LoginService loginService;
 
 
-    /*****************************************************************************************************************/
-    // @GetMapping("/")
-    // public Response login() {
-    // return new Response( HttpStatus.OK, "ok", null);
-    // }
 
     /***************************************************************************************************************/
+    
+    /**
+     * Handles the custom login request.
+     *
+     * @param  loginRequest  the login request containing the user's credentials
+     * @param  result        the result of the validation of the login request
+     * @param  request       the HTTP servlet request
+     * @return               the response indicating the result of the login process
+     * @throws MessagingException    if there is an error sending an email
+     * @throws SQLException         if there is an error with the database
+     * @throws IOException           if there is an error with the input/output
+     */
     @PostMapping("/login/custom")
     public Response loginCustom(@RequestBody @Valid LoginRequest loginRequest, BindingResult result,
             HttpServletRequest request)
@@ -57,6 +62,13 @@ public class LoginController implements ErrorController {
     }
 
     /*****************************************************************************************************************/
+    
+    /**
+     * Retrieves the Google login URL and redirects the user to it.
+     *
+     * @param  request   the HttpServletRequest object
+     * @return           a RedirectView object for the Google OAuth2 authorization URL
+     */
     @GetMapping("/login/google")
     public RedirectView loginWithGoogle(HttpServletRequest request) {
         String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
@@ -67,7 +79,13 @@ public class LoginController implements ErrorController {
     }
 
     /*****************************************************************************************************************/
-    /*****************************************************************************************************************/
+    
+    /**
+     * Handles the OAuth2 login with Github.
+     *
+     * @param  request   the HttpServletRequest object
+     * @return           a RedirectView object for the Github OAuth2 authorization URL
+     */
     @GetMapping("/login/github")
     public RedirectView loginWithGithub(HttpServletRequest request) {
         String baseUrl = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
@@ -78,24 +96,25 @@ public class LoginController implements ErrorController {
     }
     /*****************************************************************************************************************/
 
+    /**
+     * Handles the OAuth2 login success response.
+     *
+     * @param  oAuth2User   the OAuth2 user object containing the user's attributes
+     * @return              a Response object containing the status, message, and data
+     * @throws SerialException    if a serialization error occurs
+     * @throws IOException        if an I/O error occurs
+     * @throws SQLException       if a database error occurs
+     */
     @GetMapping("/login/oauth2/success")
-    public Response loginOuth2(@AuthenticationPrincipal OAuth2User oAuth2User)
-            throws SerialException, IOException, SQLException {
-        // System.out.println("mohamed");
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        // System.out.println(authentication);
+    public Response loginOAuth2(@AuthenticationPrincipal OAuth2User oAuth2User)
+            throws IOException, SQLException {
+        OAuth2AuthenticationToken authentication = (OAuth2AuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         try {
-            if (authentication instanceof OAuth2AuthenticationToken) {
-
-                OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
-
-                String registrationId = oauthToken.getAuthorizedClientRegistrationId();
-
-                return loginService.loginOuth2(oAuth2User.getAttributes(), registrationId);
-
+            if (authentication != null) {
+                String registrationId = authentication.getAuthorizedClientRegistrationId();
+                Map<String, Object> attributes = oAuth2User.getAttributes();
+                return loginService.loginOuth2(attributes, registrationId);
             } else {
-
                 throw new CustomException("User is not authenticated with OAuth2", HttpStatus.UNAUTHORIZED);
             }
         } catch (CustomException e) {
@@ -105,23 +124,6 @@ public class LoginController implements ErrorController {
         }
     }
 
-    // @GetMapping("/login/oauth2/code/{provider}")
-    // public String loginSuccess(@PathVariable String provider,
-    // OAuth2AuthenticationToken authenticationToken) {
-
-    // OAuth2AuthorizedClient client = clientService.loadAuthorizedClient(
-    // authenticationToken.getAuthorizedClientRegistrationId(),
-    // authenticationToken.getName());
-    // System.out.println(client);
-
-    // return "/login-success";
-    // }
-
-    // @GetMapping("/login-error")
-    // public String loginSuccess() {
-
-    // return "error";
-    // }
 }
 
 

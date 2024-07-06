@@ -13,13 +13,13 @@ import lombok.RequiredArgsConstructor;
 public class CategoryController {
     private final CategoryService categoryService;
 
+    /**
+     * Get all categories.
+     *
+     * @return          The response containing all categories.
+     */
     @GetMapping("/category/all")
     public Response findAll() {
         return new Response(HttpStatus.OK, "Success", categoryService.findAll());
     }
-/********************************************************************************************* */
-    //  @GetMapping("/create-category")
-    // public Response createCategory() {
-        
-    // }
 }
